@@ -1,6 +1,6 @@
 {
-  "name": "Calculadora MRV",
-  "short_name": "MRV Calc",
+  "name": "Calculadora de Comprometimento de Renda - MRV",
+  "short_name": "Comprom. MRV",
   "description": "Calculadora de Comprometimento de Renda — MRV",
   "start_url": "/calculadoraMRV/",
   "scope": "/calculadoraMRV/",
