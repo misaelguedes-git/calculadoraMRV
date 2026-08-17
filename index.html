@@ -258,20 +258,23 @@ tr:hover td{background:#F8F9FA;}
 
 <header>
   <div class="logo-container">
-    <img class="logo-img"
-         src="https://raw.githubusercontent.com/misaelguedes-git/calculadoraMRV/main/assets/LogoMRV.png"
-         alt="MRV&CO"
-         onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-    <span style="display:none;font-family:Arial Black,Arial;font-weight:900;font-size:20px;color:#006b3f;letter-spacing:-1px;">
-      MRV<span style="color:#E87722;">&CO</span>
-    </span>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <img class="logo-img"
+           src="https://raw.githubusercontent.com/misaelguedes-git/calculadoraMRV/main/assets/LogoMRV.png"
+           alt="MRV&CO"
+           onerror="this.style.display='none';">
+      <span style="font-size:9px;font-weight:700;color:#006b3f;letter-spacing:0.3px;white-space:nowrap;">
+        Comprometimento de Renda
+      </span>
+    </div>
   </div>
   <div class="header-div"></div>
   <div class="header-text">
-    <h1>Calculadora de Comprometimento de Renda</h1>
+    <h1>Calculadora de Comprometimento de Renda - MRV</h1>
     <p>Faça o upload do contrato — preenchimento automático dos dados</p>
   </div>
 </header>
+
 
 <!-- Toast de sincronização com Sheets -->
 <div class="toast-sheets" id="toastSheets">
