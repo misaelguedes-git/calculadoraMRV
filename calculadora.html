@@ -190,6 +190,21 @@ input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
   border-radius:8px;font-size:12px;color:#555;line-height:1.6;
   border-left:3px solid var(--amarelo);
 }
+/* Toast de sincronização */
+.toast-sheets{
+  position:fixed;bottom:24px;right:24px;z-index:9999;
+  background:#fff;border-radius:12px;padding:14px 18px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.18);
+  display:flex;align-items:center;gap:10px;
+  font-size:13px;font-weight:600;
+  transform:translateY(80px);opacity:0;
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);
+  border-left:4px solid var(--verde);
+  max-width:320px;
+}
+.toast-sheets.show{transform:translateY(0);opacity:1;}
+.toast-sheets.erro{border-color:var(--vermelho);}
+.toast-sheets .toast-icon{font-size:20px;flex-shrink:0;}
 .historico-card{
   background:#fff;border-radius:14px;padding:18px;
   margin-top:18px;box-shadow:0 2px 10px rgba(0,0,0,0.07);display:none;
@@ -222,6 +237,7 @@ tr:hover td{background:#F8F9FA;}
   .badge-resultado{font-size:16px;}
   .btn{padding:12px 16px;font-size:13px;}
   .desconto-row{flex-direction:column;align-items:flex-start;}
+  .toast-sheets{bottom:12px;right:12px;left:12px;max-width:100%;}
 }
 @media(max-width:380px){.res-grid{grid-template-columns:1fr;}}
 @media print{
@@ -239,7 +255,6 @@ tr:hover td{background:#F8F9FA;}
          src="https://raw.githubusercontent.com/misaelguedes-git/calculadoraMRV/main/assets/LogoMRV.png"
          alt="MRV&CO"
          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-    <!-- Fallback caso a imagem não carregue -->
     <span style="display:none;font-family:Arial Black,Arial;font-weight:900;font-size:20px;color:#006b3f;letter-spacing:-1px;">
       MRV<span style="color:#E87722;">&CO</span>
     </span>
@@ -250,6 +265,12 @@ tr:hover td{background:#F8F9FA;}
     <p>Faça o upload do contrato — preenchimento automático dos dados</p>
   </div>
 </header>
+
+<!-- Toast de sincronização com Sheets -->
+<div class="toast-sheets" id="toastSheets">
+  <span class="toast-icon" id="toastIcon">⏳</span>
+  <span id="toastMsg">Salvando no Google Sheets...</span>
+</div>
 
 <div class="container">
 
@@ -479,9 +500,42 @@ tr:hover td{background:#F8F9FA;}
 pdfjsLib.GlobalWorkerOptions.workerSrc=
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+// ── URL DO GOOGLE APPS SCRIPT ────────────────────────────────────
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyIkN0UQnB3XBqTJgH57OQe2LbeGVqU1Y9qP5lNvI5bnCl1VZw91otCy3pRlgY0Nahc-A/exec';
+
 let _psaQtd=0,_psaSaldo=0,_psbQtd=0,_psbSaldo=0;
 let _parcelasPSB=[];
 let _dataEntregaISO=null,_obraPronta=false;
+
+// ── TOAST ────────────────────────────────────────────────────────
+function mostrarToast(msg, tipo='loading'){
+  const toast=document.getElementById('toastSheets');
+  const icon=document.getElementById('toastIcon');
+  const txt=document.getElementById('toastMsg');
+  txt.textContent=msg;
+  if(tipo==='loading'){icon.textContent='⏳';toast.className='toast-sheets show';}
+  else if(tipo==='ok'){icon.textContent='✅';toast.className='toast-sheets show';}
+  else{icon.textContent='⚠️';toast.className='toast-sheets show erro';}
+  if(tipo!=='loading') setTimeout(()=>{toast.className='toast-sheets';},4000);
+}
+
+// ── ENVIO AO GOOGLE SHEETS ───────────────────────────────────────
+async function enviarParaSheets(dados){
+  mostrarToast('Salvando no Google Sheets...');
+  try{
+    await fetch(SHEETS_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(dados)
+    });
+    // no-cors não retorna body, então assumimos sucesso se não lançar erro
+    mostrarToast('✅ Dados salvos no Google Sheets!','ok');
+  }catch(err){
+    mostrarToast('Falha ao salvar no Sheets. Verifique a conexão.','erro');
+    console.error('Sheets error:',err);
+  }
+}
 
 // ── LEITURA DO PDF ──────────────────────────────────────────────
 async function lerPDF(input){
@@ -672,18 +726,23 @@ function calcular(e){
   const bar=document.getElementById('progressBar');
   const badge=document.getElementById('badgeResultado');
   bar.style.width=Math.min(pct*2,100)+'%';
+
+  let statusTexto='';
   if(pct<=35){
     badge.className='badge-resultado aprovado';
     badge.textContent='✔ APROVADO — '+pct.toFixed(2).replace('.',',')+' %';
     bar.className='progress-bar verde';
+    statusTexto='APROVADO';
   }else if(pct<=40){
     badge.className='badge-resultado atencao';
     badge.textContent='⚠ ATENÇÃO — '+pct.toFixed(2).replace('.',',')+' %';
     bar.className='progress-bar amarelo';
+    statusTexto='ATENÇÃO';
   }else{
     badge.className='badge-resultado reprovado';
     badge.textContent='✘ REPROVADO — '+pct.toFixed(2).replace('.',',')+' %';
     bar.className='progress-bar vermelho';
+    statusTexto='REPROVADO';
   }
 
   // ── DESCONTO ────────────────────────────────────────────────
@@ -707,9 +766,12 @@ function calcular(e){
     for(const p of _parcelasPSB)descontoEstimadoPSB+=p.valorNum*pctRed;
   }
 
+  let descontoCobreNecessario='—';
+
   if(pctFin!==null&&pctFin>=80){
     ds.className='desconto-section bloqueado';
     dt.innerHTML='🔒 Desconto bloqueado — limite de financiamento atingido (80%)';
+    descontoCobreNecessario='Bloqueado';
     dc.innerHTML=`
       <div class="desconto-row"><span class="dr-label">% Financiado atual</span><span class="dr-val" style="color:var(--vermelho)">${pctFin.toFixed(2).replace('.',',')} %</span></div>
       <div class="desconto-row"><span class="dr-label">Limite máximo</span><span class="dr-val" style="color:#888">80,00 %</span></div>
@@ -718,6 +780,7 @@ function calcular(e){
   }else if(pct<=35){
     ds.className='desconto-section ok';
     dt.innerHTML='✔ Cliente enquadrado — desconto não necessário';
+    descontoCobreNecessario='Não necessário';
     dc.innerHTML=`
       <div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} %</span></div>
       <div class="desconto-row"><span class="dr-label">% Financiado</span><span class="dr-val" style="color:var(--verde)">${pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—'}</span></div>
@@ -738,20 +801,61 @@ function calcular(e){
       <div class="desconto-row"><span class="dr-label">💡 Desconto estimado no PSB</span><span class="dr-val" style="color:var(--laranja);font-size:18px;">${formatMoeda(descontoEstimadoPSB)}</span></div>`;
       if(descontoDisponivel!==null){
         const coberto=descontoEstimadoPSB<=descontoDisponivel;
+        descontoCobreNecessario=coberto?'Sim':'Não';
         html+=`
       <div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${formatMoeda(descontoDisponivel)}</span></div>
       <div class="desconto-row"><span class="dr-label">Desconto cobre o necessário?</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${coberto?'✔ Sim':'✘ Não'}</span></div>`;
       }
     }
-    html+=`<div class="projecao-aviso">📌 <strong>Projeção estimada.</strong> A redução por parcela é calculada proporcionalmente com base na parcela atual. Contratos com curva de queda terão redução proporcional em cada parcela individualmente. Solicite simulação exata ao financeiro MRV para confirmação.</div>`;
+    html+=`<div class="projecao-aviso">⚠️ Estimativa baseada em parcelas uniformes. Contratos com curva de queda podem ter valores diferentes. Solicite simulação exata ao financeiro MRV para confirmação.</div>`;
     dc.innerHTML=html;
   }
 
   document.getElementById('resultado').className='resultado show';
   document.getElementById('resultado').scrollIntoView({behavior:'smooth'});
+
+  // ── ENVIO AUTOMÁTICO AO GOOGLE SHEETS ───────────────────────
+  const agora = new Date();
+  const dataHora = agora.toLocaleString('pt-BR');
+  const pctFinStr = pctFin!==null ? pctFin.toFixed(2).replace('.',',')+' %' : '—';
+
+  const dadosSheets = {
+    dataHora:               dataHora,
+    nomeCliente:            document.getElementById('nomeCliente').value || '—',
+    cpf:                    document.getElementById('cpf').value || '—',
+    gerenteResponsavel:     document.getElementById('gerente').value || '—',
+    numeroContrato:         document.getElementById('numContrato').value || '—',
+    empreendimento:         document.getElementById('empreendimento').value || '—',
+    blocoModulo:            document.getElementById('modulo').value || '—',
+    valorImovel:            document.getElementById('valorImovel').value || '—',
+    dataEntregaPrevista:    document.getElementById('dataEntrega').value || '—',
+    valorAvaliacao:         document.getElementById('valorAvaliacao').value || '—',
+    tetoFaixa:              document.getElementById('tetoFaixa').value || '—',
+    valorFinanciado:        document.getElementById('valorFinanciado').value || '—',
+    percentualFinanciado:   pctFinStr,
+    saldoCarteiraMRV:       document.getElementById('saldoCarteira').value || '—',
+    parcelaMRV:             formatMoeda(mrv),
+    qtdParcelasMRV:         document.getElementById('qtdParcelas').value || '—',
+    parcelaCaixa:           formatMoeda(caixa),
+    rendaCliente:           formatMoeda(renda),
+    psaQtdParcelas:         _psaQtd > 0 ? _psaQtd : 0,
+    psaSaldoTotal:          _psaSaldo > 0 ? formatMoeda(_psaSaldo) : '—',
+    psbQtdParcelas:         _psbQtd > 0 ? _psbQtd : 0,
+    psbSaldoTotal:          _psbSaldo > 0 ? formatMoeda(_psbSaldo) : '—',
+    totalParcelas:          formatMoeda(total),
+    comprometimentoPercent: pct.toFixed(2).replace('.',',')+' %',
+    status:                 statusTexto,
+    descontoNecessario:     reducaoNecessaria > 0 ? formatMoeda(reducaoNecessaria) : 'Não necessário',
+    descontoEstimadoPSB:    descontoEstimadoPSB > 0 ? formatMoeda(descontoEstimadoPSB) : '—',
+    descontoDisponivel:     descontoDisponivel !== null ? formatMoeda(descontoDisponivel) : '—',
+    descontoCobreNecessario: descontoCobreNecessario,
+    obraEntregue:           _obraPronta ? 'Sim' : 'Não'
+  };
+
+  enviarParaSheets(dadosSheets);
 }
 
-// ── HISTÓRICO ───────────────────────────────────────────────────
+// ── HISTÓRICO LOCAL ──────────────────────────────────────────────
 function salvarHistorico(){
   const h=JSON.parse(localStorage.getItem('mrv_hist')||'[]');
   const pct=parseFloat(document.getElementById('res-pct').textContent.replace(',','.').replace('%','').trim());
@@ -774,7 +878,7 @@ function salvarHistorico(){
   });
   localStorage.setItem('mrv_hist',JSON.stringify(h.slice(0,50)));
   renderHistorico();
-  alert('✅ Salvo no histórico!');
+  alert('✅ Salvo no histórico local!');
 }
 
 function renderHistorico(){
