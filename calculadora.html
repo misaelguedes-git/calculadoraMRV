@@ -730,7 +730,7 @@ function calcular(e){
       <div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--vermelho)">${pct.toFixed(2).replace('.',',')} %</span></div>
       <div class="desconto-row"><span class="dr-label">Meta de comprometimento</span><span class="dr-val" style="color:var(--verde)">35,00 %</span></div>
       <div class="desconto-row"><span class="dr-label">Parcela MRV atual</span><span class="dr-val" style="color:var(--vermelho)">${formatMoeda(mrv)}</span></div>
-      <div class="desconto-row"><span class="dr-label">Parcela MRV ideal (para 35%)</span><span class="dr-val" style="color:var(--verde)">${mrvIdeal>0?formatMoeda(mrvIdeal):'Inviável — parcela Caixa já excede 30%'}</span></div>`;
+      <div class="desconto-row"><span class="dr-label">Parcela MRV ideal (para 35%)</span><span class="dr-val" style="color:var(--verde)">${mrvIdeal>0?formatMoeda(mrvIdeal):'Inviável — parcela Caixa já excede 35%'}</span></div>`;
     if(mrvIdeal>0&&_parcelasPSB.length>0){
       html+=`
       <div class="desconto-row"><span class="dr-label">Redução necessária por parcela</span><span class="dr-val" style="color:var(--laranja)">${formatMoeda(reducaoNecessaria)}</span></div>
