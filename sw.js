@@ -1,21 +1,17 @@
-const CACHE = 'mrv-calc-v1';
-const ARQUIVOS = [
+const CACHE = 'mrv-calc-v3';
+const ASSETS = [
   '/calculadoraMRV/',
   '/calculadoraMRV/index.html',
-  '/calculadoraMRV/manifest.json',
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+  '/calculadoraMRV/manifest.json'
 ];
 
-// Instala e faz cache dos arquivos
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(ARQUIVOS))
+    caches.open(CACHE).then(c => c.addAll(ASSETS))
   );
   self.skipWaiting();
 });
 
-// Ativa e limpa caches antigos
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -25,11 +21,8 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
-// Intercepta requisições — serve do cache se offline
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      return cached || fetch(e.request).catch(() => caches.match('/calculadoraMRV/index.html'));
-    })
+    fetch(e.request).catch(() => caches.match(e.request))
   );
 });
