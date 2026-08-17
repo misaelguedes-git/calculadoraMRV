@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#006b3f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MRV Calc">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/misaelguedes-git/calculadoraMRV/main/assets/LogoMRV.png">
 <title>Calculadora MRV — Comprometimento de Renda</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
@@ -17,6 +24,8 @@
   --amarelo-medio:#E65100;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
+</style>
+
 body{font-family:'Segoe UI',Arial,sans-serif;background:#ECEEF2;color:var(--texto);font-size:15px;}
 header{
   background:var(--verde);padding:0 24px;display:flex;align-items:center;gap:20px;
@@ -970,6 +979,16 @@ function limpar(){
   _parcelasPSB=[];_dataEntregaISO=null;_obraPronta=false;
 }
 window.onload=renderHistorico;
+</script>
+  
+<script>
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/calculadoraMRV/sw.js')
+        .then(() => console.log('✅ PWA registrado'))
+        .catch(e => console.log('SW erro:', e));
+    });
+  }
 </script>
 </body>
 </html>
