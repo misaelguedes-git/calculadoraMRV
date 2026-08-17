@@ -436,7 +436,7 @@ tr:hover td{background:#F8F9FA;}
       <div class="progress-bar" id="progressBar"></div>
     </div>
     <div class="progress-labels">
-      <span>0%</span><span>30% ✔</span><span>35% ⚠</span><span>50%+</span>
+      <span>0%</span><span>35% ✔</span><span>40% ⚠</span><span>50%+</span>
     </div>
     <div class="badge-resultado" id="badgeResultado">—</div>
 
@@ -672,11 +672,11 @@ function calcular(e){
   const bar=document.getElementById('progressBar');
   const badge=document.getElementById('badgeResultado');
   bar.style.width=Math.min(pct*2,100)+'%';
-  if(pct<=30){
+  if(pct<=35){
     badge.className='badge-resultado aprovado';
     badge.textContent='✔ APROVADO — '+pct.toFixed(2).replace('.',',')+' %';
     bar.className='progress-bar verde';
-  }else if(pct<=35){
+  }else if(pct<=40){
     badge.className='badge-resultado atencao';
     badge.textContent='⚠ ATENÇÃO — '+pct.toFixed(2).replace('.',',')+' %';
     bar.className='progress-bar amarelo';
@@ -695,7 +695,7 @@ function calcular(e){
   const dc=document.getElementById('descontoConteudo');
   ds.style.display='block';
 
-  const mrvIdeal=(0.30*renda)-caixa;
+  const mrvIdeal=(0.35*renda)-caixa;
   const reducaoNecessaria=Math.max(0,mrv-mrvIdeal);
   let descontoDisponivel=null;
   if(pctFin!==null&&imo){
@@ -715,22 +715,22 @@ function calcular(e){
       <div class="desconto-row"><span class="dr-label">Limite máximo</span><span class="dr-val" style="color:#888">80,00 %</span></div>
       <div class="desconto-row"><span class="dr-label">Desconto disponível</span><span class="dr-val" style="color:var(--vermelho)">R$ 0,00</span></div>
       <div class="projecao-aviso">🔒 O cliente atingiu o limite máximo de financiamento (80%). Não é possível conceder nenhum desconto. Para viabilizar, o cliente precisaria aumentar o valor de entrada.</div>`;
-  }else if(pct<=30){
+  }else if(pct<=35){
     ds.className='desconto-section ok';
     dt.innerHTML='✔ Cliente enquadrado — desconto não necessário';
     dc.innerHTML=`
       <div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} %</span></div>
       <div class="desconto-row"><span class="dr-label">% Financiado</span><span class="dr-val" style="color:var(--verde)">${pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—'}</span></div>
       ${descontoDisponivel!==null&&descontoDisponivel>0?`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(descontoDisponivel)}</span></div>`:''}
-      <div class="projecao-aviso">✅ Cliente dentro do limite de 30%.${descontoDisponivel>0?' Há margem de desconto disponível caso necessário.':''}</div>`;
+      <div class="projecao-aviso">✅ Cliente dentro do limite de 35%.${descontoDisponivel>0?' Há margem de desconto disponível caso necessário.':''}</div>`;
   }else{
     ds.className='desconto-section nok';
     dt.innerHTML='⚠️ Desconto necessário para enquadramento';
     let html=`
       <div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--vermelho)">${pct.toFixed(2).replace('.',',')} %</span></div>
-      <div class="desconto-row"><span class="dr-label">Meta de comprometimento</span><span class="dr-val" style="color:var(--verde)">30,00 %</span></div>
+      <div class="desconto-row"><span class="dr-label">Meta de comprometimento</span><span class="dr-val" style="color:var(--verde)">35,00 %</span></div>
       <div class="desconto-row"><span class="dr-label">Parcela MRV atual</span><span class="dr-val" style="color:var(--vermelho)">${formatMoeda(mrv)}</span></div>
-      <div class="desconto-row"><span class="dr-label">Parcela MRV ideal (para 30%)</span><span class="dr-val" style="color:var(--verde)">${mrvIdeal>0?formatMoeda(mrvIdeal):'Inviável — parcela Caixa já excede 30%'}</span></div>`;
+      <div class="desconto-row"><span class="dr-label">Parcela MRV ideal (para 35%)</span><span class="dr-val" style="color:var(--verde)">${mrvIdeal>0?formatMoeda(mrvIdeal):'Inviável — parcela Caixa já excede 30%'}</span></div>`;
     if(mrvIdeal>0&&_parcelasPSB.length>0){
       html+=`
       <div class="desconto-row"><span class="dr-label">Redução necessária por parcela</span><span class="dr-val" style="color:var(--laranja)">${formatMoeda(reducaoNecessaria)}</span></div>
@@ -770,7 +770,7 @@ function salvarHistorico(){
     pctFin,
     psa:_psaSaldo>0?formatMoeda(_psaSaldo)+' ('+_psaQtd+'p)':'—',
     psb:_psbSaldo>0?formatMoeda(_psbSaldo)+' ('+_psbQtd+'p)':'—',
-    status:pct<=30?'APROVADO':pct<=35?'ATENÇÃO':'REPROVADO'
+    status:pct<=35?'APROVADO':pct<=40?'ATENÇÃO':'REPROVADO'
   });
   localStorage.setItem('mrv_hist',JSON.stringify(h.slice(0,50)));
   renderHistorico();
