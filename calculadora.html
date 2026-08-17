@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Calculadora MRV — Comprometimento de Renda</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{
+  --verde:#006b3f;--verde-claro:#E6F4ED;--verde-hover:#005530;
+  --laranja:#E87722;--laranja-claro:#FEF3E8;
+  --roxo:#6B2D8B;--roxo-claro:#F3EDF7;
+  --azul:#003366;--cinza:#F5F5F5;--cinza-borda:#E0E0E0;
+  --texto:#333;--branco:#FFF;
+  --vermelho:#D32F2F;--vermelho-claro:#FDECEA;
+  --amarelo:#F9A825;--amarelo-claro:#FFFDE7;
+  --amarelo-medio:#E65100;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#ECEEF2;color:var(--texto);font-size:15px;}
+
+/* ── HEADER ── */
+header{
+  background:var(--verde);
+  padding:0 24px;display:flex;align-items:center;gap:20px;
+  height:68px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.22);
+  position:sticky;top:0;z-index:100;
+}
+.logo-container{
+  background:#fff;border-radius:8px;
+  padding:6px 12px;display:flex;align-items:center;
+  flex-shrink:0;height:50px;
+}
+.logo-img{height:36px;width:auto;display:block;}
+.header-div{width:2px;height:38px;background:rgba(255,255,255,0.25);border-radius:2px;flex-shrink:0;}
+.header-text h1{color:#fff;font-size:15px;font-weight:700;line-height:1.3;}
+.header-text p{color:rgba(255,255,255,0.78);font-size:11px;margin-top:2px;}
+
+/* ── CONTAINER ── */
+.container{max-width:880px;margin:22px auto;padding:0 14px 80px;}
+
+/* ── UPLOAD ── */
+.upload-card{
+  background:#fff;border-radius:14px;border:2px dashed var(--verde);
+  padding:30px 20px;text-align:center;margin-bottom:18px;
+  cursor:pointer;transition:.25s;
+}
+.upload-card:hover{border-color:var(--laranja);background:var(--laranja-claro);}
+.upload-icon{font-size:42px;margin-bottom:10px;}
+.upload-card h2{color:var(--verde);font-size:18px;font-weight:700;margin-bottom:6px;}
+.upload-card p{color:#777;font-size:13px;}
+.upload-card input{display:none;}
+.btn-upload{
+  display:inline-flex;align-items:center;gap:8px;margin-top:14px;
+  background:var(--verde);color:#fff;padding:12px 28px;border-radius:8px;
+  font-size:14px;font-weight:700;cursor:pointer;border:none;transition:.2s;
+}
+.btn-upload:hover{background:var(--laranja);}
+
+/* ── STATUS ── */
+.status-bar{
+  display:none;align-items:center;gap:12px;background:#fff;
+  border-radius:10px;padding:13px 18px;margin-bottom:16px;
+  border-left:4px solid var(--verde);font-size:14px;font-weight:500;
+}
+.status-bar.show{display:flex;}
+.status-bar.success{border-color:var(--verde);}
+.status-bar.error{border-color:var(--vermelho);}
+.spinner{
+  width:20px;height:20px;flex-shrink:0;
+  border:3px solid #eee;border-top-color:var(--verde);
+  border-radius:50%;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── CARDS ── */
+.card{
+  background:#fff;border-radius:14px;padding:20px 18px;
+  margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.07);
+}
+.card-title{
+  font-size:15px;font-weight:700;margin-bottom:16px;
+  padding-bottom:10px;border-bottom:2px solid var(--cinza);
+  display:flex;align-items:center;gap:8px;
+}
+.card-title.verde{color:var(--verde);}
+.card-title.laranja{color:var(--laranja);}
+.card-title.roxo{color:var(--roxo);}
+
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field.full{grid-column:1/-1;}
+
+/* ── LABELS / TAGS ── */
+label{font-size:12px;font-weight:700;color:#555;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.tag{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;}
+.tag.auto{background:var(--verde-claro);color:var(--verde);}
+.tag.manual{background:var(--laranja-claro);color:var(--laranja);}
+
+/* ── INPUTS ── */
+input[type=text]{
+  padding:11px 13px;border:1.5px solid var(--cinza-borda);
+  border-radius:8px;font-size:14px;transition:border .2s;
+  width:100%;background:#fff;color:var(--texto);
+}
+input[type=text]:focus{outline:none;border-color:var(--verde);}
+input.auto-filled{background:var(--verde-claro);border-color:var(--verde);color:#1a5c2a;}
+input.manual-field{background:var(--laranja-claro);border-color:var(--laranja);}
+input[readonly]{background:#F8F9FA;color:#555;cursor:default;}
+input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
+
+/* ── PSA / PSB ── */
+.psa-psb-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;grid-column:1/-1;}
+.psa-box,.psb-box{border-radius:10px;padding:14px 16px;}
+.psa-box{background:var(--roxo-claro);border:1.5px solid var(--roxo);}
+.psb-box{background:var(--verde-claro);border:1.5px solid var(--verde);}
+.psa-psb-title{font-size:12px;font-weight:700;margin-bottom:10px;}
+.psa-box .psa-psb-title{color:var(--roxo);}
+.psb-box .psa-psb-title{color:var(--verde);}
+.psa-psb-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.psa-psb-label{font-size:12px;color:#666;}
+.psa-psb-val{font-size:14px;font-weight:700;}
+.psa-box .psa-psb-val{color:var(--roxo);}
+.psb-box .psa-psb-val{color:var(--verde);}
+
+/* ── % FINANCIADO ── */
+.financiado-wrap{
+  grid-column:1/-1;border-radius:10px;
+  padding:14px 16px;display:none;
+  align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  border:2px solid;
+}
+.financiado-wrap.fin-verde{background:var(--verde-claro);border-color:var(--verde);}
+.financiado-wrap.fin-amarelo{background:var(--amarelo-claro);border-color:var(--amarelo);}
+.financiado-wrap.fin-vermelho{background:var(--vermelho-claro);border-color:var(--vermelho);}
+.financiado-info{font-size:13px;color:#555;}
+.financiado-info strong{font-size:22px;display:block;margin-top:2px;}
+.financiado-wrap.fin-verde .financiado-info strong{color:var(--verde);}
+.financiado-wrap.fin-amarelo .financiado-info strong{color:var(--amarelo-medio);}
+.financiado-wrap.fin-vermelho .financiado-info strong{color:var(--vermelho);}
+.financiado-badge{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;}
+.financiado-badge.ok{background:var(--verde);color:#fff;}
+.financiado-badge.aviso{background:var(--amarelo);color:#fff;}
+.financiado-badge.nok{background:var(--vermelho);color:#fff;}
+
+/* ── BOTÕES ── */
+.botoes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+.btn{
+  padding:13px 22px;border-radius:9px;font-size:14px;font-weight:700;
+  cursor:pointer;border:none;transition:.2s;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.btn-verde{background:var(--verde);color:#fff;}
+.btn-verde:hover{background:var(--verde-hover);}
+.btn-laranja{background:var(--laranja);color:#fff;}
+.btn-laranja:hover{background:#c45e0f;}
+.btn-roxo{background:var(--roxo);color:#fff;}
+.btn-roxo:hover{background:#4e1f68;}
+.btn-cinza{background:#6c757d;color:#fff;}
+.btn-cinza:hover{background:#545b62;}
+
+/* ── RESULTADO ── */
+.resultado{
+  display:none;background:#fff;border-radius:14px;
+  padding:24px 18px;margin-bottom:18px;
+  box-shadow:0 4px 18px rgba(0,0,0,0.1);
+}
+.resultado.show{display:block;}
+.resultado-title{
+  font-size:16px;font-weight:800;color:var(--verde);
+  text-align:center;margin-bottom:18px;padding-bottom:12px;
+  border-bottom:2px solid var(--cinza);
+}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px;}
+.res-item{background:var(--cinza);border-radius:10px;padding:13px;text-align:center;}
+.res-item label{font-size:11px;color:#777;display:block;margin-bottom:4px;font-weight:600;}
+.res-item .val{font-size:18px;font-weight:800;color:var(--azul);}
+.res-item.destaque{background:var(--verde-claro);}
+.res-item.destaque .val{color:var(--verde);}
+
+/* ── COMPROMETIMENTO ── */
+.comprom-box{
+  background:var(--cinza);border-radius:10px;
+  padding:16px;text-align:center;margin-bottom:13px;
+}
+.comprom-box label{font-size:13px;color:#777;display:block;margin-bottom:4px;font-weight:600;}
+.comprom-box .val-grande{font-size:36px;font-weight:900;color:var(--azul);}
+
+/* ── BARRA ── */
+.progress-wrap{background:#e0e0e0;border-radius:20px;height:14px;overflow:hidden;margin-bottom:6px;}
+.progress-bar{height:100%;border-radius:20px;transition:width 1s ease;width:0%;}
+.progress-bar.verde{background:linear-gradient(90deg,var(--verde),#5cb85c);}
+.progress-bar.amarelo{background:linear-gradient(90deg,var(--amarelo),#ffd54f);}
+.progress-bar.vermelho{background:linear-gradient(90deg,var(--vermelho),#e57373);}
+.progress-labels{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-bottom:14px;}
+
+/* ── BADGE ── */
+.badge-resultado{
+  text-align:center;padding:15px;border-radius:12px;
+  font-size:19px;font-weight:800;margin-bottom:16px;
+}
+.badge-resultado.aprovado{background:var(--verde-claro);color:var(--verde);}
+.badge-resultado.atencao{background:var(--amarelo-claro);color:var(--amarelo-medio);}
+.badge-resultado.reprovado{background:var(--vermelho-claro);color:var(--vermelho);}
+
+/* ── PSA PSB RESULTADO ── */
+.psa-psb-resultado{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px;}
+.psa-res,.psb-res{border-radius:10px;padding:14px;text-align:center;}
+.psa-res{background:var(--roxo-claro);}
+.psb-res{background:var(--verde-claro);}
+.psa-res .pr-title{font-size:12px;font-weight:700;color:var(--roxo);margin-bottom:8px;}
+.psb-res .pr-title{font-size:12px;font-weight:700;color:var(--verde);margin-bottom:8px;}
+.psa-res .pr-val{font-size:16px;font-weight:800;color:var(--roxo);}
+.psb-res .pr-val{font-size:16px;font-weight:800;color:var(--verde);}
+.psa-res .pr-sub,.psb-res .pr-sub{font-size:11px;color:#888;margin-top:3px;}
+
+/* ── SEÇÃO DESCONTO ── */
+.desconto-section{border-radius:12px;padding:18px;margin-bottom:16px;border:2px solid;}
+.desconto-section.ok{background:var(--verde-claro);border-color:var(--verde);}
+.desconto-section.nok{background:var(--vermelho-claro);border-color:var(--vermelho);}
+.desconto-section.aviso{background:var(--amarelo-claro);border-color:var(--amarelo);}
+.desconto-section.bloqueado{background:#F5F5F5;border-color:#ccc;}
+.desconto-titulo{font-size:14px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.desconto-section.ok .desconto-titulo{color:var(--verde);}
+.desconto-section.nok .desconto-titulo{color:var(--vermelho);}
+.desconto-section.aviso .desconto-titulo{color:var(--amarelo-medio);}
+.desconto-section.bloqueado .desconto-titulo{color:#888;}
+.desconto-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.07);
+  font-size:13px;flex-wrap:wrap;gap:6px;
+}
+.desconto-row:last-child{border-bottom:none;padding-bottom:0;}
+.desconto-row .dr-label{color:#555;font-weight:500;}
+.desconto-row .dr-val{font-weight:800;font-size:15px;}
+.projecao-aviso{
+  margin-top:14px;padding:11px 14px;
+  background:rgba(0,0,0,0.06);border-radius:8px;
+  font-size:12px;color:#555;line-height:1.6;
+  border-left:3px solid var(--amarelo);
+}
+
+/* ── HISTÓRICO ── */
+.historico-card{
+  background:#fff;border-radius:14px;padding:18px;
+  margin-top:18px;box-shadow:0 2px 10px rgba(0,0,0,0.07);display:none;
+}
+.historico-title{
+  font-size:15px;font-weight:700;color:var(--roxo);
+  margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;
+}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:640px;}
+th{background:var(--roxo);color:#fff;padding:9px 10px;text-align:left;white-space:nowrap;}
+td{padding:8px 10px;border-bottom:1px solid #F0F2F5;white-space:nowrap;}
+tr:hover td{background:#F8F9FA;}
+.badge-sm{padding:3px 8px;border-radius:4px;font-size:11px;font-weight:700;}
+.badge-sm.a{background:var(--verde-claro);color:var(--verde);}
+.badge-sm.t{background:var(--amarelo-claro);color:var(--amarelo-medio);}
+.badge-sm.r{background:var(--vermelho-claro);color:var(--vermelho);}
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  header{padding:0 14px;gap:12px;height:58px;}
+  .logo-container{height:44px;padding:5px 10px;}
+  .logo-img{height:28px;}
+  .header-div{display:none;}
+  .header-text h1{font-size:13px;}
+  .header-text p{font-size:10px;}
+  .container{padding:0 10px 80px;}
+  .grid,.psa-psb-grid,.res-grid,.psa-psb-resultado{grid-template-columns:1fr;}
+  .field.full,.psa-psb-grid{grid-column:1;}
+  .financiado-wrap{flex-direction:column;align-items:flex-start;}
+  .comprom-box .val-grande{font-size:28px;}
+  .badge-resultado{font-size:16px;}
+  .btn{padding:12px 16px;font-size:13px;}
+  .desconto-row{flex-direction:column;align-items:flex-start;}
+}
+@media(max-width:380px){.res-grid{grid-template-columns:1fr;}}
+@media print{
+  header,.upload-card,.status-bar,.botoes,.historico-card{display:none!important;}
+  .resultado{display:block!important;box-shadow:none;}
+  body{background:#fff;}.container{padding:0;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-container">
+    <img class="logo-img"
+         alt="MRV&CO"
+         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAsoAAAHKCAYAAAAKPMFkAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAABmJLR0QA/wD/AP+gvaeTAAAAB3RJTUUH5QsKDQoH/mMfngAAcBxJREFUeNrt3XecXmd97/HPuaeoS5ZkWZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZl2ZZ*
