@@ -9,7 +9,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Comprom. MRV">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/misaelguedes-git/calculadoraMRV/main/assets/LogoMRV.png">
 <title>Calculadora MRV — Comprometimento de Renda</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
@@ -124,6 +123,88 @@ input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
 .financiado-badge.ok{background:var(--verde);color:#fff;}
 .financiado-badge.aviso{background:var(--amarelo);color:#fff;}
 .financiado-badge.nok{background:var(--vermelho);color:#fff;}
+
+/* ── PLANO DE PAGAMENTO ── */
+.plano-wrap{
+  grid-column:1/-1;display:none;
+  border-radius:12px;overflow:hidden;
+  border:1.5px solid var(--cinza-borda);
+  margin-top:4px;
+}
+.plano-header{
+  background:var(--azul);color:#fff;
+  padding:11px 16px;font-size:13px;font-weight:700;
+  display:flex;align-items:center;gap:8px;
+}
+.plano-body{padding:0;}
+.plano-secao{border-bottom:1px solid var(--cinza-borda);}
+.plano-secao:last-child{border-bottom:none;}
+.plano-secao-titulo{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;background:#FAFAFA;
+  font-size:13px;font-weight:700;cursor:pointer;
+  gap:8px;flex-wrap:wrap;
+  border-bottom:1px solid var(--cinza-borda);
+  transition:background .2s;
+}
+.plano-secao-titulo:hover{background:#F0F2F5;}
+.plano-secao-titulo .ps-esq{display:flex;align-items:center;gap:8px;}
+.plano-secao-titulo .ps-dir{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.plano-badge-total{
+  font-size:13px;font-weight:800;color:var(--azul);
+}
+.plano-badge-pct{
+  font-size:11px;padding:2px 8px;border-radius:4px;
+  background:var(--azul);color:#fff;font-weight:700;
+}
+.plano-chevron{font-size:11px;color:#aaa;transition:transform .25s;}
+.plano-secao.open .plano-chevron{transform:rotate(180deg);}
+.plano-conteudo{display:none;padding:12px 16px;}
+.plano-secao.open .plano-conteudo{display:block;}
+
+/* Parcelas da entrada */
+.entrada-lista{list-style:none;padding:0;margin:0;}
+.entrada-lista li{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 0;border-bottom:1px solid #F0F2F5;
+  font-size:13px;flex-wrap:wrap;gap:4px;
+}
+.entrada-lista li:last-child{border-bottom:none;}
+.entrada-lista .el-num{
+  font-size:11px;color:#aaa;font-weight:600;
+  min-width:22px;
+}
+.entrada-lista .el-val{font-weight:700;color:var(--azul);}
+.entrada-lista .el-venc{
+  font-size:12px;color:#777;
+  background:#F0F2F5;padding:2px 8px;border-radius:4px;
+}
+
+/* Grupos intermediárias */
+.grupo-wrap{margin-bottom:10px;}
+.grupo-wrap:last-child{margin-bottom:0;}
+.grupo-titulo{
+  font-size:12px;font-weight:700;color:var(--roxo);
+  margin-bottom:6px;display:flex;align-items:center;
+  justify-content:space-between;flex-wrap:wrap;gap:4px;
+}
+.grupo-titulo .gt-total{font-size:13px;color:var(--roxo);}
+.grupo-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 0;border-bottom:1px solid #F0F2F5;
+  font-size:13px;flex-wrap:wrap;gap:4px;
+}
+.grupo-row:last-child{border-bottom:none;}
+.grupo-row .gr-val{font-weight:700;color:var(--azul);}
+.grupo-row .gr-venc{
+  font-size:12px;color:#777;
+  background:#F0F2F5;padding:2px 8px;border-radius:4px;
+}
+.sem-intermediarias{
+  font-size:13px;color:#999;font-style:italic;
+  padding:8px 0;text-align:center;
+}
+
 .botoes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
 .btn{
   padding:13px 22px;border-radius:9px;font-size:14px;font-weight:700;
@@ -197,7 +278,6 @@ input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
   border-radius:8px;font-size:12px;color:#555;line-height:1.6;
   border-left:3px solid var(--amarelo);
 }
-/* Toast de sincronização */
 .toast-sheets{
   position:fixed;bottom:24px;right:24px;z-index:9999;
   background:#fff;border-radius:12px;padding:14px 18px;
@@ -206,8 +286,7 @@ input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
   font-size:13px;font-weight:600;
   transform:translateY(80px);opacity:0;
   transition:all .4s cubic-bezier(.34,1.56,.64,1);
-  border-left:4px solid var(--verde);
-  max-width:320px;
+  border-left:4px solid var(--verde);max-width:320px;
 }
 .toast-sheets.show{transform:translateY(0);opacity:1;}
 .toast-sheets.erro{border-color:var(--vermelho);}
@@ -239,12 +318,14 @@ tr:hover td{background:#F8F9FA;}
   .container{padding:0 10px 80px;}
   .grid,.psa-psb-grid,.res-grid,.psa-psb-resultado{grid-template-columns:1fr;}
   .field.full,.psa-psb-grid{grid-column:1;}
+  .financiado-wrap,.plano-wrap{grid-column:1;}
   .financiado-wrap{flex-direction:column;align-items:flex-start;}
   .comprom-box .val-grande{font-size:28px;}
   .badge-resultado{font-size:16px;}
   .btn{padding:12px 16px;font-size:13px;}
   .desconto-row{flex-direction:column;align-items:flex-start;}
   .toast-sheets{bottom:12px;right:12px;left:12px;max-width:100%;}
+  .plano-secao-titulo{flex-direction:column;align-items:flex-start;}
 }
 @media(max-width:380px){.res-grid{grid-template-columns:1fr;}}
 @media print{
@@ -275,11 +356,9 @@ tr:hover td{background:#F8F9FA;}
   </div>
 </header>
 
-
-<!-- Toast de sincronização com Sheets -->
 <div class="toast-sheets" id="toastSheets">
   <span class="toast-icon" id="toastIcon">⏳</span>
-  <span id="toastMsg">Salvando no Google Sheets...</span>
+  <span id="toastMsg">Salvando...</span>
 </div>
 
 <div class="container">
@@ -302,6 +381,7 @@ tr:hover td{background:#F8F9FA;}
 
   <form id="formCalc" onsubmit="calcular(event)">
 
+    <!-- DADOS DO CLIENTE -->
     <div class="card">
       <div class="card-title verde">👤 Dados do Cliente</div>
       <div class="grid">
@@ -324,6 +404,7 @@ tr:hover td{background:#F8F9FA;}
       </div>
     </div>
 
+    <!-- DADOS DO IMÓVEL -->
     <div class="card">
       <div class="card-title laranja">🏠 Dados do Imóvel</div>
       <div class="grid">
@@ -354,6 +435,7 @@ tr:hover td{background:#F8F9FA;}
       </div>
     </div>
 
+    <!-- DADOS FINANCEIROS -->
     <div class="card">
       <div class="card-title roxo">💰 Dados Financeiros</div>
       <div class="grid">
@@ -382,6 +464,7 @@ tr:hover td{background:#F8F9FA;}
           <input type="text" id="renda" placeholder="R$ 0,00" class="manual-field" oninput="mascaraMoeda(this)" required>
         </div>
 
+        <!-- PSA / PSB -->
         <div class="psa-psb-grid" id="psaPsbWrap" style="display:none;">
           <div class="psa-box">
             <div class="psa-psb-title">📅 PSA — Pró-Soluto A (Pré-entrega)</div>
@@ -407,12 +490,19 @@ tr:hover td{background:#F8F9FA;}
           </div>
         </div>
 
+        <!-- % FINANCIADO -->
         <div class="financiado-wrap" id="financiadoWrap">
           <div class="financiado-info">
             <span>% do imóvel financiado pelo cliente</span>
             <strong id="pctFinanciadoDisplay">—</strong>
           </div>
           <div class="financiado-badge" id="financiadoBadge">—</div>
+        </div>
+
+        <!-- ── PLANO DE PAGAMENTO ── -->
+        <div class="plano-wrap" id="planoWrap">
+          <div class="plano-header">📄 Plano de Pagamento</div>
+          <div class="plano-body" id="planoBody"></div>
         </div>
 
       </div>
@@ -445,7 +535,6 @@ tr:hover td{background:#F8F9FA;}
         <div class="val" id="res-renda">—</div>
       </div>
     </div>
-
     <div class="psa-psb-resultado" id="resPsaPsb" style="display:none;">
       <div class="psa-res">
         <div class="pr-title">📅 PSA — Pré-entrega</div>
@@ -458,7 +547,6 @@ tr:hover td{background:#F8F9FA;}
         <div class="pr-sub" id="res-psb-qtd">— parcelas</div>
       </div>
     </div>
-
     <div class="comprom-box">
       <label>Comprometimento de Renda</label>
       <div class="val-grande" id="res-pct">—</div>
@@ -470,12 +558,10 @@ tr:hover td{background:#F8F9FA;}
       <span>0%</span><span>35% ✔</span><span>40% ⚠</span><span>50%+</span>
     </div>
     <div class="badge-resultado" id="badgeResultado">—</div>
-
     <div class="desconto-section" id="descontoSection" style="display:none;">
       <div class="desconto-titulo" id="descontoTitulo">—</div>
       <div id="descontoConteudo"></div>
     </div>
-
     <div class="botoes">
       <button class="btn btn-verde" onclick="salvarHistorico()">💾 Salvar</button>
       <button class="btn btn-roxo" onclick="window.print()">🖨️ Imprimir</button>
@@ -508,17 +594,20 @@ tr:hover td{background:#F8F9FA;}
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc=
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
 
-// ── URL DO GOOGLE APPS SCRIPT ────────────────────────────────────
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyIkN0UQnB3XBqTJgH57OQe2LbeGVqU1Y9qP5lNvI5bnCl1VZw91otCy3pRlgY0Nahc-A/exec';
+const SHEETS_URL='https://script.google.com/macros/s/AKfycbyIkN0UQnB3XBqTJgH57OQe2LbeGVqU1Y9qP5lNvI5bnCl1VZw91otCy3pRlgY0Nahc-A/exec';
 
 let _psaQtd=0,_psaSaldo=0,_psbQtd=0,_psbSaldo=0;
 let _parcelasPSB=[];
 let _dataEntregaISO=null,_obraPronta=false;
 
+// Dados do plano de pagamento
+let _entrada={total:0,pct:'',parcelas:[]};
+let _intermediarias=[];// [{grupo:1, total:0, parcelas:[{valor,venc}]}]
+
 // ── TOAST ────────────────────────────────────────────────────────
-function mostrarToast(msg, tipo='loading'){
+function mostrarToast(msg,tipo='loading'){
   const toast=document.getElementById('toastSheets');
   const icon=document.getElementById('toastIcon');
   const txt=document.getElementById('toastMsg');
@@ -526,31 +615,24 @@ function mostrarToast(msg, tipo='loading'){
   if(tipo==='loading'){icon.textContent='⏳';toast.className='toast-sheets show';}
   else if(tipo==='ok'){icon.textContent='✅';toast.className='toast-sheets show';}
   else{icon.textContent='⚠️';toast.className='toast-sheets show erro';}
-  if(tipo!=='loading') setTimeout(()=>{toast.className='toast-sheets';},4000);
+  if(tipo!=='loading')setTimeout(()=>{toast.className='toast-sheets';},4000);
 }
 
-// ── ENVIO AO GOOGLE SHEETS ───────────────────────────────────────
+// ── ENVIO SHEETS ─────────────────────────────────────────────────
 async function enviarParaSheets(dados){
   mostrarToast('Salvando no Google Sheets...');
   try{
-    await fetch(SHEETS_URL,{
-      method:'POST',
-      mode:'no-cors',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(dados)
-    });
-    // no-cors não retorna body, então assumimos sucesso se não lançar erro
-    mostrarToast('✅ Dados salvos no Google Sheets!','ok');
+    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)});
+    mostrarToast('Dados salvos no Google Sheets!','ok');
   }catch(err){
-    mostrarToast('Falha ao salvar no Sheets. Verifique a conexão.','erro');
-    console.error('Sheets error:',err);
+    mostrarToast('Falha ao salvar. Verifique a conexão.','erro');
   }
 }
 
-// ── LEITURA DO PDF ──────────────────────────────────────────────
+// ── LEITURA DO PDF ───────────────────────────────────────────────
 async function lerPDF(input){
-  const file=input.files[0];
-  if(!file)return;
+  const file=input.files[0];if(!file)return;
   mostrarStatus('⏳ Lendo contrato PDF...','loading');
   try{
     const buf=await file.arrayBuffer();
@@ -563,22 +645,19 @@ async function lerPDF(input){
     }
     extrairDados(texto);
   }catch(e){
-    mostrarStatus('❌ Erro ao ler o PDF. Verifique se o arquivo é válido.','error');
+    mostrarStatus('❌ Erro ao ler o PDF.','error');
   }
 }
 
-// ── EXTRAÇÃO ────────────────────────────────────────────────────
+// ── EXTRAÇÃO PRINCIPAL ───────────────────────────────────────────
 function extrairDados(texto){
   try{
     const nomeM=texto.match(/COMPRADOR\(A\):\s*([A-ZÁÉÍÓÚÃÕÂÊÎÔÛÇ\s]+?)(?=Nacionalidade|CPF)/i);
     if(nomeM)setAuto('nomeCliente',nomeM[1].trim());
-
     const cpfM=texto.match(/CPF:\s*([\d]{3}\.[\d]{3}\.[\d]{3}-[\d]{2})/);
     if(cpfM)setAuto('cpf',cpfM[1]);
-
     const contM=texto.match(/CONT:\s*([a-f0-9\-]{36})/i);
     if(contM)setAuto('numContrato',contM[1]);
-
     const prodM=texto.match(/Produto:\s*([^\n]+?)(?=CONT:)/is);
     if(prodM){
       const prod=prodM[1].trim().replace(/\s+/g,' ');
@@ -586,27 +665,29 @@ function extrairDados(texto){
       if(blocoM){setAuto('empreendimento',blocoM[1].trim());setAuto('modulo',blocoM[2].trim());}
       else setAuto('empreendimento',prod);
     }
-
     const valM=texto.match(/PRE[ÇC]O DO IM[OÓ]VEL[^R]*R\$\s*([\d.,]+)/i);
     if(valM)setAuto('valorImovel','R$ '+valM[1].trim());
-
     const finM=texto.match(/4\.1\.4[^R]*R\$\s*([\d.,]+)/is)
               ||texto.match(/Financiamento[^R]*R\$\s*([\d.,]+)/i)
               ||texto.match(/valor financiado[^R]*R\$\s*([\d.,]+)/i);
     if(finM){setAuto('valorFinanciado','R$ '+finM[1].trim());calcularPctFinanciado();}
-
     const saldoM=texto.match(/4\.1\.2[^R]*R\$\s*([\d.,]+)/is);
     if(saldoM)setAuto('saldoCarteira','R$ '+saldoM[1].trim());
-
     const nums=[...texto.matchAll(/\b(\d{1,2})\s+R\$\s+[\d.,]+\s+\d{2}\/\d{2}\/\d{4}/g)];
     if(nums.length){
       const max=Math.max(...nums.map(m=>parseInt(m[1])));
       setAuto('qtdParcelas',max.toString());
     }
 
+    // ── ENTRADA (4.1.1) ──────────────────────────────────────────
+    extrairEntrada(texto);
+
+    // ── INTERMEDIÁRIAS (4.1.3) ───────────────────────────────────
+    extrairIntermediarias(texto);
+
+    // ── MENSAIS / PSA / PSB ──────────────────────────────────────
     _obraPronta=/por se tratar de obra conclu[ií]da/i.test(texto);
     const parcelas=extrairParcelas(texto);
-
     if(_obraPronta){
       setAuto('dataEntrega','Obra já entregue');
       _dataEntregaISO=null;
@@ -622,17 +703,192 @@ function extrairDados(texto){
         buscarParcelaPosEntrega(parcelas,entM[1]);
       }
     }
+
+    // Renderiza plano de pagamento
+    renderizarPlano();
+
     mostrarStatus('✅ Contrato lido com sucesso! Preencha os campos manuais e calcule.','success');
   }catch(e){
-    mostrarStatus('⚠️ Leitura parcial. Verifique os campos preenchidos.','error');
+    console.error(e);
+    mostrarStatus('⚠️ Leitura parcial. Verifique os campos.','error');
   }
 }
 
-// ── EXTRAI PARCELAS ─────────────────────────────────────────────
+// ── EXTRAI ENTRADA (4.1.1) ───────────────────────────────────────
+function extrairEntrada(texto){
+  _entrada={total:0,pct:'',parcelas:[]};
+
+  // Isola bloco 4.1.1
+  const blocoM=texto.match(/4\.1\.1\s*[-–]?\s*Entrada[:\s]*([\s\S]*?)(?=4\.1\.2)/i);
+  if(!blocoM)return;
+  const bloco=blocoM[1];
+
+  // Total da entrada
+  const totalM=bloco.match(/R\$\s*([\d.,]+)/);
+  if(totalM)_entrada.total=parseMoeda(totalM[1]);
+
+  // % do preço
+  const pctM=bloco.match(/correspondem a\s*([\d,]+)%/i);
+  if(pctM)_entrada.pct=pctM[1].replace('.',',')+' %';
+
+  // Parcelas individuais: "1 (Uma) parcela no valor de R$ XXX vencível dia DD/MM/AAAA"
+  const regParcela=/\d+\s*\([^)]+\)\s*parcela[s]?\s*no\s*valor\s*de\s*R\$\s*([\d.,]+)[^v]*venc[íi]vel\s*dia\s*(\d{2}\/\d{2}\/\d{4})/gi;
+  let m;
+  while((m=regParcela.exec(bloco))!==null){
+    _entrada.parcelas.push({valor:parseMoeda(m[1]),venc:m[2]});
+  }
+}
+
+// ── EXTRAI INTERMEDIÁRIAS (4.1.3) ────────────────────────────────
+function extrairIntermediarias(texto){
+  _intermediarias=[];
+
+  // Isola bloco 4.1.3
+  const blocoM=texto.match(/4\.1\.3\s*[-–]?\s*Intermedi[aá]rias[:\s]*([\s\S]*?)(?=4\.1\.4)/i);
+  if(!blocoM)return;
+  const bloco=blocoM[1];
+
+  // Detecta grupos (4.1.3.1, 4.1.3.2, ...)
+  const regGrupo=/4\.1\.3\.(\d+)\s*[-–]?\s*GRUPO\s*(\d+)[:\s]*([\s\S]*?)(?=4\.1\.3\.\d|$)/gi;
+  let gm;
+  while((gm=regGrupo.exec(bloco))!==null){
+    const numGrupo=parseInt(gm[2]);
+    const conteudo=gm[3];
+
+    // Total do grupo
+    const totalM=conteudo.match(/R\$\s*([\d.,]+)/);
+    const total=totalM?parseMoeda(totalM[1]):0;
+
+    // Parcelas do grupo
+    const parcelas=[];
+    const regP=/\d+\s*\([^)]+\)\s*parcela[s]?\s*no\s*valor\s*de\s*R\$\s*([\d.,]+)[^v]*venc[íi]vel\s*dia\s*(\d{2}\/\d{2}\/\d{4})/gi;
+    let pm;
+    while((pm=regP.exec(conteudo))!==null){
+      parcelas.push({valor:parseMoeda(pm[1]),venc:pm[2]});
+    }
+
+    _intermediarias.push({grupo:numGrupo,total,parcelas});
+  }
+
+  // Se não encontrou grupos mas há parcelas diretas (sem grupos)
+  if(_intermediarias.length===0){
+    const totalM=bloco.match(/R\$\s*([\d.,]+)/);
+    const total=totalM?parseMoeda(totalM[1]):0;
+    const parcelas=[];
+    const regP=/\d+\s*\([^)]+\)\s*parcela[s]?\s*no\s*valor\s*de\s*R\$\s*([\d.,]+)[^v]*venc[íi]vel\s*dia\s*(\d{2}\/\d{2}\/\d{4})/gi;
+    let pm;
+    while((pm=regP.exec(bloco))!==null){
+      parcelas.push({valor:parseMoeda(pm[1]),venc:pm[2]});
+    }
+    if(total>0||parcelas.length>0){
+      _intermediarias.push({grupo:1,total,parcelas});
+    }
+  }
+}
+
+// ── RENDERIZA PLANO DE PAGAMENTO ─────────────────────────────────
+function renderizarPlano(){
+  const wrap=document.getElementById('planoWrap');
+  const body=document.getElementById('planoBody');
+  const temEntrada=_entrada.total>0||_entrada.parcelas.length>0;
+  const temInter=_intermediarias.length>0;
+  if(!temEntrada&&!temInter){wrap.style.display='none';return;}
+  wrap.style.display='block';
+
+  let html='';
+
+  // ── ENTRADA ──
+  if(temEntrada){
+    const totalStr=_entrada.total>0?formatMoeda(_entrada.total):'—';
+    const pctStr=_entrada.pct?`<span class="plano-badge-pct">${_entrada.pct}</span>`:'';
+    html+=`
+    <div class="plano-secao open" id="secaoEntrada">
+      <div class="plano-secao-titulo" onclick="toggleSecao('secaoEntrada')">
+        <span class="ps-esq">💰 Entrada</span>
+        <span class="ps-dir">
+          <span class="plano-badge-total">${totalStr}</span>
+          ${pctStr}
+          <span class="plano-chevron">▼</span>
+        </span>
+      </div>
+      <div class="plano-conteudo">
+        <ul class="entrada-lista">`;
+
+    if(_entrada.parcelas.length>0){
+      _entrada.parcelas.forEach((p,i)=>{
+        const ultimo=i===_entrada.parcelas.length-1;
+        html+=`<li>
+          <span class="el-num">${ultimo?'└':'├'}</span>
+          <span class="el-val">${formatMoeda(p.valor)}</span>
+          <span class="el-venc">📅 ${p.venc}</span>
+        </li>`;
+      });
+    }else{
+      html+=`<li style="color:#999;font-style:italic;">Parcelas da entrada não identificadas no contrato.</li>`;
+    }
+
+    html+=`</ul></div></div>`;
+  }
+
+  // ── INTERMEDIÁRIAS ──
+  {
+    const totalInter=_intermediarias.reduce((s,g)=>s+g.total,0);
+    const totalStr=totalInter>0?formatMoeda(totalInter):'—';
+
+    html+=`
+    <div class="plano-secao open" id="secaoInter">
+      <div class="plano-secao-titulo" onclick="toggleSecao('secaoInter')">
+        <span class="ps-esq">🔀 Intermediárias</span>
+        <span class="ps-dir">
+          <span class="plano-badge-total">${totalStr}</span>
+          <span class="plano-chevron">▼</span>
+        </span>
+      </div>
+      <div class="plano-conteudo">`;
+
+    if(!temInter){
+      html+=`<p class="sem-intermediarias">ℹ️ Não há intermediárias neste contrato.</p>`;
+    }else{
+      _intermediarias.forEach(g=>{
+        const gTotalStr=g.total>0?formatMoeda(g.total):'—';
+        html+=`<div class="grupo-wrap">
+          <div class="grupo-titulo">
+            <span>📦 Grupo ${g.grupo}</span>
+            <span class="gt-total">${gTotalStr}</span>
+          </div>`;
+
+        if(g.parcelas.length>0){
+          g.parcelas.forEach((p,i)=>{
+            const ultimo=i===g.parcelas.length-1;
+            html+=`<div class="grupo-row">
+              <span style="font-size:11px;color:#aaa;min-width:16px;">${ultimo?'└':'├'}</span>
+              <span class="gr-val">${formatMoeda(p.valor)}</span>
+              <span class="gr-venc">📅 ${p.venc}</span>
+            </div>`;
+          });
+        }else{
+          html+=`<div style="font-size:12px;color:#999;font-style:italic;padding:4px 0;">
+            Parcelas não identificadas individualmente.</div>`;
+        }
+        html+=`</div>`;
+      });
+    }
+
+    html+=`</div></div>`;
+  }
+
+  body.innerHTML=html;
+}
+
+function toggleSecao(id){
+  const el=document.getElementById(id);
+  if(el)el.classList.toggle('open');
+}
+
+// ── EXTRAI PARCELAS MENSAIS ──────────────────────────────────────
 function extrairParcelas(texto){
   const regex=/\b(\d{1,2})\s+R\$\s+([\d.,]+)\s+(\d{2}\/\d{2}\/\d{4})/g;
-  const map=new Map();
-  let match;
+  const map=new Map();let match;
   while((match=regex.exec(texto))!==null){
     const[,num,valor,vencStr]=match;
     const[vd,vm,va]=vencStr.split('/').map(Number);
@@ -642,7 +898,7 @@ function extrairParcelas(texto){
   return[...map.values()].sort((a,b)=>a.venc-b.venc);
 }
 
-// ── PSA / PSB ───────────────────────────────────────────────────
+// ── PSA / PSB ────────────────────────────────────────────────────
 function calcularPsaPsb(parcelas,dataEntrega,obraPronta){
   _psaQtd=0;_psaSaldo=0;_psbQtd=0;_psbSaldo=0;_parcelasPSB=[];
   if(obraPronta){
@@ -673,11 +929,13 @@ function buscarParcelaPosEntrega(parcelas,dataStr){
 
 function buscarPrimeiraParcela(parcelas){
   if(!parcelas.length)return;
-  const p=parcelas[0];
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const futura=parcelas.find(p=>p.venc>=hoje);
+  const p=futura||parcelas[0];
   setAuto('parcelaMRV','R$ '+p.valor+' (Mensal '+p.num+' — venc. '+p.vencStr+')');
 }
 
-// ── % FINANCIADO ────────────────────────────────────────────────
+// ── % FINANCIADO ─────────────────────────────────────────────────
 function calcularPctFinanciado(){
   const fin=parseMoeda(document.getElementById('valorFinanciado').value);
   const imo=parseMoeda(document.getElementById('valorImovel').value);
@@ -702,7 +960,7 @@ function calcularPctFinanciado(){
   }
 }
 
-// ── CALCULAR ────────────────────────────────────────────────────
+// ── CALCULAR ─────────────────────────────────────────────────────
 function calcular(e){
   e.preventDefault();
   const caixa=parseMoeda(document.getElementById('parcelaCaixa').value);
@@ -710,21 +968,14 @@ function calcular(e){
   const renda=parseMoeda(document.getElementById('renda').value);
   const mrvNum=mrvStr.match(/R\$\s*([\d.,]+)/);
   const mrv=mrvNum?parseMoeda(mrvNum[1]):0;
-
-  if(!caixa||!mrv||!renda){
-    alert('⚠️ Faça o upload do contrato e preencha todos os campos obrigatórios.');
-    return;
-  }
-
+  if(!caixa||!mrv||!renda){alert('⚠️ Preencha todos os campos obrigatórios.');return;}
   const total=caixa+mrv;
   const pct=(total/renda)*100;
-
   document.getElementById('res-caixa').textContent=formatMoeda(caixa);
   document.getElementById('res-mrv').textContent=formatMoeda(mrv);
   document.getElementById('res-total').textContent=formatMoeda(total);
   document.getElementById('res-renda').textContent=formatMoeda(renda);
   document.getElementById('res-pct').textContent=pct.toFixed(2).replace('.',',')+' %';
-
   if(_psbQtd>0||_psaQtd>0){
     document.getElementById('res-psa-saldo').textContent=_psaSaldo>0?formatMoeda(_psaSaldo):'—';
     document.getElementById('res-psa-qtd').textContent=_psaQtd>0?_psaQtd+' parcelas':'—';
@@ -732,30 +983,23 @@ function calcular(e){
     document.getElementById('res-psb-qtd').textContent=_psbQtd>0?_psbQtd+' parcelas':'—';
     document.getElementById('resPsaPsb').style.display='grid';
   }
-
   const bar=document.getElementById('progressBar');
   const badge=document.getElementById('badgeResultado');
   bar.style.width=Math.min(pct*2,100)+'%';
-
   let statusTexto='';
   if(pct<=35){
     badge.className='badge-resultado aprovado';
     badge.textContent='✔ APROVADO — '+pct.toFixed(2).replace('.',',')+' %';
-    bar.className='progress-bar verde';
-    statusTexto='APROVADO';
+    bar.className='progress-bar verde';statusTexto='APROVADO';
   }else if(pct<=40){
     badge.className='badge-resultado atencao';
     badge.textContent='⚠ ATENÇÃO — '+pct.toFixed(2).replace('.',',')+' %';
-    bar.className='progress-bar amarelo';
-    statusTexto='ATENÇÃO';
+    bar.className='progress-bar amarelo';statusTexto='ATENÇÃO';
   }else{
     badge.className='badge-resultado reprovado';
     badge.textContent='✘ REPROVADO — '+pct.toFixed(2).replace('.',',')+' %';
-    bar.className='progress-bar vermelho';
-    statusTexto='REPROVADO';
+    bar.className='progress-bar vermelho';statusTexto='REPROVADO';
   }
-
-  // ── DESCONTO ────────────────────────────────────────────────
   const fin=parseMoeda(document.getElementById('valorFinanciado').value);
   const imo=parseMoeda(document.getElementById('valorImovel').value);
   const pctFin=(fin&&imo)?(fin/imo)*100:null;
@@ -763,21 +1007,16 @@ function calcular(e){
   const dt=document.getElementById('descontoTitulo');
   const dc=document.getElementById('descontoConteudo');
   ds.style.display='block';
-
   const mrvIdeal=(0.35*renda)-caixa;
   const reducaoNecessaria=Math.max(0,mrv-mrvIdeal);
   let descontoDisponivel=null;
-  if(pctFin!==null&&imo){
-    descontoDisponivel=Math.max(0,((80-pctFin)/100)*imo);
-  }
+  if(pctFin!==null&&imo)descontoDisponivel=Math.max(0,((80-pctFin)/100)*imo);
   let descontoEstimadoPSB=0;
   if(reducaoNecessaria>0&&_parcelasPSB.length>0&&mrv>0){
     const pctRed=reducaoNecessaria/mrv;
     for(const p of _parcelasPSB)descontoEstimadoPSB+=p.valorNum*pctRed;
   }
-
   let descontoCobreNecessario='—';
-
   if(pctFin!==null&&pctFin>=80){
     ds.className='desconto-section bloqueado';
     dt.innerHTML='🔒 Desconto bloqueado — limite de financiamento atingido (80%)';
@@ -786,7 +1025,7 @@ function calcular(e){
       <div class="desconto-row"><span class="dr-label">% Financiado atual</span><span class="dr-val" style="color:var(--vermelho)">${pctFin.toFixed(2).replace('.',',')} %</span></div>
       <div class="desconto-row"><span class="dr-label">Limite máximo</span><span class="dr-val" style="color:#888">80,00 %</span></div>
       <div class="desconto-row"><span class="dr-label">Desconto disponível</span><span class="dr-val" style="color:var(--vermelho)">R$ 0,00</span></div>
-      <div class="projecao-aviso">🔒 O cliente atingiu o limite máximo de financiamento (80%). Não é possível conceder nenhum desconto. Para viabilizar, o cliente precisaria aumentar o valor de entrada.</div>`;
+      <div class="projecao-aviso">🔒 O cliente atingiu o limite máximo de financiamento (80%). Para viabilizar desconto, o cliente precisaria aumentar o valor de entrada.</div>`;
   }else if(pct<=35){
     ds.className='desconto-section ok';
     dt.innerHTML='✔ Cliente enquadrado — desconto não necessário';
@@ -794,7 +1033,7 @@ function calcular(e){
     dc.innerHTML=`
       <div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} %</span></div>
       <div class="desconto-row"><span class="dr-label">% Financiado</span><span class="dr-val" style="color:var(--verde)">${pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—'}</span></div>
-      ${descontoDisponivel!==null&&descontoDisponivel>0?`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(descontoDisponivel)}</span></div>`:''}
+      ${descontoDisponivel>0?`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(descontoDisponivel)}</span></div>`:''}
       <div class="projecao-aviso">✅ Cliente dentro do limite de 35%.${descontoDisponivel>0?' Há margem de desconto disponível caso necessário.':''}</div>`;
   }else{
     ds.className='desconto-section nok';
@@ -817,55 +1056,54 @@ function calcular(e){
       <div class="desconto-row"><span class="dr-label">Desconto cobre o necessário?</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${coberto?'✔ Sim':'✘ Não'}</span></div>`;
       }
     }
-    html+=`<div class="projecao-aviso">⚠️ Estimativa baseada em parcelas uniformes. Contratos com curva de queda podem ter valores diferentes. Solicite simulação exata ao financeiro MRV para confirmação.</div>`;
+    html+=`<div class="projecao-aviso">📌 <strong>Projeção estimada.</strong> A redução por parcela é calculada proporcionalmente. Contratos com curva de queda terão redução proporcional em cada parcela individualmente. Solicite simulação exata ao financeiro MRV para confirmação.</div>`;
     dc.innerHTML=html;
   }
-
   document.getElementById('resultado').className='resultado show';
   document.getElementById('resultado').scrollIntoView({behavior:'smooth'});
 
-  // ── ENVIO AUTOMÁTICO AO GOOGLE SHEETS ───────────────────────
-  const agora = new Date();
-  const dataHora = agora.toLocaleString('pt-BR');
-  const pctFinStr = pctFin!==null ? pctFin.toFixed(2).replace('.',',')+' %' : '—';
-
-  const dadosSheets = {
-    dataHora:               dataHora,
-    nomeCliente:            document.getElementById('nomeCliente').value || '—',
-    cpf:                    document.getElementById('cpf').value || '—',
-    gerenteResponsavel:     document.getElementById('gerente').value || '—',
-    numeroContrato:         document.getElementById('numContrato').value || '—',
-    empreendimento:         document.getElementById('empreendimento').value || '—',
-    blocoModulo:            document.getElementById('modulo').value || '—',
-    valorImovel:            document.getElementById('valorImovel').value || '—',
-    dataEntregaPrevista:    document.getElementById('dataEntrega').value || '—',
-    valorAvaliacao:         document.getElementById('valorAvaliacao').value || '—',
-    tetoFaixa:              document.getElementById('tetoFaixa').value || '—',
-    valorFinanciado:        document.getElementById('valorFinanciado').value || '—',
-    percentualFinanciado:   pctFinStr,
-    saldoCarteiraMRV:       document.getElementById('saldoCarteira').value || '—',
-    parcelaMRV:             formatMoeda(mrv),
-    qtdParcelasMRV:         document.getElementById('qtdParcelas').value || '—',
-    parcelaCaixa:           formatMoeda(caixa),
-    rendaCliente:           formatMoeda(renda),
-    psaQtdParcelas:         _psaQtd > 0 ? _psaQtd : 0,
-    psaSaldoTotal:          _psaSaldo > 0 ? formatMoeda(_psaSaldo) : '—',
-    psbQtdParcelas:         _psbQtd > 0 ? _psbQtd : 0,
-    psbSaldoTotal:          _psbSaldo > 0 ? formatMoeda(_psbSaldo) : '—',
-    totalParcelas:          formatMoeda(total),
-    comprometimentoPercent: pct.toFixed(2).replace('.',',')+' %',
-    status:                 statusTexto,
-    descontoNecessario:     reducaoNecessaria > 0 ? formatMoeda(reducaoNecessaria) : 'Não necessário',
-    descontoEstimadoPSB:    descontoEstimadoPSB > 0 ? formatMoeda(descontoEstimadoPSB) : '—',
-    descontoDisponivel:     descontoDisponivel !== null ? formatMoeda(descontoDisponivel) : '—',
-    descontoCobreNecessario: descontoCobreNecessario,
-    obraEntregue:           _obraPronta ? 'Sim' : 'Não'
-  };
-
-  enviarParaSheets(dadosSheets);
+  // Envio Sheets
+  const pctFinStr=pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—';
+  enviarParaSheets({
+    dataHora:new Date().toLocaleString('pt-BR'),
+    nomeCliente:document.getElementById('nomeCliente').value||'—',
+    cpf:document.getElementById('cpf').value||'—',
+    gerenteResponsavel:document.getElementById('gerente').value||'—',
+    numeroContrato:document.getElementById('numContrato').value||'—',
+    empreendimento:document.getElementById('empreendimento').value||'—',
+    blocoModulo:document.getElementById('modulo').value||'—',
+    valorImovel:document.getElementById('valorImovel').value||'—',
+    dataEntregaPrevista:document.getElementById('dataEntrega').value||'—',
+    valorAvaliacao:document.getElementById('valorAvaliacao').value||'—',
+    tetoFaixa:document.getElementById('tetoFaixa').value||'—',
+    valorFinanciado:document.getElementById('valorFinanciado').value||'—',
+    percentualFinanciado:pctFinStr,
+    saldoCarteiraMRV:document.getElementById('saldoCarteira').value||'—',
+    parcelaMRV:formatMoeda(mrv),
+    qtdParcelasMRV:document.getElementById('qtdParcelas').value||'—',
+    parcelaCaixa:formatMoeda(caixa),
+    rendaCliente:formatMoeda(renda),
+    entradaTotal:_entrada.total>0?formatMoeda(_entrada.total):'—',
+    entradaPct:_entrada.pct||'—',
+    entradaQtdParcelas:_entrada.parcelas.length,
+    intermediariasTotal:_intermediarias.reduce((s,g)=>s+g.total,0)>0?formatMoeda(_intermediarias.reduce((s,g)=>s+g.total,0)):'—',
+    intermediariasGrupos:_intermediarias.length,
+    psaQtdParcelas:_psaQtd,
+    psaSaldoTotal:_psaSaldo>0?formatMoeda(_psaSaldo):'—',
+    psbQtdParcelas:_psbQtd,
+    psbSaldoTotal:_psbSaldo>0?formatMoeda(_psbSaldo):'—',
+    totalParcelas:formatMoeda(total),
+    comprometimentoPercent:pct.toFixed(2).replace('.',',')+' %',
+    status:statusTexto,
+    descontoNecessario:reducaoNecessaria>0?formatMoeda(reducaoNecessaria):'Não necessário',
+    descontoEstimadoPSB:descontoEstimadoPSB>0?formatMoeda(descontoEstimadoPSB):'—',
+    descontoDisponivel:descontoDisponivel!==null?formatMoeda(descontoDisponivel):'—',
+    descontoCobreNecessario,
+    obraEntregue:_obraPronta?'Sim':'Não'
+  });
 }
 
-// ── HISTÓRICO LOCAL ──────────────────────────────────────────────
+// ── HISTÓRICO ────────────────────────────────────────────────────
 function salvarHistorico(){
   const h=JSON.parse(localStorage.getItem('mrv_hist')||'[]');
   const pct=parseFloat(document.getElementById('res-pct').textContent.replace(',','.').replace('%','').trim());
@@ -897,19 +1135,13 @@ function renderHistorico(){
   document.getElementById('historicoCard').style.display='block';
   document.getElementById('corpoHistorico').innerHTML=h.map(r=>{
     const c=r.status==='APROVADO'?'a':r.status==='ATENÇÃO'?'t':'r';
-    return`<tr>
-      <td>${r.data}</td><td>${r.cliente}</td><td>${r.emp}</td>
-      <td>${r.gerente}</td><td>${r.caixa}</td><td>${r.mrv}</td>
-      <td>${r.renda}</td><td><strong>${r.pct}</strong></td>
-      <td>${r.pctFin||'—'}</td><td>${r.psa||'—'}</td><td>${r.psb||'—'}</td>
-      <td><span class="badge-sm ${c}">${r.status}</span></td>
-    </tr>`;
+    return`<tr><td>${r.data}</td><td>${r.cliente}</td><td>${r.emp}</td><td>${r.gerente}</td><td>${r.caixa}</td><td>${r.mrv}</td><td>${r.renda}</td><td><strong>${r.pct}</strong></td><td>${r.pctFin||'—'}</td><td>${r.psa||'—'}</td><td>${r.psb||'—'}</td><td><span class="badge-sm ${c}">${r.status}</span></td></tr>`;
   }).join('');
 }
 
 function exportarCSV(){
   const h=JSON.parse(localStorage.getItem('mrv_hist')||'[]');
-  if(!h.length){alert('Nenhum registro no histórico.');return;}
+  if(!h.length){alert('Nenhum registro.');return;}
   const cab='Data,Cliente,Empreendimento,Gerente,P.Caixa,P.MRV,Renda,Comprometimento,% Financiado,PSA,PSB,Status\n';
   const rows=h.map(r=>`"${r.data}","${r.cliente}","${r.emp}","${r.gerente}","${r.caixa}","${r.mrv}","${r.renda}","${r.pct}","${r.pctFin||''}","${r.psa||''}","${r.psb||''}","${r.status}"`).join('\n');
   const blob=new Blob(['\uFEFF'+cab+rows],{type:'text/csv;charset=utf-8;'});
@@ -937,14 +1169,10 @@ PSB: ${document.getElementById('res-psb-saldo').textContent} (${document.getElem
 Comprometimento: ${document.getElementById('res-pct').textContent}
 Status: ${document.getElementById('badgeResultado').textContent}
 * Projeções são estimativas. Solicite simulação ao financeiro MRV.`;
-  navigator.clipboard.writeText(txt).then(()=>alert('✅ Copiado para a área de transferência!'));
+  navigator.clipboard.writeText(txt).then(()=>alert('✅ Copiado!'));
 }
 
-// ── UTILITÁRIOS ─────────────────────────────────────────────────
-function setAuto(id,val){
-  const el=document.getElementById(id);
-  if(el){el.value=val;el.classList.add('auto-filled');}
-}
+function setAuto(id,val){const el=document.getElementById(id);if(el){el.value=val;el.classList.add('auto-filled');}}
 function mostrarStatus(msg,tipo){
   const bar=document.getElementById('statusBar');
   bar.className='status-bar show'+(tipo==='success'?' success':tipo==='error'?' error':'');
@@ -952,8 +1180,7 @@ function mostrarStatus(msg,tipo){
   document.getElementById('spinner').style.display=tipo==='loading'?'block':'none';
 }
 function mascaraMoeda(el){
-  let v=el.value.replace(/\D/g,'');
-  if(!v){el.value='';return;}
+  let v=el.value.replace(/\D/g,'');if(!v){el.value='';return;}
   v=(parseInt(v)/100).toFixed(2);
   el.value='R$ '+v.replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 }
@@ -976,20 +1203,22 @@ function limpar(){
   document.getElementById('psaPsbWrap').style.display='none';
   document.getElementById('resPsaPsb').style.display='none';
   document.getElementById('descontoSection').style.display='none';
+  document.getElementById('planoWrap').style.display='none';
+  document.getElementById('planoBody').innerHTML='';
   _psaQtd=0;_psaSaldo=0;_psbQtd=0;_psbSaldo=0;
   _parcelasPSB=[];_dataEntregaISO=null;_obraPronta=false;
+  _entrada={total:0,pct:'',parcelas:[]};_intermediarias=[];
 }
 window.onload=renderHistorico;
 </script>
-  
 <script>
-  if('serviceWorker' in navigator){
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/calculadoraMRV/sw.js')
-        .then(() => console.log('✅ PWA registrado'))
-        .catch(e => console.log('SW erro:', e));
-    });
-  }
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/calculadoraMRV/sw.js')
+      .then(()=>console.log('✅ PWA registrado'))
+      .catch(e=>console.log('SW erro:',e));
+  });
+}
 </script>
 </body>
 </html>
