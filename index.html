@@ -631,20 +631,58 @@ async function enviarParaSheets(dados){
 
 // ── LEITURA DO PDF ───────────────────────────────────────────────
 async function lerPDF(input){
-  const file=input.files[0];if(!file)return;
+  const file = input.files[0];
+  if(!file) return;
   mostrarStatus('⏳ Lendo contrato PDF...','loading');
+
+  // Timeout de segurança — 30 segundos
+  const timeout = setTimeout(()=>{
+    mostrarStatus('⏰ Tempo esgotado. O PDF pode estar protegido ou corrompido.','error');
+  }, 30000);
+
   try{
-    const buf=await file.arrayBuffer();
-    const pdf=await pdfjsLib.getDocument({data:buf}).promise;
-    let texto='';
-    for(let i=1;i<=pdf.numPages;i++){
-      const page=await pdf.getPage(i);
-      const content=await page.getTextContent();
-      texto+=content.items.map(it=>it.str).join(' ')+'\n';
+    const buf = await file.arrayBuffer();
+    
+    // Tenta abrir com e sem senha
+    let pdf;
+    try{
+      pdf = await pdfjsLib.getDocument({data: buf}).promise;
+    }catch(e){
+      clearTimeout(timeout);
+      mostrarStatus('🔒 PDF protegido ou inválido. Tente remover a proteção antes de carregar.','error');
+      return;
     }
+
+    console.log('📄 PDF carregado — páginas:', pdf.numPages);
+    mostrarStatus('⏳ Extraindo texto ('+pdf.numPages+' páginas)...','loading');
+
+    let texto = '';
+    for(let i = 1; i <= pdf.numPages; i++){
+      try{
+        const page = await pdf.getPage(i);
+        const content = await page.getTextContent();
+        const pageTxt = content.items.map(it => it.str).join(' ');
+        texto += pageTxt + '\n';
+        console.log('Página '+i+'/'+pdf.numPages+' — chars:', pageTxt.length);
+      }catch(pageErr){
+        console.warn('Erro na página '+i, pageErr);
+      }
+    }
+
+    clearTimeout(timeout);
+
+    if(texto.trim().length < 100){
+      mostrarStatus('⚠️ PDF parece ser uma imagem escaneada — texto não extraível.','error');
+      return;
+    }
+
+    console.log('✅ Texto total extraído:', texto.length, 'chars');
     extrairDados(texto);
+
   }catch(e){
-    mostrarStatus('❌ Erro ao ler o PDF.','error');
+    clearTimeout(timeout);
+    console.error('Erro geral:', e);
+    mostrarStatus('❌ Erro ao ler o PDF: ' + e.message,'error');
   }
 }
 
