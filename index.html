@@ -241,8 +241,8 @@ tr:hover td{background:#F8F9FA;}
   .upload-card,.status-bar,.botoes,.historico-card,
   .debug-toolbar,.debug-box,.toast-sheets,#pdfInput{display:none!important;}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;}
-  @page{size:A4 portrait;margin:12mm 10mm 12mm 10mm;}
-  html,body{background:#ECEEF2!important;font-size:10px;width:100%;}
+  @page{size:A4 portrait;margin:8mm 8mm 8mm 8mm;}
+  html,body{background:#ECEEF2!important;font-size:12px;width:100%;}
   header{position:relative!important;display:flex!important;background:#006b3f!important;height:60px!important;padding:0 20px!important;border-radius:10px!important;margin-bottom:14px!important;box-shadow:0 2px 8px rgba(0,0,0,0.3)!important;align-items:center!important;gap:16px!important;}
   .logo-container{display:flex!important;background:#fff!important;border-radius:7px!important;padding:5px 12px!important;height:44px!important;align-items:center!important;}
   .logo-img{height:30px!important;width:auto!important;display:block!important;}
@@ -275,7 +275,7 @@ tr:hover td{background:#F8F9FA;}
   .psa-psb-val{font-size:13px!important;font-weight:700!important;}
   .psa-box .psa-psb-val{color:#6B2D8B!important;}
   .psb-box .psa-psb-val{color:#006b3f!important;}
-  .financiado-wrap{display:flex!important;grid-column:1/-1!important;border-radius:10px!important;padding:12px 14px!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;border:2px solid!important;}
+  .financiado-wrap{display:flex!important;grid-column:1/-1!important;border-radius:10px!important;padding:12px 14px!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;border:2px solid!important;break-inside:avoid!important;}
   .financiado-wrap.fin-verde{background:#E6F4ED!important;border-color:#006b3f!important;}
   .financiado-wrap.fin-amarelo{background:#FFFDE7!important;border-color:#F9A825!important;}
   .financiado-wrap.fin-vermelho{background:#FDECEA!important;border-color:#D32F2F!important;}
@@ -288,144 +288,74 @@ tr:hover td{background:#F8F9FA;}
   .financiado-badge.ok{background:#006b3f!important;color:#fff!important;}
   .financiado-badge.aviso{background:#F9A825!important;color:#fff!important;}
   .financiado-badge.nok{background:#D32F2F!important;color:#fff!important;}
-  .plano-wrap{display:block!important;grid-column:1/-1!important;border-radius:10px!important;overflow:hidden!important;border:1.5px solid #E0E0E0!important;margin-top:4px!important;break-inside:avoid!important;}
-  .plano-header{background:#003366!important;color:#fff!important;padding:9px 14px!important;font-size:12px!important;font-weight:700!important;display:flex!important;align-items:center!important;gap:6px!important;}
-  .plano-secao{border-bottom:1px solid #E0E0E0!important;}
+  /* ── Plano de Pagamento compacto ── */
+  .plano-wrap{display:block!important;grid-column:1/-1!important;border-radius:10px!important;overflow:hidden!important;border:1.5px solid #E0E0E0!important;margin-top:4px!important;break-inside:avoid!important;break-before:page!important;}
+  .plano-header{background:#003366!important;color:#fff!important;padding:6px 10px!important;font-size:11px!important;font-weight:700!important;display:flex!important;align-items:center!important;gap:6px!important;}
+  .plano-secao{border-bottom:1px solid #E0E0E0!important;break-inside:avoid!important;}
   .plano-secao:last-child{border-bottom:none!important;}
-  .plano-secao-titulo{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:9px 14px!important;background:#FAFAFA!important;font-size:12px!important;font-weight:700!important;border-bottom:1px solid #E0E0E0!important;}
+  .plano-secao-titulo{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:6px 10px!important;background:#FAFAFA!important;font-size:11px!important;font-weight:700!important;border-bottom:1px solid #E0E0E0!important;}
   .plano-chevron{display:none!important;}
-  .plano-conteudo{display:block!important;padding:10px 14px!important;}
-  .plano-badge-total{font-size:12px!important;font-weight:800!important;color:#003366!important;}
-  .plano-badge-pct{font-size:10px!important;padding:2px 7px!important;border-radius:4px!important;font-weight:700!important;background:#003366!important;color:#fff!important;}
+  .plano-conteudo{display:block!important;padding:6px 10px!important;}
+  .plano-badge-total{font-size:11px!important;font-weight:800!important;color:#003366!important;}
+  .plano-badge-pct{font-size:9px!important;padding:1px 5px!important;border-radius:4px!important;font-weight:700!important;background:#003366!important;color:#fff!important;}
   .plano-badge-pct.roxo{background:#6B2D8B!important;}
   .entrada-lista{list-style:none!important;padding:0!important;margin:0!important;}
-  .entrada-lista li{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:5px 0!important;border-bottom:1px solid #F0F2F5!important;font-size:12px!important;}
+  .entrada-lista li{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:3px 0!important;border-bottom:1px solid #F0F2F5!important;font-size:11px!important;}
   .entrada-lista li:last-child{border-bottom:none!important;}
-  .el-num{font-size:10px!important;color:#aaa!important;min-width:18px!important;}
-  .el-val{font-weight:700!important;color:#003366!important;}
-  .el-venc{font-size:11px!important;color:#777!important;background:#F0F2F5!important;padding:2px 7px!important;border-radius:4px!important;}
-  .grupo-wrap{margin-bottom:8px!important;}
-  .grupo-titulo{font-size:11px!important;font-weight:700!important;color:#6B2D8B!important;margin-bottom:5px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;}
-  .grupo-titulo .gt-total{font-size:12px!important;color:#6B2D8B!important;display:flex!important;align-items:center!important;gap:6px!important;}
-  .grupo-row{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:5px 0!important;border-bottom:1px solid #F0F2F5!important;font-size:12px!important;}
+  .el-num{font-size:9px!important;color:#aaa!important;min-width:14px!important;}
+  .el-val{font-weight:700!important;color:#003366!important;font-size:11px!important;}
+  .el-venc{font-size:10px!important;color:#777!important;background:#F0F2F5!important;padding:1px 5px!important;border-radius:4px!important;}
+  .grupo-wrap{margin-bottom:5px!important;}
+  .grupo-titulo{font-size:10px!important;font-weight:700!important;color:#6B2D8B!important;margin-bottom:3px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;}
+  .grupo-titulo .gt-total{font-size:11px!important;color:#6B2D8B!important;display:flex!important;align-items:center!important;gap:6px!important;}
+  .grupo-row{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:3px 0!important;border-bottom:1px solid #F0F2F5!important;font-size:11px!important;}
   .grupo-row:last-child{border-bottom:none!important;}
-  .gr-val{font-weight:700!important;color:#003366!important;}
-  .gr-venc{font-size:11px!important;color:#777!important;background:#F0F2F5!important;padding:2px 7px!important;border-radius:4px!important;}
-  .resultado{display:block!important;background:#fff!important;border-radius:12px!important;padding:18px 14px!important;box-shadow:0 2px 8px rgba(0,0,0,0.08)!important;break-inside:avoid!important;}
-  .resultado-title{font-size:14px!important;font-weight:800!important;color:#006b3f!important;text-align:center!important;margin-bottom:14px!important;padding-bottom:10px!important;border-bottom:2px solid #F5F5F5!important;}
-  .res-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;margin-bottom:12px!important;}
-  .res-item{background:#F5F5F5!important;border-radius:9px!important;padding:11px!important;text-align:center!important;}
-  .res-item label{font-size:10px!important;color:#777!important;display:block!important;margin-bottom:3px!important;font-weight:600!important;}
-  .res-item .val{font-size:16px!important;font-weight:800!important;color:#003366!important;}
+  .gr-val{font-weight:700!important;color:#003366!important;font-size:11px!important;}
+  .gr-venc{font-size:10px!important;color:#777!important;background:#F0F2F5!important;padding:1px 5px!important;border-radius:4px!important;}
+  .sem-intermediarias{font-size:11px!important;color:#999!important;font-style:italic!important;padding:4px 0!important;text-align:center!important;}
+  /* ── Resultado compacto ── */
+  .resultado{display:block!important;background:#fff!important;border-radius:12px!important;padding:8px 10px!important;box-shadow:0 2px 8px rgba(0,0,0,0.08)!important;break-inside:avoid!important;}
+  .resultado-title{font-size:11px!important;font-weight:800!important;color:#006b3f!important;text-align:center!important;margin-bottom:6px!important;padding-bottom:5px!important;border-bottom:2px solid #F5F5F5!important;}
+  .res-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;margin-bottom:6px!important;}
+  .res-item{background:#F5F5F5!important;border-radius:6px!important;padding:5px 8px!important;text-align:center!important;}
+  .res-item label{font-size:8px!important;color:#777!important;display:block!important;margin-bottom:1px!important;font-weight:600!important;}
+  .res-item .val{font-size:12px!important;font-weight:800!important;color:#003366!important;}
   .res-item.destaque{background:#E6F4ED!important;}
   .res-item.destaque .val{color:#006b3f!important;}
-  .psa-psb-resultado{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;margin-bottom:12px!important;}
-  .psa-res{background:#F3EDF7!important;border-radius:9px!important;padding:12px!important;text-align:center!important;}
-  .psb-res{background:#E6F4ED!important;border-radius:9px!important;padding:12px!important;text-align:center!important;}
-  .psa-res .pr-title{font-size:11px!important;font-weight:700!important;color:#6B2D8B!important;margin-bottom:6px!important;}
-  .psb-res .pr-title{font-size:11px!important;font-weight:700!important;color:#006b3f!important;margin-bottom:6px!important;}
-  .psa-res .pr-val{font-size:15px!important;font-weight:800!important;color:#6B2D8B!important;}
-  .psb-res .pr-val{font-size:15px!important;font-weight:800!important;color:#006b3f!important;}
-  .psa-res .pr-sub,.psb-res .pr-sub{font-size:10px!important;color:#888!important;margin-top:2px!important;}
-  .comprom-box{background:#F5F5F5!important;border-radius:9px!important;padding:14px!important;text-align:center!important;margin-bottom:11px!important;}
-  .comprom-box label{font-size:12px!important;color:#777!important;display:block!important;margin-bottom:3px!important;}
-  .comprom-box .val-grande{font-size:32px!important;font-weight:900!important;color:#003366!important;}
-  .progress-wrap{background:#e0e0e0!important;border-radius:20px!important;height:12px!important;overflow:hidden!important;margin-bottom:5px!important;}
+  .psa-psb-resultado{display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;margin-bottom:6px!important;}
+  .psa-res{background:#F3EDF7!important;border-radius:6px!important;padding:5px 8px!important;text-align:center!important;}
+  .psb-res{background:#E6F4ED!important;border-radius:6px!important;padding:5px 8px!important;text-align:center!important;}
+  .psa-res .pr-title{font-size:9px!important;font-weight:700!important;color:#6B2D8B!important;margin-bottom:3px!important;}
+  .psb-res .pr-title{font-size:9px!important;font-weight:700!important;color:#006b3f!important;margin-bottom:3px!important;}
+  .psa-res .pr-val{font-size:12px!important;font-weight:800!important;color:#6B2D8B!important;}
+  .psb-res .pr-val{font-size:12px!important;font-weight:800!important;color:#006b3f!important;}
+  .psa-res .pr-sub,.psb-res .pr-sub{font-size:8px!important;color:#888!important;margin-top:1px!important;}
+  .comprom-box{background:#F5F5F5!important;border-radius:6px!important;padding:6px!important;text-align:center!important;margin-bottom:6px!important;}
+  .comprom-box label{font-size:9px!important;color:#777!important;display:block!important;margin-bottom:1px!important;}
+  .comprom-box .val-grande{font-size:20px!important;font-weight:900!important;color:#003366!important;}
+  .progress-wrap{background:#e0e0e0!important;border-radius:20px!important;height:7px!important;overflow:hidden!important;margin-bottom:2px!important;}
   .progress-bar{height:100%!important;border-radius:20px!important;}
   .progress-bar.verde{background:#006b3f!important;}
   .progress-bar.amarelo{background:#F9A825!important;}
   .progress-bar.vermelho{background:#D32F2F!important;}
-  .progress-labels{display:flex!important;justify-content:space-between!important;font-size:10px!important;color:#aaa!important;margin-bottom:12px!important;}
-  .badge-resultado{text-align:center!important;padding:13px!important;border-radius:10px!important;font-size:17px!important;font-weight:800!important;margin-bottom:14px!important;}
+  .progress-labels{display:flex!important;justify-content:space-between!important;font-size:8px!important;color:#aaa!important;margin-bottom:6px!important;}
+  .badge-resultado{text-align:center!important;padding:6px!important;border-radius:7px!important;font-size:12px!important;font-weight:800!important;margin-bottom:6px!important;}
   .badge-resultado.aprovado{background:#E6F4ED!important;color:#006b3f!important;}
   .badge-resultado.atencao{background:#FFFDE7!important;color:#E65100!important;}
   .badge-resultado.reprovado{background:#FDECEA!important;color:#D32F2F!important;}
-  .desconto-section{border-radius:10px!important;padding:14px!important;margin-bottom:0!important;border:2px solid!important;break-inside:avoid!important;}
+  .desconto-section{border-radius:7px!important;padding:8px 10px!important;margin-bottom:0!important;border:2px solid!important;break-inside:avoid!important;}
   .desconto-section.ok{background:#E6F4ED!important;border-color:#006b3f!important;}
   .desconto-section.nok{background:#FDECEA!important;border-color:#D32F2F!important;}
   .desconto-section.bloqueado{background:#F5F5F5!important;border-color:#ccc!important;}
-  .desconto-titulo{font-size:13px!important;font-weight:800!important;margin-bottom:12px!important;display:flex!important;align-items:center!important;gap:6px!important;}
+  .desconto-titulo{font-size:10px!important;font-weight:800!important;margin-bottom:6px!important;display:flex!important;align-items:center!important;gap:6px!important;}
   .desconto-section.ok .desconto-titulo{color:#006b3f!important;}
   .desconto-section.nok .desconto-titulo{color:#D32F2F!important;}
   .desconto-section.bloqueado .desconto-titulo{color:#888!important;}
-  .desconto-row{display:flex!important;justify-content:space-between!important;align-items:center!important;padding:7px 0!important;border-bottom:1px solid rgba(0,0,0,0.07)!important;font-size:12px!important;}
+  .desconto-row{display:flex!important;justify-content:space-between!important;align-items:center!important;padding:3px 0!important;border-bottom:1px solid rgba(0,0,0,0.07)!important;font-size:10px!important;gap:3px!important;}
   .desconto-row:last-child{border-bottom:none!important;padding-bottom:0!important;}
-  .desconto-row .dr-label{color:#555!important;font-weight:500!important;}
-  .desconto-row .dr-val{font-weight:800!important;font-size:13px!important;}
-  .projecao-aviso{margin-top:12px!important;padding:9px 12px!important;background:rgba(0,0,0,0.05)!important;border-radius:7px!important;font-size:11px!important;color:#555!important;line-height:1.5!important;border-left:3px solid #F9A825!important;}
-  /* ── Controle de quebra de páginas ── */
-
-  /* Página 1: Dados do Cliente + Imóvel + Financeiros juntos */
-  .card { break-inside:avoid!important; }
-
-  /* Força quebra de página ANTES do Plano de Pagamento */
-  .plano-wrap {
-    break-before:page!important;
-    margin-top:0!important;
-  }
-
-  /* Garante que o resultado também comece em nova página se necessário */
-  .resultado {
-    break-before:auto!important;
-  }
-
-  /* Impede que PSA/PSB quebre no meio */
-  .psa-psb-grid { break-inside:avoid!important; }
-
-  /* Impede que % financiado quebre */
-  .financiado-wrap { break-inside:avoid!important; }
-
-  /* Plano de pagamento não quebra internamente */
-  .plano-secao { break-inside:avoid!important; }
-
-  /* Resultado não quebra internamente */
-  .desconto-section { break-inside:avoid!important; }
-  /* ── Compactar seção de resultado para caber na pág 2 ── */
-
-   /* ← quebras de página (mantém igual) */
-  .card{break-inside:avoid!important;}
-  .plano-wrap{break-before:page!important;margin-top:0!important;}
-  .psa-psb-grid{break-inside:avoid!important;}
-  .financiado-wrap{break-inside:avoid!important;}
-  .plano-secao{break-inside:avoid!important;}
-  .desconto-section{break-inside:avoid!important;}
-
-  /* ← compactar resultado (versão mais agressiva) */
-  .resultado{padding:8px 10px!important;}
-  .resultado-title{font-size:11px!important;margin-bottom:6px!important;padding-bottom:5px!important;}
-
-  /* 4 cards de parcelas */
-  .res-grid{gap:5px!important;margin-bottom:6px!important;}
-  .res-item{padding:5px 8px!important;border-radius:6px!important;}
-  .res-item label{font-size:8px!important;margin-bottom:1px!important;}
-  .res-item .val{font-size:12px!important;}
-
-  /* PSA/PSB */
-  .psa-psb-resultado{gap:5px!important;margin-bottom:6px!important;}
-  .psa-res,.psb-res{padding:5px 8px!important;border-radius:6px!important;}
-  .psa-res .pr-title,.psb-res .pr-title{font-size:9px!important;margin-bottom:3px!important;}
-  .psa-res .pr-val,.psb-res .pr-val{font-size:12px!important;}
-  .psa-res .pr-sub,.psb-res .pr-sub{font-size:8px!important;margin-top:1px!important;}
-
-  /* Comprometimento */
-  .comprom-box{padding:6px!important;margin-bottom:6px!important;}
-  .comprom-box label{font-size:9px!important;margin-bottom:1px!important;}
-  .comprom-box .val-grande{font-size:20px!important;}
-
-  /* Barra */
-  .progress-wrap{height:7px!important;margin-bottom:2px!important;}
-  .progress-labels{font-size:8px!important;margin-bottom:6px!important;}
-
-  /* Badge */
-  .badge-resultado{padding:6px!important;font-size:12px!important;margin-bottom:6px!important;border-radius:7px!important;}
-
-  /* Desconto */
-  .desconto-section{padding:8px 10px!important;border-radius:7px!important;margin-bottom:0!important;}
-  .desconto-titulo{font-size:10px!important;margin-bottom:6px!important;}
-  .desconto-row{padding:3px 0!important;font-size:10px!important;gap:3px!important;}
-  .desconto-row .dr-label{font-size:10px!important;}
-  .desconto-row .dr-val{font-size:11px!important;}
-  .projecao-aviso{margin-top:6px!important;padding:5px 8px!important;font-size:9px!important;line-height:1.3!important;}
+  .desconto-row .dr-label{color:#555!important;font-weight:500!important;font-size:10px!important;}
+  .desconto-row .dr-val{font-weight:800!important;font-size:11px!important;}
+  .projecao-aviso{margin-top:6px!important;padding:5px 8px!important;background:rgba(0,0,0,0.05)!important;border-radius:6px!important;font-size:9px!important;color:#555!important;line-height:1.3!important;border-left:3px solid #F9A825!important;}
 }
 </style>
 </head>
@@ -810,13 +740,8 @@ function renderizarPlano(){
   const temInter=_intermediarias.length>0;
   if(!temEntrada&&!temInter){wrap.style.display='none';return;}
   wrap.style.display='block';
-
-  // Valor do imóvel para calcular %
   const valorImovel=parseMoeda(document.getElementById('valorImovel').value);
-
   let html='';
-
-  // ── ENTRADA ──
   if(temEntrada){
     const totalStr=_entrada.total>0?formatMoeda(_entrada.total):'—';
     let pctStr='';
@@ -842,8 +767,6 @@ function renderizarPlano(){
     }
     html+=`</ul></div></div>`;
   }
-
-  // ── INTERMEDIÁRIAS ──
   const totalInter=_intermediarias.reduce((s,g)=>s+g.total,0);
   let pctInterStr='';
   if(valorImovel>0&&totalInter>0){
@@ -1009,8 +932,7 @@ function calcular(e){
     descontoCobreNecessario='Não necessário';
     dc.innerHTML=`<div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} %</span></div>
       <div class="desconto-row"><span class="dr-label">% Financiado</span><span class="dr-val" style="color:var(--verde)">${pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—'}</span></div>
-      ${descontoDisponivel>0?`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(descontoDisponivel)}</span></div>`:''}
-      <div class="projecao-aviso">✅ Cliente dentro do limite de 35%.${descontoDisponivel>0?' Há margem de desconto disponível caso necessário.':''}</div>`;
+      ${descontoDisponivel>0?`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(descontoDisponivel)}</span></div>`_
   }else{
     ds.className='desconto-section nok';
     dt.innerHTML='⚠️ Desconto necessário para enquadramento';
