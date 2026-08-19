@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#006b3f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Comprom. MRV">
+<title>Calculadora MRV — Comprometimento de Renda</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{
+  --verde:#006b3f;--verde-claro:#E6F4ED;--verde-hover:#005530;
+  --laranja:#E87722;--laranja-claro:#FEF3E8;
+  --roxo:#6B2D8B;--roxo-claro:#F3EDF7;
+  --azul:#003366;--cinza:#F5F5F5;--cinza-borda:#E0E0E0;
+  --texto:#333;--branco:#FFF;
+  --vermelho:#D32F2F;--vermelho-claro:#FDECEA;
+  --amarelo:#F9A825;--amarelo-claro:#FFFDE7;
+  --amarelo-medio:#E65100;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#ECEEF2;color:var(--texto);font-size:15px;}
+header{
+  background:var(--verde);padding:0 24px;display:flex;align-items:center;gap:20px;
+  height:68px;box-shadow:0 2px 10px rgba(0,0,0,0.22);position:sticky;top:0;z-index:100;
+}
+.logo-container{
+  background:#fff;border-radius:8px;padding:6px 14px;
+  display:flex;align-items:center;flex-shrink:0;height:50px;
+}
+.logo-img{height:36px;width:auto;display:block;}
+.logo-fallback{display:none;font-family:'Arial Black',Arial;font-weight:900;font-size:20px;letter-spacing:-0.5px;}
+.logo-fallback .mrv{color:#006b3f;}
+.logo-fallback .eco{color:#E87722;}
+.header-div{width:2px;height:38px;background:rgba(255,255,255,0.25);border-radius:2px;flex-shrink:0;}
+.header-text h1{color:#fff;font-size:15px;font-weight:700;line-height:1.3;}
+.header-text p{color:rgba(255,255,255,0.78);font-size:11px;margin-top:2px;}
+.container{max-width:880px;margin:22px auto;padding:0 14px 80px;}
+.upload-card{
+  background:#fff;border-radius:14px;border:2px dashed var(--verde);
+  padding:30px 20px;text-align:center;margin-bottom:18px;cursor:pointer;transition:.25s;
+}
+.upload-card:hover{border-color:var(--laranja);background:var(--laranja-claro);}
+.upload-icon{font-size:42px;margin-bottom:10px;}
+.upload-card h2{color:var(--verde);font-size:18px;font-weight:700;margin-bottom:6px;}
+.upload-card p{color:#777;font-size:13px;}
+.upload-card input{display:none;}
+.btn-upload{
+  display:inline-flex;align-items:center;gap:8px;margin-top:14px;
+  background:var(--verde);color:#fff;padding:12px 28px;border-radius:8px;
+  font-size:14px;font-weight:700;cursor:pointer;border:none;transition:.2s;
+}
+.btn-upload:hover{background:var(--laranja);}
+.status-bar{
+  display:none;align-items:center;gap:12px;background:#fff;
+  border-radius:10px;padding:13px 18px;margin-bottom:16px;
+  border-left:4px solid var(--verde);font-size:14px;font-weight:500;
+}
+.status-bar.show{display:flex;}
+.status-bar.success{border-color:var(--verde);}
+.status-bar.error{border-color:var(--vermelho);}
+.spinner{
+  width:20px;height:20px;flex-shrink:0;
+  border:3px solid #eee;border-top-color:var(--verde);
+  border-radius:50%;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.card{background:#fff;border-radius:14px;padding:20px 18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.07);}
+.card-title{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--cinza);display:flex;align-items:center;gap:8px;}
+.card-title.verde{color:var(--verde);}
+.card-title.laranja{color:var(--laranja);}
+.card-title.roxo{color:var(--roxo);}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field.full{grid-column:1/-1;}
+label{font-size:12px;font-weight:700;color:#555;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.tag{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;}
+.tag.auto{background:var(--verde-claro);color:var(--verde);}
+.tag.manual{background:var(--laranja-claro);color:var(--laranja);}
+input[type=text]{padding:11px 13px;border:1.5px solid var(--cinza-borda);border-radius:8px;font-size:14px;transition:border .2s;width:100%;background:#fff;color:var(--texto);}
+input[type=text]:focus{outline:none;border-color:var(--verde);}
+input.auto-filled{background:var(--verde-claro);border-color:var(--verde);color:#1a5c2a;}
+input.manual-field{background:var(--laranja-claro);border-color:var(--laranja);}
+input[readonly]{background:#F8F9FA;color:#555;cursor:default;}
+input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
+.psa-psb-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;grid-column:1/-1;}
+.psa-box,.psb-box{border-radius:10px;padding:14px 16px;}
+.psa-box{background:var(--roxo-claro);border:1.5px solid var(--roxo);}
+.psb-box{background:var(--verde-claro);border:1.5px solid var(--verde);}
+.psa-psb-title{font-size:12px;font-weight:700;margin-bottom:10px;}
+.psa-box .psa-psb-title{color:var(--roxo);}
+.psb-box .psa-psb-title{color:var(--verde);}
+.psa-psb-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.psa-psb-label{font-size:12px;color:#666;}
+.psa-psb-val{font-size:14px;font-weight:700;}
+.psa-box .psa-psb-val{color:var(--roxo);}
+.psb-box .psa-psb-val{color:var(--verde);}
+.financiado-wrap{grid-column:1/-1;border-radius:10px;padding:14px 16px;display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border:2px solid;}
+.financiado-wrap.fin-verde{background:var(--verde-claro);border-color:var(--verde);}
+.financiado-wrap.fin-amarelo{background:var(--amarelo-claro);border-color:var(--amarelo);}
+.financiado-wrap.fin-vermelho{background:var(--vermelho-claro);border-color:var(--vermelho);}
+.financiado-info{font-size:13px;color:#555;}
+.financiado-info strong{font-size:22px;display:block;margin-top:2px;}
+.financiado-wrap.fin-verde .financiado-info strong{color:var(--verde);}
+.financiado-wrap.fin-amarelo .financiado-info strong{color:var(--amarelo-medio);}
+.financiado-wrap.fin-vermelho .financiado-info strong{color:var(--vermelho);}
+.financiado-badge{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;}
+.financiado-badge.ok{background:var(--verde);color:#fff;}
+.financiado-badge.aviso{background:var(--amarelo);color:#fff;}
+.financiado-badge.nok{background:var(--vermelho);color:#fff;}
+.plano-wrap{grid-column:1/-1;display:none;border-radius:12px;overflow:hidden;border:1.5px solid var(--cinza-borda);margin-top:4px;}
+.plano-header{background:var(--azul);color:#fff;padding:11px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.plano-secao{border-bottom:1px solid var(--cinza-borda);}
+.plano-secao:last-child{border-bottom:none;}
+.plano-secao-titulo{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#FAFAFA;font-size:13px;font-weight:700;cursor:pointer;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--cinza-borda);transition:background .2s;}
+.plano-secao-titulo:hover{background:#F0F2F5;}
+.plano-secao-titulo .ps-esq{display:flex;align-items:center;gap:8px;}
+.plano-secao-titulo .ps-dir{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.plano-badge-total{font-size:13px;font-weight:800;color:var(--azul);}
+.plano-badge-pct{font-size:11px;padding:2px 8px;border-radius:4px;background:var(--azul);color:#fff;font-weight:700;}
+.plano-badge-pct.roxo{background:var(--roxo);}
+.plano-chevron{font-size:11px;color:#aaa;transition:transform .25s;}
+.plano-secao.open .plano-chevron{transform:rotate(180deg);}
+.plano-conteudo{display:none;padding:12px 16px;}
+.plano-secao.open .plano-conteudo{display:block;}
+.entrada-lista{list-style:none;padding:0;margin:0;}
+.entrada-lista li{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F0F2F5;font-size:13px;flex-wrap:wrap;gap:4px;}
+.entrada-lista li:last-child{border-bottom:none;}
+.entrada-lista .el-num{font-size:11px;color:#aaa;font-weight:600;min-width:22px;}
+.entrada-lista .el-val{font-weight:700;color:var(--azul);}
+.entrada-lista .el-venc{font-size:12px;color:#777;background:#F0F2F5;padding:2px 8px;border-radius:4px;}
+.grupo-wrap{margin-bottom:10px;}
+.grupo-wrap:last-child{margin-bottom:0;}
+.grupo-titulo{font-size:12px;font-weight:700;color:var(--roxo);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;}
+.grupo-titulo .gt-total{font-size:13px;color:var(--roxo);display:flex;align-items:center;gap:8px;}
+.grupo-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F0F2F5;font-size:13px;flex-wrap:wrap;gap:4px;}
+.grupo-row:last-child{border-bottom:none;}
+.grupo-row .gr-val{font-weight:700;color:var(--azul);}
+.grupo-row .gr-venc{font-size:12px;color:#777;background:#F0F2F5;padding:2px 8px;border-radius:4px;}
+.sem-intermediarias{font-size:13px;color:#999;font-style:italic;padding:8px 0;text-align:center;}
+.debug-toolbar{grid-column:1/-1;display:none;align-items:center;gap:8px;flex-wrap:wrap;background:#1a1a2e;border-radius:10px 10px 0 0;padding:10px 14px;border:2px solid #00ff88;border-bottom:none;margin-top:8px;}
+.debug-toolbar.show{display:flex;}
+.debug-box{grid-column:1/-1;background:#1a1a2e;color:#00ff88;border-radius:0 0 10px 10px;padding:14px 16px;font-size:11px;font-family:'Courier New',monospace;max-height:280px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;border:2px solid #00ff88;border-top:none;display:none;}
+.debug-box.show{display:block;}
+.debug-btn{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #00ff88;background:transparent;color:#00ff88;transition:.2s;font-family:'Courier New',monospace;}
+.debug-btn:hover,.debug-btn.active{background:#00ff88;color:#1a1a2e;}
+.debug-btn.fechar{border-color:#ff4444;color:#ff4444;margin-left:auto;}
+.debug-btn.fechar:hover{background:#ff4444;color:#fff;}
+.botoes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+.btn{padding:13px 22px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;gap:7px;}
+.btn-verde{background:var(--verde);color:#fff;}
+.btn-verde:hover{background:var(--verde-hover);}
+.btn-laranja{background:var(--laranja);color:#fff;}
+.btn-laranja:hover{background:#c45e0f;}
+.btn-roxo{background:var(--roxo);color:#fff;}
+.btn-roxo:hover{background:#4e1f68;}
+.btn-cinza{background:#6c757d;color:#fff;}
+.btn-cinza:hover{background:#545b62;}
+.btn-azul{background:var(--azul);color:#fff;}
+.btn-azul:hover{background:#002244;}
+.resultado{display:none;background:#fff;border-radius:14px;padding:24px 18px;margin-bottom:18px;box-shadow:0 4px 18px rgba(0,0,0,0.1);}
+.resultado.show{display:block;}
+.resultado-title{font-size:16px;font-weight:800;color:var(--verde);text-align:center;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--cinza);}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px;}
+.res-item{background:var(--cinza);border-radius:10px;padding:13px;text-align:center;}
+.res-item label{font-size:11px;color:#777;display:block;margin-bottom:4px;font-weight:600;}
+.res-item .val{font-size:18px;font-weight:800;color:var(--azul);}
+.res-item.destaque{background:var(--verde-claro);}
+.res-item.destaque .val{color:var(--verde);}
+.comprom-box{background:var(--cinza);border-radius:10px;padding:16px;text-align:center;margin-bottom:13px;}
+.comprom-box label{font-size:13px;color:#777;display:block;margin-bottom:4px;font-weight:600;}
+.comprom-box .val-grande{font-size:36px;font-weight:900;color:var(--azul);}
+.progress-wrap{background:#e0e0e0;border-radius:20px;height:14px;overflow:hidden;margin-bottom:6px;}
+.progress-bar{height:100%;border-radius:20px;transition:width 1s ease;width:0%;}
+.progress-bar.verde{background:linear-gradient(90deg,var(--verde),#5cb85c);}
+.progress-bar.amarelo{background:linear-gradient(90deg,var(--amarelo),#ffd54f);}
+.progress-bar.vermelho{background:linear-gradient(90deg,var(--vermelho),#e57373);}
+.progress-labels{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-bottom:14px;}
+.badge-resultado{text-align:center;padding:15px;border-radius:12px;font-size:19px;font-weight:800;margin-bottom:16px;}
+.badge-resultado.aprovado{background:var(--verde-claro);color:var(--verde);}
+.badge-resultado.atencao{background:var(--amarelo-claro);color:var(--amarelo-medio);}
+.badge-resultado.reprovado{background:var(--vermelho-claro);color:var(--vermelho);}
+.psa-psb-resultado{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px;}
+.psa-res,.psb-res{border-radius:10px;padding:14px;text-align:center;}
+.psa-res{background:var(--roxo-claro);}
+.psb-res{background:var(--verde-claro);}
+.psa-res .pr-title{font-size:12px;font-weight:700;color:var(--roxo);margin-bottom:8px;}
+.psb-res .pr-title{font-size:12px;font-weight:700;color:var(--verde);margin-bottom:8px;}
+.psa-res .pr-val{font-size:16px;font-weight:800;color:var(--roxo);}
+.psb-res .pr-val{font-size:16px;font-weight:800;color:var(--verde);}
+.psa-res .pr-sub,.psb-res .pr-sub{font-size:11px;color:#888;margin-top:3px;}
+.desconto-section{border-radius:12px;padding:18px;margin-bottom:16px;border:2px solid;}
+.desconto-section.ok{background:var(--verde-claro);border-color:var(--verde);}
+.desconto-section.nok{background:var(--vermelho-claro);border-color:var(--vermelho);}
+.desconto-section.bloqueado{background:#F5F5F5;border-color:#ccc;}
+.desconto-titulo{font-size:14px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.desconto-section.ok .desconto-titulo{color:var(--verde);}
+.desconto-section.nok .desconto-titulo{color:var(--vermelho);}
+.desconto-section.bloqueado .desconto-titulo{color:#888;}
+.desconto-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.07);font-size:13px;flex-wrap:wrap;gap:6px;}
+.desconto-row:last-child{border-bottom:none;padding-bottom:0;}
+.desconto-row .dr-label{color:#555;font-weight:500;}
+.desconto-row .dr-val{font-weight:800;font-size:15px;}
+.projecao-aviso{margin-top:14px;padding:11px 14px;background:rgba(0,0,0,0.06);border-radius:8px;font-size:12px;color:#555;line-height:1.6;border-left:3px solid var(--amarelo);}
+.toast-sheets{position:fixed;bottom:24px;right:24px;z-index:9999;background:#fff;border-radius:12px;padding:14px 18px;box-shadow:0 4px 20px rgba(0,0,0,0.18);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;transform:translateY(80px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);border-left:4px solid var(--verde);max-width:320px;}
+.toast-sheets.show{transform:translateY(0);opacity:1;}
+.toast-sheets.erro{border-color:var(--vermelho);}
+.toast-sheets .toast-icon{font-size:20px;flex-shrink:0;}
+.historico-card{background:#fff;border-radius:14px;padding:18px;margin-top:18px;box-shadow:0 2px 10px rgba(0,0,0,0.07);display:none;}
+.historico-title{font-size:15px;font-weight:700;color:var(--roxo);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:640px;}
+th{background:var(--roxo);color:#fff;padding:9px 10px;text-align:left;white-space:nowrap;}
+td{padding:8px 10px;border-bottom:1px solid #F0F2F5;white-space:nowrap;}
+tr:hover td{background:#F8F9FA;}
+.badge-sm{padding:3px 8px;border-radius:4px;font-size:11px;font-weight:700;}
+.badge-sm.a{background:var(--verde-claro);color:var(--verde);}
+.badge-sm.t{background:var(--amarelo-claro);color:var(--amarelo-medio);}
+.badge-sm.r{background:var(--vermelho-claro);color:var(--vermelho);}
+@media(max-width:600px){
+  header{padding:0 14px;gap:12px;height:58px;}
+  .logo-container{height:44px;padding:5px 10px;}
+  .logo-img{height:28px;}
+  .header-div{display:none;}
+  .header-text h1{font-size:13px;}
+  .container{padding:0 10px 80px;}
+  .grid,.psa-psb-grid,.res-grid,.psa-psb-resultado{grid-template-columns:1fr;}
+  .field.full,.psa-psb-grid,.financiado-wrap,.plano-wrap,.debug-toolbar,.debug-box{grid-column:1;}
+  .financiado-wrap{flex-direction:column;align-items:flex-start;}
+  .comprom-box .val-grande{font-size:28px;}
+  .badge-resultado{font-size:16px;}
+  .btn{padding:12px 16px;font-size:13px;}
+  .desconto-row{flex-direction:column;align-items:flex-start;}
+  .toast-sheets{bottom:12px;right:12px;left:12px;max-width:100%;}
+}
+@media(max-width:380px){.res-grid{grid-template-columns:1fr;}}
+@media print{
+  .upload-card,.status-bar,.botoes,.historico-card,
+  .debug-toolbar,.debug-box,.toast-sheets,#pdfInput{display:none!important;}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;}
+  @page{size:A4 portrait;margin:8mm 8mm 8mm 8mm;}
+  html,body{background:#ECEEF2!important;font-size:12px;width:100%;}
+  header{position:relative!important;display:flex!important;background:#006b3f!important;height:60px!important;padding:0 20px!important;border-radius:10px!important;margin-bottom:14px!important;box-shadow:0 2px 8px rgba(0,0,0,0.3)!important;align-items:center!important;gap:16px!important;}
+  .logo-container{display:flex!important;background:#fff!important;border-radius:7px!important;padding:5px 12px!important;height:44px!important;align-items:center!important;}
+  .logo-img{height:30px!important;width:auto!important;display:block!important;}
+  .logo-fallback{display:none!important;}
+  .header-div{display:block!important;width:2px!important;height:34px!important;background:rgba(255,255,255,0.3)!important;border-radius:2px!important;}
+  .header-text h1{color:#fff!important;font-size:13px!important;font-weight:700!important;}
+  .header-text p{color:rgba(255,255,255,0.75)!important;font-size:10px!important;display:block!important;}
+  .container{max-width:100%!important;margin:0!important;padding:0!important;}
+  .card{background:#fff!important;border-radius:12px!important;padding:14px!important;margin-bottom:10px!important;box-shadow:0 2px 8px rgba(0,0,0,0.08)!important;break-inside:avoid!important;}
+  .card-title{font-size:13px!important;font-weight:700!important;padding-bottom:8px!important;margin-bottom:10px!important;border-bottom:2px solid #F5F5F5!important;display:flex!important;align-items:center!important;gap:6px!important;}
+  .card-title.verde{color:#006b3f!important;}
+  .card-title.laranja{color:#E87722!important;}
+  .card-title.roxo{color:#6B2D8B!important;}
+  .grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;}
+  label{font-size:11px!important;font-weight:700!important;color:#555!important;display:flex!important;align-items:center!important;gap:4px!important;}
+  .tag{font-size:9px!important;padding:1px 6px!important;border-radius:4px!important;font-weight:700!important;}
+  .tag.auto{background:#E6F4ED!important;color:#006b3f!important;}
+  .tag.manual{background:#FEF3E8!important;color:#E87722!important;}
+  input[type=text]{padding:8px 10px!important;border:1.5px solid #E0E0E0!important;border-radius:7px!important;font-size:12px!important;width:100%!important;background:#fff!important;color:#333!important;display:block!important;}
+  input.auto-filled{background:#E6F4ED!important;border-color:#006b3f!important;color:#1a5c2a!important;}
+  input.manual-field{background:#FEF3E8!important;border-color:#E87722!important;color:#333!important;}
+  .psa-psb-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;grid-column:1/-1!important;}
+  .psa-box{background:#F3EDF7!important;border:1.5px solid #6B2D8B!important;border-radius:10px!important;padding:12px 14px!important;}
+  .psb-box{background:#E6F4ED!important;border:1.5px solid #006b3f!important;border-radius:10px!important;padding:12px 14px!important;}
+  .psa-psb-title{font-size:11px!important;font-weight:700!important;margin-bottom:8px!important;}
+  .psa-box .psa-psb-title{color:#6B2D8B!important;}
+  .psb-box .psa-psb-title{color:#006b3f!important;}
+  .psa-psb-row{display:flex!important;justify-content:space-between!important;margin-bottom:4px!important;}
+  .psa-psb-label{font-size:11px!important;color:#666!important;}
+  .psa-psb-val{font-size:13px!important;font-weight:700!important;}
+  .psa-box .psa-psb-val{color:#6B2D8B!important;}
+  .psb-box .psa-psb-val{color:#006b3f!important;}
+  .financiado-wrap{display:flex!important;grid-column:1/-1!important;border-radius:10px!important;padding:12px 14px!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;border:2px solid!important;break-inside:avoid!important;}
+  .financiado-wrap.fin-verde{background:#E6F4ED!important;border-color:#006b3f!important;}
+  .financiado-wrap.fin-amarelo{background:#FFFDE7!important;border-color:#F9A825!important;}
+  .financiado-wrap.fin-vermelho{background:#FDECEA!important;border-color:#D32F2F!important;}
+  .financiado-info{font-size:12px!important;color:#555!important;}
+  .financiado-info strong{font-size:20px!important;display:block!important;margin-top:2px!important;}
+  .financiado-wrap.fin-verde .financiado-info strong{color:#006b3f!important;}
+  .financiado-wrap.fin-amarelo .financiado-info strong{color:#E65100!important;}
+  .financiado-wrap.fin-vermelho .financiado-info strong{color:#D32F2F!important;}
+  .financiado-badge{padding:7px 14px!important;border-radius:7px!important;font-size:12px!important;font-weight:700!important;}
+  .financiado-badge.ok{background:#006b3f!important;color:#fff!important;}
+  .financiado-badge.aviso{background:#F9A825!important;color:#fff!important;}
+  .financiado-badge.nok{background:#D32F2F!important;color:#fff!important;}
+  /* ── Plano de Pagamento compacto ── */
+  .plano-wrap{display:block!important;grid-column:1/-1!important;border-radius:10px!important;overflow:hidden!important;border:1.5px solid #E0E0E0!important;margin-top:4px!important;break-inside:avoid!important;break-before:page!important;}
+  .plano-header{background:#003366!important;color:#fff!important;padding:6px 10px!important;font-size:11px!important;font-weight:700!important;display:flex!important;align-items:center!important;gap:6px!important;}
+  .plano-secao{border-bottom:1px solid #E0E0E0!important;break-inside:avoid!important;}
+  .plano-secao:last-child{border-bottom:none!important;}
+  .plano-secao-titulo{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:6px 10px!important;background:#FAFAFA!important;font-size:11px!important;font-weight:700!important;border-bottom:1px solid #E0E0E0!important;}
+  .plano-chevron{display:none!important;}
+  .plano-conteudo{display:block!important;padding:6px 10px!important;}
+  .plano-badge-total{font-size:11px!important;font-weight:800!important;color:#003366!important;}
+  .plano-badge-pct{font-size:9px!important;padding:1px 5px!important;border-radius:4px!important;font-weight:700!important;background:#003366!important;color:#fff!important;}
+  .plano-badge-pct.roxo{background:#6B2D8B!important;}
+  .entrada-lista{list-style:none!important;padding:0!important;margin:0!important;}
+  .entrada-lista li{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:3px 0!important;border-bottom:1px solid #F0F2F5!important;font-size:11px!important;}
+  .entrada-lista li:last-child{border-bottom:none!important;}
+  .el-num{font-size:9px!important;color:#aaa!important;min-width:14px!important;}
+  .el-val{font-weight:700!important;color:#003366!important;font-size:11px!important;}
+  .el-venc{font-size:10px!important;color:#777!important;background:#F0F2F5!important;padding:1px 5px!important;border-radius:4px!important;}
+  .grupo-wrap{margin-bottom:5px!important;}
+  .grupo-titulo{font-size:10px!important;font-weight:700!important;color:#6B2D8B!important;margin-bottom:3px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;}
+  .grupo-titulo .gt-total{font-size:11px!important;color:#6B2D8B!important;display:flex!important;align-items:center!important;gap:6px!important;}
+  .grupo-row{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:3px 0!important;border-bottom:1px solid #F0F2F5!important;font-size:11px!important;}
+  .grupo-row:last-child{border-bottom:none!important;}
+  .gr-val{font-weight:700!important;color:#003366!important;font-size:11px!important;}
+  .gr-venc{font-size:10px!important;color:#777!important;background:#F0F2F5!important;padding:1px 5px!important;border-radius:4px!important;}
+  .sem-intermediarias{font-size:11px!important;color:#999!important;font-style:italic!important;padding:4px 0!important;text-align:center!important;}
+  /* ── Resultado compacto ── */
+  .resultado{display:block!important;background:#fff!important;border-radius:12px!important;padding:8px 10px!important;box-shadow:0 2px 8px rgba(0,0,0,0.08)!important;break-inside:avoid!important;}
+  .resultado-title{font-size:11px!important;font-weight:800!important;color:#006b3f!important;text-align:center!important;margin-bottom:6px!important;padding-bottom:5px!important;border-bottom:2px solid #F5F5F5!important;}
+  .res-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;margin-bottom:6px!important;}
+  .res-item{background:#F5F5F5!important;border-radius:6px!important;padding:5px 8px!important;text-align:center!important;}
+  .res-item label{font-size:8px!important;color:#777!important;display:block!important;margin-bottom:1px!important;font-weight:600!important;}
+  .res-item .val{font-size:12px!important;font-weight:800!important;color:#003366!important;}
+  .res-item.destaque{background:#E6F4ED!important;}
+  .res-item.destaque .val{color:#006b3f!important;}
+  .psa-psb-resultado{display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;margin-bottom:6px!important;}
+  .psa-res{background:#F3EDF7!important;border-radius:6px!important;padding:5px 8px!important;text-align:center!important;}
+  .psb-res{background:#E6F4ED!important;border-radius:6px!important;padding:5px 8px!important;text-align:center!important;}
+  .psa-res .pr-title{font-size:9px!important;font-weight:700!important;color:#6B2D8B!important;margin-bottom:3px!important;}
+  .psb-res .pr-title{font-size:9px!important;font-weight:700!important;color:#006b3f!important;margin-bottom:3px!important;}
+  .psa-res .pr-val{font-size:12px!important;font-weight:800!important;color:#6B2D8B!important;}
+  .psb-res .pr-val{font-size:12px!important;font-weight:800!important;color:#006b3f!important;}
+  .psa-res .pr-sub,.psb-res .pr-sub{font-size:8px!important;color:#888!important;margin-top:1px!important;}
+  .comprom-box{background:#F5F5F5!important;border-radius:6px!important;padding:6px!important;text-align:center!important;margin-bottom:6px!important;}
+  .comprom-box label{font-size:9px!important;color:#777!important;display:block!important;margin-bottom:1px!important;}
+  .comprom-box .val-grande{font-size:20px!important;font-weight:900!important;color:#003366!important;}
+  .progress-wrap{background:#e0e0e0!important;border-radius:20px!important;height:7px!important;overflow:hidden!important;margin-bottom:2px!important;}
+  .progress-bar{height:100%!important;border-radius:20px!important;}
+  .progress-bar.verde{background:#006b3f!important;}
+  .progress-bar.amarelo{background:#F9A825!important;}
+  .progress-bar.vermelho{background:#D32F2F!important;}
+  .progress-labels{display:flex!important;justify-content:space-between!important;font-size:8px!important;color:#aaa!important;margin-bottom:6px!important;}
+  .badge-resultado{text-align:center!important;padding:6px!important;border-radius:7px!important;font-size:12px!important;font-weight:800!important;margin-bottom:6px!important;}
+  .badge-resultado.aprovado{background:#E6F4ED!important;color:#006b3f!important;}
+  .badge-resultado.atencao{background:#FFFDE7!important;color:#E65100!important;}
+  .badge-resultado.reprovado{background:#FDECEA!important;color:#D32F2F!important;}
+  .desconto-section{border-radius:7px!important;padding:8px 10px!important;margin-bottom:0!important;border:2px solid!important;break-inside:avoid!important;}
+  .desconto-section.ok{background:#E6F4ED!important;border-color:#006b3f!important;}
+  .desconto-section.nok{background:#FDECEA!important;border-color:#D32F2F!important;}
+  .desconto-section.bloqueado{background:#F5F5F5!important;border-color:#ccc!important;}
+  .desconto-titulo{font-size:10px!important;font-weight:800!important;margin-bottom:6px!important;display:flex!important;align-items:center!important;gap:6px!important;}
+  .desconto-section.ok .desconto-titulo{color:#006b3f!important;}
+  .desconto-section.nok .desconto-titulo{color:#D32F2F!important;}
+  .desconto-section.bloqueado .desconto-titulo{color:#888!important;}
+  .desconto-row{display:flex!important;justify-content:space-between!important;align-items:center!important;padding:3px 0!important;border-bottom:1px solid rgba(0,0,0,0.07)!important;font-size:10px!important;gap:3px!important;}
+  .desconto-row:last-child{border-bottom:none!important;padding-bottom:0!important;}
+  .desconto-row .dr-label{color:#555!important;font-weight:500!important;font-size:10px!important;}
+  .desconto-row .dr-val{font-weight:800!important;font-size:11px!important;}
+  .projecao-aviso{margin-top:6px!important;padding:5px 8px!important;background:rgba(0,0,0,0.05)!important;border-radius:6px!important;font-size:9px!important;color:#555!important;line-height:1.3!important;border-left:3px solid #F9A825!important;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-container">
+    <img class="logo-img" id="logoImg"
+         src="https://raw.githubusercontent.com/misaelguedes-git/calculadoraMRV/28c91fb6679626b4096a672dbd9fd8f3fd8a5733/assets/LogoMRV.png"
+         alt="MRV&CO"
+         onerror="this.style.display='none';document.getElementById('logoFallback').style.display='inline';">
+    <span class="logo-fallback" id="logoFallback">
+      <span class="mrv">MRV</span><span class="eco">&amp;CO</span>
+    </span>
+  </div>
+  <div class="header-div"></div>
+  <div class="header-text">
+    <h1>Calculadora de Comprometimento de Renda — MRV</h1>
+    <p>Upload do contrato para preenchimento automático</p>
+  </div>
+</header>
+
+<div class="toast-sheets" id="toastSheets">
+  <span class="toast-icon" id="toastIcon">⏳</span>
+  <span id="toastMsg">Salvando...</span>
+</div>
+
+<div class="container">
+
+  <div class="upload-card" onclick="document.getElementById('pdfInput').click()">
+    <div class="upload-icon">📄</div>
+    <h2>Carregue aqui o Contrato MRV</h2>
+    <p>Selecione o PDF do contrato do cliente para preenchimento automático</p>
+    <p style="font-size:11px;color:#bbb;margin-top:4px;">🔒 Processamento 100% local — nenhum dado é enviado para a internet</p>
+    <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('pdfInput').click()">
+      📎 Selecionar PDF
+    </button>
+    <input type="file" id="pdfInput" accept=".pdf" onchange="lerPDF(this)">
+  </div>
+
+  <div class="status-bar" id="statusBar">
+    <div class="spinner" id="spinner"></div>
+    <span id="statusMsg">Lendo contrato...</span>
+  </div>
+
+  <form id="formCalc" onsubmit="calcular(event)">
+
+    <div class="card">
+      <div class="card-title verde">👤 Dados do Cliente</div>
+      <div class="grid">
+        <div class="field"><label>Nome do Cliente <span class="tag auto">AUTO</span></label><input type="text" id="nomeCliente" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>CPF <span class="tag auto">AUTO</span></label><input type="text" id="cpf" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Gerente Responsável <span class="tag manual">MANUAL</span></label><input type="text" id="gerente" placeholder="Nome do gerente" class="manual-field" required></div>
+        <div class="field"><label>Número do Contrato <span class="tag auto">AUTO</span></label><input type="text" id="numContrato" placeholder="Lido do contrato..." readonly></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title laranja">🏠 Dados do Imóvel</div>
+      <div class="grid">
+        <div class="field"><label>Empreendimento <span class="tag auto">AUTO</span></label><input type="text" id="empreendimento" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Bloco / Módulo <span class="tag auto">AUTO</span></label><input type="text" id="modulo" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Valor do Imóvel (R$) <span class="tag auto">AUTO</span></label><input type="text" id="valorImovel" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Data de Entrega Prevista <span class="tag auto">AUTO</span></label><input type="text" id="dataEntrega" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Valor de Avaliação (R$) <span class="tag manual">MANUAL</span></label><input type="text" id="valorAvaliacao" placeholder="R$ 0,00" class="manual-field" oninput="mascaraMoeda(this)" required></div>
+        <div class="field"><label>Teto Faixa do Cliente (R$) <span class="tag manual">MANUAL</span></label><input type="text" id="tetoFaixa" placeholder="R$ 0,00" class="manual-field" oninput="mascaraMoeda(this)" required></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title roxo">💰 Dados Financeiros</div>
+      <div class="grid">
+        <div class="field"><label>Valor Financiado (R$) <span class="tag auto">AUTO</span></label><input type="text" id="valorFinanciado" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Saldo Carteira MRV (R$) <span class="tag auto">AUTO</span></label><input type="text" id="saldoCarteira" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Parcela MRV pós-entrega (R$) <span class="tag auto">AUTO</span></label><input type="text" id="parcelaMRV" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Quantidade de Parcelas <span class="tag auto">AUTO</span></label><input type="text" id="qtdParcelas" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Parcela Caixa (R$) <span class="tag manual">MANUAL</span></label><input type="text" id="parcelaCaixa" placeholder="R$ 0,00" class="manual-field" oninput="mascaraMoeda(this)" required></div>
+        <div class="field"><label>Renda do Cliente (R$) <span class="tag manual">MANUAL</span></label><input type="text" id="renda" placeholder="R$ 0,00" class="manual-field" oninput="mascaraMoeda(this)" required></div>
+
+        <div class="psa-psb-grid" id="psaPsbWrap" style="display:none;">
+          <div class="psa-box">
+            <div class="psa-psb-title">📅 PSA — Pró-Soluto A (Pré-entrega)</div>
+            <div class="psa-psb-row"><span class="psa-psb-label">Qtd. parcelas</span><span class="psa-psb-val" id="psaQtd">—</span></div>
+            <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="psaSaldo">—</span></div>
+          </div>
+          <div class="psb-box">
+            <div class="psa-psb-title">🏠 PSB — Pró-Soluto B (Pós-entrega)</div>
+            <div class="psa-psb-row"><span class="psa-psb-label">Qtd. parcelas</span><span class="psa-psb-val" id="psbQtd">—</span></div>
+            <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="psbSaldo">—</span></div>
+          </div>
+        </div>
+
+        <div class="financiado-wrap" id="financiadoWrap">
+          <div class="financiado-info">
+            <span>% do imóvel financiado pelo cliente</span>
+            <strong id="pctFinanciadoDisplay">—</strong>
+          </div>
+          <div class="financiado-badge" id="financiadoBadge">—</div>
+        </div>
+
+        <div class="plano-wrap" id="planoWrap">
+          <div class="plano-header">📄 Plano de Pagamento</div>
+          <div class="plano-body" id="planoBody"></div>
+        </div>
+
+        <div class="debug-toolbar" id="debugToolbar">
+          <span style="color:#00ff88;font-size:11px;font-weight:700;font-family:monospace;">🔍 DEBUG PDF</span>
+          <button type="button" class="debug-btn active" id="btnTexto"    onclick="debugMostrar('texto')">📄 Texto</button>
+          <button type="button" class="debug-btn"        id="btnParcelas" onclick="debugMostrar('parcelas')">📊 Parcelas</button>
+          <button type="button" class="debug-btn"        id="btnEntrada"  onclick="debugMostrar('entrada')">💰 Entrada</button>
+          <button type="button" class="debug-btn"        id="btnInter"    onclick="debugMostrar('inter')">🔀 Intermediárias</button>
+          <button type="button" class="debug-btn fechar" onclick="fecharDebug()">✕ Fechar</button>
+        </div>
+        <div class="debug-box" id="debugBox"></div>
+      </div>
+    </div>
+
+    <div class="botoes">
+      <button type="submit" class="btn btn-verde">📊 Calcular Comprometimento</button>
+      <button type="button" class="btn btn-azul" onclick="abrirDebug()">🔍 Debug PDF</button>
+      <button type="button" class="btn btn-cinza" onclick="limpar()">🗑️ Limpar</button>
+    </div>
+  </form>
+
+  <div class="resultado" id="resultado">
+    <div class="resultado-title">📋 ANÁLISE DE COMPROMETIMENTO DE RENDA</div>
+    <div class="res-grid">
+      <div class="res-item"><label>Parcela Caixa</label><div class="val" id="res-caixa">—</div></div>
+      <div class="res-item"><label>Parcela MRV pós-entrega</label><div class="val" id="res-mrv">—</div></div>
+      <div class="res-item destaque"><label>Total de Parcelas</label><div class="val" id="res-total">—</div></div>
+      <div class="res-item"><label>Renda do Cliente</label><div class="val" id="res-renda">—</div></div>
+    </div>
+    <div class="psa-psb-resultado" id="resPsaPsb" style="display:none;">
+      <div class="psa-res">
+        <div class="pr-title">📅 PSA — Pré-entrega</div>
+        <div class="pr-val" id="res-psa-saldo">—</div>
+        <div class="pr-sub" id="res-psa-qtd">— parcelas</div>
+      </div>
+      <div class="psb-res">
+        <div class="pr-title">🏠 PSB — Pós-entrega</div>
+        <div class="pr-val" id="res-psb-saldo">—</div>
+        <div class="pr-sub" id="res-psb-qtd">— parcelas</div>
+      </div>
+    </div>
+    <div class="comprom-box">
+      <label>Comprometimento de Renda</label>
+      <div class="val-grande" id="res-pct">—</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-labels"><span>0%</span><span>35% ✔</span><span>40% ⚠</span><span>50%+</span></div>
+    <div class="badge-resultado" id="badgeResultado">—</div>
+    <div class="desconto-section" id="descontoSection" style="display:none;">
+      <div class="desconto-titulo" id="descontoTitulo">—</div>
+      <div id="descontoConteudo"></div>
+    </div>
+    <div class="botoes">
+      <button class="btn btn-verde" onclick="salvarHistorico()">💾 Salvar</button>
+      <button class="btn btn-roxo"  onclick="window.print()">🖨️ Imprimir</button>
+      <button class="btn btn-laranja" onclick="copiarResultado()">📋 Copiar</button>
+    </div>
+  </div>
+
+  <div class="historico-card" id="historicoCard">
+    <div class="historico-title">
+      <span>📁 Histórico de Análises</span>
+      <button class="btn btn-cinza" style="padding:7px 14px;font-size:12px;" onclick="exportarCSV()">⬇️ Exportar CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Data/Hora</th><th>Cliente</th><th>Empreendimento</th><th>Gerente</th>
+            <th>P.Caixa</th><th>P.MRV</th><th>Renda</th><th>Comprom.%</th>
+            <th>%Financ.</th><th>PSA</th><th>PSB</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="corpoHistorico"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const SHEETS_URL='https://script.google.com/macros/s/AKfycbyIkN0UQnB3XBqTJgH57OQe2LbeGVqU1Y9qP5lNvI5bnCl1VZw91otCy3pRlgY0Nahc-A/exec';
+
+let _textoDebug='',_debugAba='texto';
+let _psaQtd=0,_psaSaldo=0,_psbQtd=0,_psbSaldo=0;
+let _parcelasPSB=[],_parcelasTodas=[];
+let _dataEntregaISO=null,_obraPronta=false;
+let _entrada={total:0,pct:'',parcelas:[]};
+let _intermediarias=[];
+
+function abrirDebug(){
+  document.getElementById('debugToolbar').classList.add('show');
+  document.getElementById('debugBox').classList.add('show');
+  document.getElementById('debugToolbar').scrollIntoView({behavior:'smooth',block:'center'});
+  debugMostrar(_debugAba);
+}
+function fecharDebug(){
+  document.getElementById('debugToolbar').classList.remove('show');
+  document.getElementById('debugBox').classList.remove('show');
+}
+function debugMostrar(aba){
+  _debugAba=aba;
+  ['btnTexto','btnParcelas','btnEntrada','btnInter'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  const mapa={texto:'btnTexto',parcelas:'btnParcelas',entrada:'btnEntrada',inter:'btnInter'};
+  if(mapa[aba])document.getElementById(mapa[aba]).classList.add('active');
+  const box=document.getElementById('debugBox');
+  if(!_textoDebug){box.textContent='⚠ Nenhum PDF carregado ainda.';return;}
+  if(aba==='texto'){
+    box.textContent='=== TEXTO EXTRAÍDO (primeiros 4000 chars) ===\n\n'+_textoDebug.substring(0,4000);
+  }else if(aba==='parcelas'){
+    const inicioPSB=_dataEntregaISO?new Date(_dataEntregaISO.getFullYear(),(_dataEntregaISO.getMonth()+1)%12,1):null;
+    const linhas=_parcelasTodas.map(p=>{
+      const tipo=_obraPronta?'PSB':(inicioPSB&&p.venc>=inicioPSB?'PSB':'PSA');
+      return`  Mensal ${String(p.num).padStart(3)} | ${formatMoeda(p.valorNum)} | ${p.vencStr} | ${tipo}`;
+    });
+    box.textContent=`=== PARCELAS MENSAIS (${_parcelasTodas.length}) ===\n\n`+(linhas.length?linhas.join('\n'):'Nenhuma encontrada.');
+  }else if(aba==='entrada'){
+    box.textContent=`=== ENTRADA ===\n\nTotal: ${_entrada.total>0?formatMoeda(_entrada.total):'—'}\n% Preço: ${_entrada.pct||'—'}\nParcelas: ${_entrada.parcelas.length}\n\n`
+      +_entrada.parcelas.map((p,i)=>`  ${i+1}. ${formatMoeda(p.valor)} — ${p.venc}`).join('\n');
+  }else if(aba==='inter'){
+    if(!_intermediarias.length){box.textContent='=== INTERMEDIÁRIAS ===\n\nNenhuma encontrada.';return;}
+    let txt=`=== INTERMEDIÁRIAS (${_intermediarias.length} grupo(s)) ===\n\n`;
+    _intermediarias.forEach(g=>{
+      txt+=`Grupo ${g.grupo} — Total: ${g.total>0?formatMoeda(g.total):'—'}\n`;
+      g.parcelas.forEach((p,i)=>{txt+=`  ${i+1}. ${formatMoeda(p.valor)} — ${p.venc}\n`;});
+      txt+='\n';
+    });
+    box.textContent=txt;
+  }
+}
+
+function mostrarToast(msg,tipo='loading'){
+  const toast=document.getElementById('toastSheets');
+  document.getElementById('toastIcon').textContent=tipo==='loading'?'⏳':tipo==='ok'?'✅':'⚠️';
+  document.getElementById('toastMsg').textContent=msg;
+  toast.className='toast-sheets show'+(tipo==='erro'?' erro':'');
+  if(tipo!=='loading')setTimeout(()=>{toast.className='toast-sheets';},4000);
+}
+async function enviarParaSheets(dados){
+  mostrarToast('Salvando no Google Sheets...');
+  try{
+    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)});
+    mostrarToast('Dados salvos com sucesso!','ok');
+  }catch(err){mostrarToast('Falha ao salvar. Verifique a conexão.','erro');}
+}
+
+async function lerPDF(input){
+  const file=input.files[0];if(!file)return;
+  mostrarStatus('⏳ Lendo contrato PDF...','loading');
+  const timeout=setTimeout(()=>mostrarStatus('⏰ Tempo esgotado.','error'),30000);
+  try{
+    const buf=await file.arrayBuffer();
+    let pdf;
+    try{pdf=await pdfjsLib.getDocument({data:buf}).promise;}
+    catch(e){clearTimeout(timeout);mostrarStatus('🔒 PDF protegido ou inválido.','error');return;}
+    mostrarStatus('⏳ Extraindo texto ('+pdf.numPages+' páginas)...','loading');
+    let texto='';
+    for(let i=1;i<=pdf.numPages;i++){
+      try{const page=await pdf.getPage(i);const c=await page.getTextContent();texto+=c.items.map(it=>it.str).join(' ')+'\n';}
+      catch(pe){console.warn('Erro pág '+i,pe);}
+    }
+    clearTimeout(timeout);
+    if(texto.trim().length<100){mostrarStatus('⚠️ PDF parece ser imagem escaneada.','error');return;}
+    _textoDebug=texto;
+    extrairDados(texto);
+  }catch(e){clearTimeout(timeout);mostrarStatus('❌ Erro: '+e.message,'error');}
+}
+
+function extrairDados(texto){
+  try{
+    const nomeM=texto.match(/COMPRADOR\(A\):\s*([A-ZÁÉÍÓÚÃÕÂÊÎÔÛÇ][A-ZÁÉÍÓÚÃÕÂÊÎÔÛÇa-záéíóúãõâêîôûç\s]+?)(?=\s*Nacionalidade|\s*CPF)/i);
+    if(nomeM)setAuto('nomeCliente',nomeM[1].trim());
+    const cpfM=texto.match(/CPF[:\s]*([\d]{3}[\.\s]?[\d]{3}[\.\s]?[\d]{3}[\-\s]?[\d]{2})/);
+    if(cpfM)setAuto('cpf',cpfM[1].replace(/\s/g,''));
+    const contM=texto.match(/CONT[:\s]*([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
+    if(contM)setAuto('numContrato',contM[1]);
+    const prodM=texto.match(/Produto:\s*([^\n]+?)(?=CONT:|$)/is);
+    if(prodM){
+      const prod=prodM[1].trim().replace(/\s+/g,' ');
+      const blocoM=prod.match(/(.*?)\s*[-–]\s*(BLOCO\s*\d+.*)/i);
+      if(blocoM){setAuto('empreendimento',blocoM[1].trim());setAuto('modulo',blocoM[2].trim());}
+      else setAuto('empreendimento',prod);
+    }
+    const valM=texto.match(/PRE[ÇC]O\s*DO\s*IM[OÓ]VEL[^R]*R\$\s*([\d.,]+)/i);
+    if(valM)setAuto('valorImovel','R$ '+valM[1].trim());
+    const finM=texto.match(/4\.1\.4[^R]*R\$\s*([\d.,]+)/is)||texto.match(/valor\s*financiado[^R]*R\$\s*([\d.,]+)/i)||texto.match(/Financiamento\s*Habitacional[^R]*R\$\s*([\d.,]+)/i);
+    if(finM){setAuto('valorFinanciado','R$ '+finM[1].trim());calcularPctFinanciado();}
+    const saldoM=texto.match(/4\.1\.2[^R]*R\$\s*([\d.,]+)/is);
+    if(saldoM)setAuto('saldoCarteira','R$ '+saldoM[1].trim());
+    const nums=[...texto.matchAll(/\b(\d{1,3})\s+R\$\s+[\d.,]+\s+\d{2}\/\d{2}\/\d{4}/g)];
+    if(nums.length){const max=Math.max(...nums.map(m=>parseInt(m[1])));setAuto('qtdParcelas',max.toString());}
+    _obraPronta=/por se tratar de obra conclu[ií]da/i.test(texto);
+    extrairEntrada(texto);
+    extrairIntermediarias(texto);
+    const parcelas=extrairParcelas(texto);
+    _parcelasTodas=parcelas;
+    if(_obraPronta){
+      setAuto('dataEntrega','Obra já entregue');_dataEntregaISO=null;
+      calcularPsaPsb(parcelas,null,true);buscarPrimeiraParcela(parcelas);
+    }else{
+      const entM=texto.match(/Previs[aã]o\s*para\s*entrega\s*das\s*chaves[:\s]*(\d{2}\/\d{2}\/\d{4})/i);
+      if(entM){
+        setAuto('dataEntrega',entM[1]);
+        const[d,m,a]=entM[1].split('/').map(Number);
+        _dataEntregaISO=new Date(a,m-1,d);
+        calcularPsaPsb(parcelas,_dataEntregaISO,false);
+        buscarParcelaPosEntrega(parcelas,entM[1]);
+      }
+    }
+    renderizarPlano();
+    mostrarStatus('✅ Contrato lido! Preencha os campos manuais e calcule.','success');
+    if(document.getElementById('debugBox').classList.contains('show'))debugMostrar(_debugAba);
+  }catch(e){console.error(e);mostrarStatus('⚠️ Leitura parcial. Use o Debug PDF.','error');}
+}
+
+function extrairEntrada(texto){
+  _entrada={total:0,pct:'',parcelas:[]};
+  const blocoM=texto.match(/4\.1\.1[\s\S]*?(?=4\.1\.2)/i);if(!blocoM)return;
+  const bloco=blocoM[0];
+  const totalM=bloco.match(/R\$\s*([\d.,]+)/);if(totalM)_entrada.total=parseMoeda(totalM[1]);
+  const pctM=bloco.match(/(\d{1,3}[,.]?\d{0,4})\s*%/);if(pctM)_entrada.pct=pctM[1].replace('.',',')+' %';
+  const padroes=[
+    /(\d+)\s*\([^)]+\)\s*parcela[s]?\s*no\s*valor\s*de\s*R\$\s*([\d.,]+)[^0-9\/]*(\d{2}\/\d{2}\/\d{4})/gi,
+    /parcela[s]?\s*de\s*R\$\s*([\d.,]+)[^0-9\/]*(\d{2}\/\d{2}\/\d{4})/gi,
+    /R\$\s*([\d.,]+)\s+(\d{2}\/\d{2}\/\d{4})/g
+  ];
+  for(const reg of padroes){
+    let m;reg.lastIndex=0;
+    while((m=reg.exec(bloco))!==null){
+      const valor=parseMoeda(m[m.length-2]);const venc=m[m.length-1];
+      if(valor>0&&/\d{2}\/\d{2}\/\d{4}/.test(venc))_entrada.parcelas.push({valor,venc});
+    }
+    if(_entrada.parcelas.length>0)break;
+  }
+}
+
+function extrairIntermediarias(texto){
+  _intermediarias=[];
+  const blocoM=texto.match(/4\.1\.3[\s\S]*?(?=4\.1\.4)/i);if(!blocoM)return;
+  const bloco=blocoM[0];
+  const subgrupos=[...bloco.matchAll(/4\.1\.3\.(\d+)([\s\S]*?)(?=4\.1\.3\.\d|$)/gi)];
+  if(subgrupos.length>0){
+    for(const sg of subgrupos){
+      const totalM=sg[2].match(/R\$\s*([\d.,]+)/);
+      _intermediarias.push({grupo:parseInt(sg[1]),total:totalM?parseMoeda(totalM[1]):0,parcelas:extrairParcelasBloco(sg[2])});
+    }
+  }else{
+    const totalM=bloco.match(/R\$\s*([\d.,]+)/);
+    const total=totalM?parseMoeda(totalM[1]):0;
+    const parcelas=extrairParcelasBloco(bloco);
+    if(total>0||parcelas.length>0)_intermediarias.push({grupo:1,total,parcelas});
+  }
+}
+
+function extrairParcelasBloco(bloco){
+  const parcelas=[];
+  const padroes=[
+    /(\d+)\s*\([^)]+\)\s*parcela[s]?\s*no\s*valor\s*de\s*R\$\s*([\d.,]+)[^0-9\/]*(\d{2}\/\d{2}\/\d{4})/gi,
+    /parcela[s]?\s*de\s*R\$\s*([\d.,]+)[^0-9\/]*(\d{2}\/\d{2}\/\d{4})/gi,
+    /R\$\s*([\d.,]+)\s+(\d{2}\/\d{2}\/\d{4})/g
+  ];
+  for(const reg of padroes){
+    let m;reg.lastIndex=0;
+    while((m=reg.exec(bloco))!==null){
+      const valor=parseMoeda(m[m.length-2]);const venc=m[m.length-1];
+      if(valor>0&&/\d{2}\/\d{2}\/\d{4}/.test(venc))parcelas.push({valor,venc});
+    }
+    if(parcelas.length>0)break;
+  }
+  return parcelas;
+}
+
+function renderizarPlano(){
+  const wrap=document.getElementById('planoWrap');
+  const body=document.getElementById('planoBody');
+  const temEntrada=_entrada.total>0||_entrada.parcelas.length>0;
+  const temInter=_intermediarias.length>0;
+  if(!temEntrada&&!temInter){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  const valorImovel=parseMoeda(document.getElementById('valorImovel').value);
+  let html='';
+  if(temEntrada){
+    const totalStr=_entrada.total>0?formatMoeda(_entrada.total):'—';
+    let pctStr='';
+    if(_entrada.pct){
+      pctStr=`<span class="plano-badge-pct">${_entrada.pct}</span>`;
+    }else if(valorImovel>0&&_entrada.total>0){
+      const pctCalc=((_entrada.total/valorImovel)*100).toFixed(2).replace('.',',');
+      pctStr=`<span class="plano-badge-pct">${pctCalc} %</span>`;
+    }
+    html+=`<div class="plano-secao open" id="secaoEntrada">
+      <div class="plano-secao-titulo" onclick="toggleSecao('secaoEntrada')">
+        <span class="ps-esq">💰 Entrada</span>
+        <span class="ps-dir"><span class="plano-badge-total">${totalStr}</span>${pctStr}<span class="plano-chevron">▼</span></span>
+      </div>
+      <div class="plano-conteudo"><ul class="entrada-lista">`;
+    if(_entrada.parcelas.length>0){
+      _entrada.parcelas.forEach((p,i)=>{
+        const u=i===_entrada.parcelas.length-1;
+        html+=`<li><span class="el-num">${u?'└':'├'}</span><span class="el-val">${formatMoeda(p.valor)}</span><span class="el-venc">📅 ${p.venc}</span></li>`;
+      });
+    }else{
+      html+=`<li style="color:#999;font-style:italic;justify-content:center;">Parcelas da entrada não identificadas individualmente.</li>`;
+    }
+    html+=`</ul></div></div>`;
+  }
+  const totalInter=_intermediarias.reduce((s,g)=>s+g.total,0);
+  let pctInterStr='';
+  if(valorImovel>0&&totalInter>0){
+    const pctCalc=((totalInter/valorImovel)*100).toFixed(2).replace('.',',');
+    pctInterStr=`<span class="plano-badge-pct roxo">${pctCalc} %</span>`;
+  }
+  html+=`<div class="plano-secao open" id="secaoInter">
+    <div class="plano-secao-titulo" onclick="toggleSecao('secaoInter')">
+      <span class="ps-esq">🔀 Intermediárias</span>
+      <span class="ps-dir"><span class="plano-badge-total">${totalInter>0?formatMoeda(totalInter):'—'}</span>${pctInterStr}<span class="plano-chevron">▼</span></span>
+    </div>
+    <div class="plano-conteudo">`;
+  if(!temInter){
+    html+=`<p class="sem-intermediarias">ℹ️ Não há intermediárias neste contrato.</p>`;
+  }else{
+    _intermediarias.forEach(g=>{
+      let pctGrupoStr='';
+      if(valorImovel>0&&g.total>0){
+        const pctG=((g.total/valorImovel)*100).toFixed(2).replace('.',',');
+        pctGrupoStr=`<span style="font-size:11px;font-weight:700;color:#6B2D8B;background:#F3EDF7;padding:2px 7px;border-radius:4px;">${pctG} %</span>`;
+      }
+      html+=`<div class="grupo-wrap">
+        <div class="grupo-titulo">
+          <span>📦 Grupo ${g.grupo}</span>
+          <span class="gt-total">${pctGrupoStr}${g.total>0?formatMoeda(g.total):'—'}</span>
+        </div>`;
+      if(g.parcelas.length>0){
+        g.parcelas.forEach((p,i)=>{
+          const u=i===g.parcelas.length-1;
+          html+=`<div class="grupo-row"><span style="font-size:11px;color:#aaa;min-width:16px;">${u?'└':'├'}</span><span class="gr-val">${formatMoeda(p.valor)}</span><span class="gr-venc">📅 ${p.venc}</span></div>`;
+        });
+      }else{
+        html+=`<div style="font-size:12px;color:#999;font-style:italic;padding:4px 0;">Parcelas não identificadas individualmente.</div>`;
+      }
+      html+=`</div>`;
+    });
+  }
+  html+=`</div></div>`;
+  body.innerHTML=html;
+}
+
+function toggleSecao(id){const el=document.getElementById(id);if(el)el.classList.toggle('open');}
+
+function extrairParcelas(texto){
+  const regex=/\b(\d{1,3})\s+R\$\s+([\d.,]+)\s+(\d{2}\/\d{2}\/\d{4})/g;
+  const map=new Map();let match;
+  while((match=regex.exec(texto))!==null){
+    const[,num,valor,vencStr]=match;
+    const[vd,vm,va]=vencStr.split('/').map(Number);
+    const p={num:parseInt(num),valor,valorNum:parseMoeda(valor),vencStr,venc:new Date(va,vm-1,vd)};
+    if(!map.has(vencStr)||p.num<map.get(vencStr).num)map.set(vencStr,p);
+  }
+  return[...map.values()].sort((a,b)=>a.venc-b.venc);
+}
+
+function calcularPsaPsb(parcelas,dataEntrega,obraPronta){
+  _psaQtd=0;_psaSaldo=0;_psbQtd=0;_psbSaldo=0;_parcelasPSB=[];
+  if(obraPronta){
+    for(const p of parcelas){_psbQtd++;_psbSaldo+=p.valorNum;_parcelasPSB.push(p);}
+  }else{
+    const m=dataEntrega.getMonth(),a=dataEntrega.getFullYear();
+    const inicioPSB=new Date(m===11?a+1:a,(m+1)%12,1);
+    for(const p of parcelas){
+      if(p.venc<inicioPSB){_psaQtd++;_psaSaldo+=p.valorNum;}
+      else{_psbQtd++;_psbSaldo+=p.valorNum;_parcelasPSB.push(p);}
+    }
+  }
+  document.getElementById('psaQtd').textContent=_psaQtd>0?_psaQtd+' parcelas':'—';
+  document.getElementById('psaSaldo').textContent=_psaSaldo>0?formatMoeda(_psaSaldo):'—';
+  document.getElementById('psbQtd').textContent=_psbQtd>0?_psbQtd+' parcelas':'—';
+  document.getElementById('psbSaldo').textContent=_psbSaldo>0?formatMoeda(_psbSaldo):'—';
+  document.getElementById('psaPsbWrap').style.display='grid';
+}
+
+function buscarParcelaPosEntrega(parcelas,dataStr){
+  const[d,m,a]=dataStr.split('/').map(Number);
+  let mesBusca=m+1,anoBusca=a;
+  if(mesBusca>12){mesBusca=1;anoBusca++;}
+  const inicioBusca=new Date(anoBusca,mesBusca-1,1);
+  const encontrada=parcelas.find(p=>p.venc>=inicioBusca);
+  if(encontrada)setAuto('parcelaMRV','R$ '+encontrada.valor+' (Mensal '+encontrada.num+' — venc. '+encontrada.vencStr+')');
+}
+
+function buscarPrimeiraParcela(parcelas){
+  if(!parcelas.length)return;
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const futura=parcelas.find(p=>p.venc>=hoje);
+  const p=futura||parcelas[0];
+  setAuto('parcelaMRV','R$ '+p.valor+' (Mensal '+p.num+' — venc. '+p.vencStr+')');
+}
+
+function calcularPctFinanciado(){
+  const fin=parseMoeda(document.getElementById('valorFinanciado').value);
+  const imo=parseMoeda(document.getElementById('valorImovel').value);
+  if(!fin||!imo)return;
+  const pct=(fin/imo)*100;
+  const wrap=document.getElementById('financiadoWrap');
+  const badge=document.getElementById('financiadoBadge');
+  document.getElementById('pctFinanciadoDisplay').textContent=pct.toFixed(2).replace('.',',')+' %';
+  wrap.style.display='flex';
+  if(pct<75){wrap.className='financiado-wrap fin-verde';badge.className='financiado-badge ok';badge.textContent='✔ Desconto disponível';}
+  else if(pct<80){wrap.className='financiado-wrap fin-amarelo';badge.className='financiado-badge aviso';badge.textContent='⚠ Margem reduzida para desconto';}
+  else{wrap.className='financiado-wrap fin-vermelho';badge.className='financiado-badge nok';badge.textContent='✘ Limite atingido — sem desconto';}
+}
+
+function calcular(e){
+  e.preventDefault();
+  const caixa=parseMoeda(document.getElementById('parcelaCaixa').value);
+  const mrvStr=document.getElementById('parcelaMRV').value;
+  const renda=parseMoeda(document.getElementById('renda').value);
+  const mrvNum=mrvStr.match(/R\$\s*([\d.,]+)/);
+  const mrv=mrvNum?parseMoeda(mrvNum[1]):0;
+  if(!caixa||!mrv||!renda){alert('⚠️ Preencha todos os campos obrigatórios.');return;}
+  const total=caixa+mrv;
+  const pct=(total/renda)*100;
+  document.getElementById('res-caixa').textContent=formatMoeda(caixa);
+  document.getElementById('res-mrv').textContent=formatMoeda(mrv);
+  document.getElementById('res-total').textContent=formatMoeda(total);
+  document.getElementById('res-renda').textContent=formatMoeda(renda);
+  document.getElementById('res-pct').textContent=pct.toFixed(2).replace('.',',')+' %';
+  if(_psbQtd>0||_psaQtd>0){
+    document.getElementById('res-psa-saldo').textContent=_psaSaldo>0?formatMoeda(_psaSaldo):'—';
+    document.getElementById('res-psa-qtd').textContent=_psaQtd>0?_psaQtd+' parcelas':'—';
+    document.getElementById('res-psb-saldo').textContent=_psbSaldo>0?formatMoeda(_psbSaldo):'—';
+    document.getElementById('res-psb-qtd').textContent=_psbQtd>0?_psbQtd+' parcelas':'—';
+    document.getElementById('resPsaPsb').style.display='grid';
+  }
+  const bar=document.getElementById('progressBar');
+  const badge=document.getElementById('badgeResultado');
+  bar.style.width=Math.min(pct*2,100)+'%';
+  let statusTexto='';
+  if(pct<=35){badge.className='badge-resultado aprovado';badge.textContent='✔ APROVADO — '+pct.toFixed(2).replace('.',',')+' %';bar.className='progress-bar verde';statusTexto='APROVADO';}
+  else if(pct<=40){badge.className='badge-resultado atencao';badge.textContent='⚠ ATENÇÃO — '+pct.toFixed(2).replace('.',',')+' %';bar.className='progress-bar amarelo';statusTexto='ATENÇÃO';}
+  else{badge.className='badge-resultado reprovado';badge.textContent='✘ REPROVADO — '+pct.toFixed(2).replace('.',',')+' %';bar.className='progress-bar vermelho';statusTexto='REPROVADO';}
+  const fin=parseMoeda(document.getElementById('valorFinanciado').value);
+  const imo=parseMoeda(document.getElementById('valorImovel').value);
+  const pctFin=(fin&&imo)?(fin/imo)*100:null;
+  const ds=document.getElementById('descontoSection');
+  const dt=document.getElementById('descontoTitulo');
+  const dc=document.getElementById('descontoConteudo');
+  ds.style.display='block';
+  const mrvIdeal=(0.35*renda)-caixa;
+  const reducaoNecessaria=Math.max(0,mrv-mrvIdeal);
+  let descontoDisponivel=null;
+  if(pctFin!==null&&imo)descontoDisponivel=Math.max(0,((80-pctFin)/100)*imo);
+  let descontoEstimadoPSB=0;
+  if(reducaoNecessaria>0&&_parcelasPSB.length>0&&mrv>0){
+    const pctRed=reducaoNecessaria/mrv;
+    for(const p of _parcelasPSB)descontoEstimadoPSB+=p.valorNum*pctRed;
+  }
+  let descontoCobreNecessario='—';
+  if(pctFin!==null&&pctFin>=80){
+    ds.className='desconto-section bloqueado';
+    dt.innerHTML='🔒 Desconto bloqueado — limite de financiamento atingido (80%)';
+    descontoCobreNecessario='Bloqueado';
+    dc.innerHTML=`<div class="desconto-row"><span class="dr-label">% Financiado atual</span><span class="dr-val" style="color:#D32F2F">${pctFin.toFixed(2).replace('.',',')} %</span></div>
+      <div class="desconto-row"><span class="dr-label">Limite máximo</span><span class="dr-val" style="color:#888">80,00 %</span></div>
+      <div class="desconto-row"><span class="dr-label">Desconto disponível</span><span class="dr-val" style="color:#D32F2F">R$ 0,00</span></div>
+      <div class="projecao-aviso">🔒 O cliente atingiu o limite máximo de financiamento (80%). Para viabilizar desconto, o cliente precisaria aumentar o valor de entrada.</div>`;
+  }else if(pct<=35){
+    ds.className='desconto-section ok';
+    dt.innerHTML='✔ Cliente enquadrado — desconto não necessário';
+    descontoCobreNecessario='Não necessário';
+    const html=`<div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} %</span></div>
+      <div class="desconto-row"><span class="dr-label">% Financiado</span><span class="dr-val" style="color:var(--verde)">${pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—'}</span></div>
+      ${descontoDisponivel>0?`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(descontoDisponivel)}</span></div>`:''}`;
+    dc.innerHTML=html;
+  }else{
+    ds.className='desconto-section nok';
+    dt.innerHTML='⚠️ Desconto necessário para enquadramento';
+    let html=`<div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--vermelho)">${pct.toFixed(2).replace('.',',')} %</span></div>
+      <div class="desconto-row"><span class="dr-label">Meta de comprometimento</span><span class="dr-val" style="color:var(--verde)">35,00 %</span></div>
+      <div class="desconto-row"><span class="dr-label">Parcela MRV atual</span><span class="dr-val" style="color:var(--vermelho)">${formatMoeda(mrv)}</span></div>
+      <div class="desconto-row"><span class="dr-label">Parcela MRV ideal (para 35%)</span><span class="dr-val" style="color:var(--verde)">${mrvIdeal>0?formatMoeda(mrvIdeal):'Inviável — parcela Caixa já excede 35%'}</span></div>`;
+    if(mrvIdeal>0&&_parcelasPSB.length>0){
+      html+=`<div class="desconto-row"><span class="dr-label">Redução necessária por parcela</span><span class="dr-val" style="color:var(--laranja)">${formatMoeda(reducaoNecessaria)}</span></div>
+        <div class="desconto-row"><span class="dr-label">Parcelas PSB</span><span class="dr-val" style="color:var(--roxo)">${_psbQtd} parcelas</span></div>
+        <div class="desconto-row"><span class="dr-label">💡 Desconto estimado no PSB</span><span class="dr-val" style="color:var(--laranja);font-size:18px;">${formatMoeda(descontoEstimadoPSB)}</span></div>`;
+      if(descontoDisponivel!==null){
+        const coberto=descontoEstimadoPSB<=descontoDisponivel;
+        descontoCobreNecessario=coberto?'Sim':'Não';
+        html+=`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${formatMoeda(descontoDisponivel)}</span></div>
+          <div class="desconto-row"><span class="dr-label">Desconto cobre o necessário?</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${coberto?'✔ Sim':'✘ Não'}</span></div>`;
+      }
+    }
+    html+=`<div class="projecao-aviso">📌 <strong>Projeção estimada.</strong> A redução por parcela é calculada proporcionalmente. Contratos com curva de queda terão redução proporcional em cada parcela individualmente. Solicite simulação exata ao financeiro MRV para confirmação.</div>`;
+    dc.innerHTML=html;
+  }
+  document.getElementById('resultado').className='resultado show';
+  document.getElementById('resultado').scrollIntoView({behavior:'smooth'});
+  const pctFinStr=pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—';
+  enviarParaSheets({
+    dataHora:new Date().toLocaleString('pt-BR'),
+    nomeCliente:document.getElementById('nomeCliente').value||'—',
+    cpf:document.getElementById('cpf').value||'—',
+    gerenteResponsavel:document.getElementById('gerente').value||'—',
+    numeroContrato:document.getElementById('numContrato').value||'—',
+    empreendimento:document.getElementById('empreendimento').value||'—',
+    blocoModulo:document.getElementById('modulo').value||'—',
+    valorImovel:document.getElementById('valorImovel').value||'—',
+    dataEntregaPrevista:document.getElementById('dataEntrega').value||'—',
+    valorAvaliacao:document.getElementById('valorAvaliacao').value||'—',
+    tetoFaixa:document.getElementById('tetoFaixa').value||'—',
+    valorFinanciado:document.getElementById('valorFinanciado').value||'—',
+    percentualFinanciado:pctFinStr,
+    saldoCarteiraMRV:document.getElementById('saldoCarteira').value||'—',
+    parcelaMRV:formatMoeda(mrv),
+    qtdParcelasMRV:document.getElementById('qtdParcelas').value||'—',
+    parcelaCaixa:formatMoeda(caixa),
+    rendaCliente:formatMoeda(renda),
+    psaQtdParcelas:_psaQtd,
+    psaSaldoTotal:_psaSaldo>0?formatMoeda(_psaSaldo):'—',
+    psbQtdParcelas:_psbQtd,
+    psbSaldoTotal:_psbSaldo>0?formatMoeda(_psbSaldo):'—',
+    totalParcelas:formatMoeda(total),
+    comprometimentoPercent:pct.toFixed(2).replace('.',',')+' %',
+    status:statusTexto,
+    descontoEstimadoPSB:descontoEstimadoPSB>0?formatMoeda(descontoEstimadoPSB):'—',
+    descontoDisponivel:descontoDisponivel!==null?formatMoeda(descontoDisponivel):'—',
+    descontoCobreNecessario,
+    obraEntregue:_obraPronta?'Sim':'Não'
+  });
+}
+
+function salvarHistorico(){
+  const h=JSON.parse(localStorage.getItem('mrv_hist')||'[]');
+  const pct=parseFloat(document.getElementById('res-pct').textContent.replace(',','.').replace('%','').trim());
+  const fin=parseMoeda(document.getElementById('valorFinanciado').value);
+  const imo=parseMoeda(document.getElementById('valorImovel').value);
+  const pctFin=(fin&&imo)?((fin/imo)*100).toFixed(2).replace('.',',')+'%':'—';
+  h.unshift({
+    data:new Date().toLocaleString('pt-BR'),
+    cliente:document.getElementById('nomeCliente').value,
+    emp:document.getElementById('empreendimento').value,
+    gerente:document.getElementById('gerente').value,
+    caixa:document.getElementById('parcelaCaixa').value,
+    mrv:document.getElementById('parcelaMRV').value,
+    renda:document.getElementById('renda').value,
+    pct:document.getElementById('res-pct').textContent,
+    pctFin,
+    psa:_psaSaldo>0?formatMoeda(_psaSaldo)+' ('+_psaQtd+'p)':'—',
+    psb:_psbSaldo>0?formatMoeda(_psbSaldo)+' ('+_psbQtd+'p)':'—',
+    status:pct<=35?'APROVADO':pct<=40?'ATENÇÃO':'REPROVADO'
+  });
+  localStorage.setItem('mrv_hist',JSON.stringify(h.slice(0,50)));
+  renderHistorico();
+  alert('✅ Salvo no histórico local!');
+}
+
+function renderHistorico(){
+  const h=JSON.parse(localStorage.getItem('mrv_hist')||'[]');
+  if(!h.length)return;
+  document.getElementById('historicoCard').style.display='block';
+  document.getElementById('corpoHistorico').innerHTML=h.map(r=>{
+    const c=r.status==='APROVADO'?'a':r.status==='ATENÇÃO'?'t':'r';
+    return`<tr><td>${r.data}</td><td>${r.cliente}</td><td>${r.emp}</td><td>${r.gerente}</td><td>${r.caixa}</td><td>${r.mrv}</td><td>${r.renda}</td><td><strong>${r.pct}</strong></td><td>${r.pctFin||'—'}</td><td>${r.psa||'—'}</td><td>${r.psb||'—'}</td><td><span class="badge-sm ${c}">${r.status}</span></td></tr>`;
+  }).join('');
+}
+
+function exportarCSV(){
+  const h=JSON.parse(localStorage.getItem('mrv_hist')||'[]');
+  if(!h.length){alert('Nenhum registro.');return;}
+  const cab='Data,Cliente,Empreendimento,Gerente,P.Caixa,P.MRV,Renda,Comprometimento,% Financiado,PSA,PSB,Status\n';
+  const rows=h.map(r=>`"${r.data}","${r.cliente}","${r.emp}","${r.gerente}","${r.caixa}","${r.mrv}","${r.renda}","${r.pct}","${r.pctFin||''}","${r.psa||''}","${r.psb||''}","${r.status}"`).join('\n');
+  const blob=new Blob(['\uFEFF'+cab+rows],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='mrv_historico_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+}
+
+function copiarResultado(){
+  const txt=`ANÁLISE MRV — ${new Date().toLocaleString('pt-BR')}
+Cliente: ${document.getElementById('nomeCliente').value}
+CPF: ${document.getElementById('cpf').value}
+Empreendimento: ${document.getElementById('empreendimento').value}
+Gerente: ${document.getElementById('gerente').value}
+─────────────────────────────
+Parcela Caixa: ${document.getElementById('res-caixa').textContent}
+Parcela MRV pós-entrega: ${document.getElementById('res-mrv').textContent}
+Total: ${document.getElementById('res-total').textContent}
+Renda: ${document.getElementById('res-renda').textContent}
+─────────────────────────────
+PSA: ${document.getElementById('res-psa-saldo').textContent} (${document.getElementById('res-psa-qtd').textContent})
+PSB: ${document.getElementById('res-psb-saldo').textContent} (${document.getElementById('res-psb-qtd').textContent})
+─────────────────────────────
+Comprometimento: ${document.getElementById('res-pct').textContent}
+Status: ${document.getElementById('badgeResultado').textContent}
+* Projeções são estimativas. Solicite simulação ao financeiro MRV.`;
+  navigator.clipboard.writeText(txt).then(()=>alert('✅ Copiado!'));
+}
+
+function setAuto(id,val){const el=document.getElementById(id);if(el){el.value=val;el.classList.add('auto-filled');}}
+function mostrarStatus(msg,tipo){
+  const bar=document.getElementById('statusBar');
+  bar.className='status-bar show'+(tipo==='success'?' success':tipo==='error'?' error':'');
+  document.getElementById('statusMsg').textContent=msg;
+  document.getElementById('spinner').style.display=tipo==='loading'?'block':'none';
+}
+function mascaraMoeda(el){
+  let v=el.value.replace(/\D/g,'');if(!v){el.value='';return;}
+  v=(parseInt(v)/100).toFixed(2);
+  el.value='R$ '+v.replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
+function parseMoeda(str){
+  if(!str)return 0;const m=str.match(/([\d.]+,[\d]{2})/);
+  if(!m)return 0;return parseFloat(m[1].replace(/\./g,'').replace(',','.'))||0;
+}
+function formatMoeda(v){return'R$ '+v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function limpar(){
+  document.getElementById('formCalc').reset();
+  document.querySelectorAll('input').forEach(el=>el.classList.remove('auto-filled'));
+  document.getElementById('resultado').className='resultado';
+  document.getElementById('statusBar').className='status-bar';
+  document.getElementById('pdfInput').value='';
+  document.getElementById('financiadoWrap').style.display='none';
+  document.getElementById('psaPsbWrap').style.display='none';
+  document.getElementById('resPsaPsb').style.display='none';
+  document.getElementById('descontoSection').style.display='none';
+  document.getElementById('planoWrap').style.display='none';
+  document.getElementById('planoBody').innerHTML='';
+  fecharDebug();
+  _textoDebug='';_psaQtd=0;_psaSaldo=0;_psbQtd=0;_psbSaldo=0;
+  _parcelasPSB=[];_parcelasTodas=[];_dataEntregaISO=null;_obraPronta=false;
+  _entrada={total:0,pct:'',parcelas:[]};_intermediarias=[];
+}
+window.onload=renderHistorico;
+</script>
+</body>
+</html>
