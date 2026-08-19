@@ -32,9 +32,7 @@ header{
   display:flex;align-items:center;flex-shrink:0;height:50px;
 }
 .logo-img{height:36px;width:auto;display:block;}
-.logo-fallback{
-  display:none;font-family:'Arial Black',Arial;font-weight:900;font-size:20px;letter-spacing:-0.5px;
-}
+.logo-fallback{display:none;font-family:'Arial Black',Arial;font-weight:900;font-size:20px;letter-spacing:-0.5px;}
 .logo-fallback .mrv{color:#006b3f;}
 .logo-fallback .eco{color:#E87722;}
 .header-div{width:2px;height:38px;background:rgba(255,255,255,0.25);border-radius:2px;flex-shrink:0;}
@@ -70,15 +68,8 @@ header{
   border-radius:50%;animation:spin .8s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg);}}
-.card{
-  background:#fff;border-radius:14px;padding:20px 18px;
-  margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.07);
-}
-.card-title{
-  font-size:15px;font-weight:700;margin-bottom:16px;
-  padding-bottom:10px;border-bottom:2px solid var(--cinza);
-  display:flex;align-items:center;gap:8px;
-}
+.card{background:#fff;border-radius:14px;padding:20px 18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.07);}
+.card-title{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--cinza);display:flex;align-items:center;gap:8px;}
 .card-title.verde{color:var(--verde);}
 .card-title.laranja{color:var(--laranja);}
 .card-title.roxo{color:var(--roxo);}
@@ -89,11 +80,7 @@ label{font-size:12px;font-weight:700;color:#555;display:flex;align-items:center;
 .tag{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;}
 .tag.auto{background:var(--verde-claro);color:var(--verde);}
 .tag.manual{background:var(--laranja-claro);color:var(--laranja);}
-input[type=text]{
-  padding:11px 13px;border:1.5px solid var(--cinza-borda);
-  border-radius:8px;font-size:14px;transition:border .2s;
-  width:100%;background:#fff;color:var(--texto);
-}
+input[type=text]{padding:11px 13px;border:1.5px solid var(--cinza-borda);border-radius:8px;font-size:14px;transition:border .2s;width:100%;background:#fff;color:var(--texto);}
 input[type=text]:focus{outline:none;border-color:var(--verde);}
 input.auto-filled{background:var(--verde-claro);border-color:var(--verde);color:#1a5c2a;}
 input.manual-field{background:var(--laranja-claro);border-color:var(--laranja);}
@@ -111,10 +98,7 @@ input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
 .psa-psb-val{font-size:14px;font-weight:700;}
 .psa-box .psa-psb-val{color:var(--roxo);}
 .psb-box .psa-psb-val{color:var(--verde);}
-.financiado-wrap{
-  grid-column:1/-1;border-radius:10px;padding:14px 16px;display:none;
-  align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border:2px solid;
-}
+.financiado-wrap{grid-column:1/-1;border-radius:10px;padding:14px 16px;display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border:2px solid;}
 .financiado-wrap.fin-verde{background:var(--verde-claro);border-color:var(--verde);}
 .financiado-wrap.fin-amarelo{background:var(--amarelo-claro);border-color:var(--amarelo);}
 .financiado-wrap.fin-vermelho{background:var(--vermelho-claro);border-color:var(--vermelho);}
@@ -127,23 +111,17 @@ input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
 .financiado-badge.ok{background:var(--verde);color:#fff;}
 .financiado-badge.aviso{background:var(--amarelo);color:#fff;}
 .financiado-badge.nok{background:var(--vermelho);color:#fff;}
-.plano-wrap{
-  grid-column:1/-1;display:none;border-radius:12px;overflow:hidden;
-  border:1.5px solid var(--cinza-borda);margin-top:4px;
-}
+.plano-wrap{grid-column:1/-1;display:none;border-radius:12px;overflow:hidden;border:1.5px solid var(--cinza-borda);margin-top:4px;}
 .plano-header{background:var(--azul);color:#fff;padding:11px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;}
 .plano-secao{border-bottom:1px solid var(--cinza-borda);}
 .plano-secao:last-child{border-bottom:none;}
-.plano-secao-titulo{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:11px 16px;background:#FAFAFA;font-size:13px;font-weight:700;
-  cursor:pointer;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--cinza-borda);transition:background .2s;
-}
+.plano-secao-titulo{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#FAFAFA;font-size:13px;font-weight:700;cursor:pointer;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--cinza-borda);transition:background .2s;}
 .plano-secao-titulo:hover{background:#F0F2F5;}
 .plano-secao-titulo .ps-esq{display:flex;align-items:center;gap:8px;}
 .plano-secao-titulo .ps-dir{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 .plano-badge-total{font-size:13px;font-weight:800;color:var(--azul);}
 .plano-badge-pct{font-size:11px;padding:2px 8px;border-radius:4px;background:var(--azul);color:#fff;font-weight:700;}
+.plano-badge-pct.roxo{background:var(--roxo);}
 .plano-chevron{font-size:11px;color:#aaa;transition:transform .25s;}
 .plano-secao.open .plano-chevron{transform:rotate(180deg);}
 .plano-conteudo{display:none;padding:12px 16px;}
@@ -157,31 +135,17 @@ input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
 .grupo-wrap{margin-bottom:10px;}
 .grupo-wrap:last-child{margin-bottom:0;}
 .grupo-titulo{font-size:12px;font-weight:700;color:var(--roxo);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;}
-.grupo-titulo .gt-total{font-size:13px;color:var(--roxo);}
+.grupo-titulo .gt-total{font-size:13px;color:var(--roxo);display:flex;align-items:center;gap:8px;}
 .grupo-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F0F2F5;font-size:13px;flex-wrap:wrap;gap:4px;}
 .grupo-row:last-child{border-bottom:none;}
 .grupo-row .gr-val{font-weight:700;color:var(--azul);}
 .grupo-row .gr-venc{font-size:12px;color:#777;background:#F0F2F5;padding:2px 8px;border-radius:4px;}
 .sem-intermediarias{font-size:13px;color:#999;font-style:italic;padding:8px 0;text-align:center;}
-/* DEBUG */
-.debug-toolbar{
-  grid-column:1/-1;display:none;align-items:center;gap:8px;flex-wrap:wrap;
-  background:#1a1a2e;border-radius:10px 10px 0 0;padding:10px 14px;
-  border:2px solid #00ff88;border-bottom:none;margin-top:8px;
-}
+.debug-toolbar{grid-column:1/-1;display:none;align-items:center;gap:8px;flex-wrap:wrap;background:#1a1a2e;border-radius:10px 10px 0 0;padding:10px 14px;border:2px solid #00ff88;border-bottom:none;margin-top:8px;}
 .debug-toolbar.show{display:flex;}
-.debug-box{
-  grid-column:1/-1;background:#1a1a2e;color:#00ff88;
-  border-radius:0 0 10px 10px;padding:14px 16px;font-size:11px;
-  font-family:'Courier New',monospace;max-height:280px;overflow-y:auto;
-  white-space:pre-wrap;word-break:break-all;border:2px solid #00ff88;border-top:none;display:none;
-}
+.debug-box{grid-column:1/-1;background:#1a1a2e;color:#00ff88;border-radius:0 0 10px 10px;padding:14px 16px;font-size:11px;font-family:'Courier New',monospace;max-height:280px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;border:2px solid #00ff88;border-top:none;display:none;}
 .debug-box.show{display:block;}
-.debug-btn{
-  padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;
-  cursor:pointer;border:1px solid #00ff88;background:transparent;
-  color:#00ff88;transition:.2s;font-family:'Courier New',monospace;
-}
+.debug-btn{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #00ff88;background:transparent;color:#00ff88;transition:.2s;font-family:'Courier New',monospace;}
 .debug-btn:hover,.debug-btn.active{background:#00ff88;color:#1a1a2e;}
 .debug-btn.fechar{border-color:#ff4444;color:#ff4444;margin-left:auto;}
 .debug-btn.fechar:hover{background:#ff4444;color:#fff;}
@@ -241,12 +205,7 @@ input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
 .desconto-row .dr-label{color:#555;font-weight:500;}
 .desconto-row .dr-val{font-weight:800;font-size:15px;}
 .projecao-aviso{margin-top:14px;padding:11px 14px;background:rgba(0,0,0,0.06);border-radius:8px;font-size:12px;color:#555;line-height:1.6;border-left:3px solid var(--amarelo);}
-.toast-sheets{
-  position:fixed;bottom:24px;right:24px;z-index:9999;background:#fff;border-radius:12px;
-  padding:14px 18px;box-shadow:0 4px 20px rgba(0,0,0,0.18);display:flex;align-items:center;
-  gap:10px;font-size:13px;font-weight:600;transform:translateY(80px);opacity:0;
-  transition:all .4s cubic-bezier(.34,1.56,.64,1);border-left:4px solid var(--verde);max-width:320px;
-}
+.toast-sheets{position:fixed;bottom:24px;right:24px;z-index:9999;background:#fff;border-radius:12px;padding:14px 18px;box-shadow:0 4px 20px rgba(0,0,0,0.18);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;transform:translateY(80px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);border-left:4px solid var(--verde);max-width:320px;}
 .toast-sheets.show{transform:translateY(0);opacity:1;}
 .toast-sheets.erro{border-color:var(--vermelho);}
 .toast-sheets .toast-icon{font-size:20px;flex-shrink:0;}
@@ -279,69 +238,32 @@ tr:hover td{background:#F8F9FA;}
 }
 @media(max-width:380px){.res-grid{grid-template-columns:1fr;}}
 @media print{
-  /* ── Oculta apenas o que não faz sentido imprimir ── */
   .upload-card,.status-bar,.botoes,.historico-card,
   .debug-toolbar,.debug-box,.toast-sheets,#pdfInput{display:none!important;}
-
-  /* ── Força cores exatas ── */
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;}
-
-  /* ── Página A4 ── */
   @page{size:A4 portrait;margin:12mm 10mm 12mm 10mm;}
-
   html,body{background:#ECEEF2!important;font-size:13px;width:100%;}
-
-  /* ── Header ── */
-  header{
-    position:relative!important;display:flex!important;
-    background:#006b3f!important;height:60px!important;
-    padding:0 20px!important;border-radius:10px!important;
-    margin-bottom:14px!important;box-shadow:0 2px 8px rgba(0,0,0,0.3)!important;
-    align-items:center!important;gap:16px!important;
-  }
-  .logo-container{
-    display:flex!important;background:#fff!important;border-radius:7px!important;
-    padding:5px 12px!important;height:44px!important;align-items:center!important;
-  }
+  header{position:relative!important;display:flex!important;background:#006b3f!important;height:60px!important;padding:0 20px!important;border-radius:10px!important;margin-bottom:14px!important;box-shadow:0 2px 8px rgba(0,0,0,0.3)!important;align-items:center!important;gap:16px!important;}
+  .logo-container{display:flex!important;background:#fff!important;border-radius:7px!important;padding:5px 12px!important;height:44px!important;align-items:center!important;}
   .logo-img{height:30px!important;width:auto!important;display:block!important;}
   .logo-fallback{display:none!important;}
   .header-div{display:block!important;width:2px!important;height:34px!important;background:rgba(255,255,255,0.3)!important;border-radius:2px!important;}
   .header-text h1{color:#fff!important;font-size:13px!important;font-weight:700!important;}
   .header-text p{color:rgba(255,255,255,0.75)!important;font-size:10px!important;display:block!important;}
-
-  /* ── Container ── */
   .container{max-width:100%!important;margin:0!important;padding:0!important;}
-
-  /* ── Cards ── */
-  .card{
-    background:#fff!important;border-radius:12px!important;padding:14px!important;
-    margin-bottom:10px!important;box-shadow:0 2px 8px rgba(0,0,0,0.08)!important;
-    break-inside:avoid!important;
-  }
+  .card{background:#fff!important;border-radius:12px!important;padding:14px!important;margin-bottom:10px!important;box-shadow:0 2px 8px rgba(0,0,0,0.08)!important;break-inside:avoid!important;}
   .card-title{font-size:13px!important;font-weight:700!important;padding-bottom:8px!important;margin-bottom:10px!important;border-bottom:2px solid #F5F5F5!important;display:flex!important;align-items:center!important;gap:6px!important;}
   .card-title.verde{color:#006b3f!important;}
   .card-title.laranja{color:#E87722!important;}
   .card-title.roxo{color:#6B2D8B!important;}
-
-  /* ── Grid ── */
   .grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;}
-
-  /* ── Labels e Tags ── */
   label{font-size:11px!important;font-weight:700!important;color:#555!important;display:flex!important;align-items:center!important;gap:4px!important;}
   .tag{font-size:9px!important;padding:1px 6px!important;border-radius:4px!important;font-weight:700!important;}
   .tag.auto{background:#E6F4ED!important;color:#006b3f!important;}
   .tag.manual{background:#FEF3E8!important;color:#E87722!important;}
-
-  /* ── Inputs ── */
-  input[type=text]{
-    padding:8px 10px!important;border:1.5px solid #E0E0E0!important;
-    border-radius:7px!important;font-size:12px!important;
-    width:100%!important;background:#fff!important;color:#333!important;display:block!important;
-  }
+  input[type=text]{padding:8px 10px!important;border:1.5px solid #E0E0E0!important;border-radius:7px!important;font-size:12px!important;width:100%!important;background:#fff!important;color:#333!important;display:block!important;}
   input.auto-filled{background:#E6F4ED!important;border-color:#006b3f!important;color:#1a5c2a!important;}
   input.manual-field{background:#FEF3E8!important;border-color:#E87722!important;color:#333!important;}
-
-  /* ── PSA / PSB ── */
   .psa-psb-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;grid-column:1/-1!important;}
   .psa-box{background:#F3EDF7!important;border:1.5px solid #6B2D8B!important;border-radius:10px!important;padding:12px 14px!important;}
   .psb-box{background:#E6F4ED!important;border:1.5px solid #006b3f!important;border-radius:10px!important;padding:12px 14px!important;}
@@ -353,8 +275,6 @@ tr:hover td{background:#F8F9FA;}
   .psa-psb-val{font-size:13px!important;font-weight:700!important;}
   .psa-box .psa-psb-val{color:#6B2D8B!important;}
   .psb-box .psa-psb-val{color:#006b3f!important;}
-
-  /* ── % Financiado ── */
   .financiado-wrap{display:flex!important;grid-column:1/-1!important;border-radius:10px!important;padding:12px 14px!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;border:2px solid!important;}
   .financiado-wrap.fin-verde{background:#E6F4ED!important;border-color:#006b3f!important;}
   .financiado-wrap.fin-amarelo{background:#FFFDE7!important;border-color:#F9A825!important;}
@@ -368,8 +288,6 @@ tr:hover td{background:#F8F9FA;}
   .financiado-badge.ok{background:#006b3f!important;color:#fff!important;}
   .financiado-badge.aviso{background:#F9A825!important;color:#fff!important;}
   .financiado-badge.nok{background:#D32F2F!important;color:#fff!important;}
-
-  /* ── Plano de Pagamento ── */
   .plano-wrap{display:block!important;grid-column:1/-1!important;border-radius:10px!important;overflow:hidden!important;border:1.5px solid #E0E0E0!important;margin-top:4px!important;break-inside:avoid!important;}
   .plano-header{background:#003366!important;color:#fff!important;padding:9px 14px!important;font-size:12px!important;font-weight:700!important;display:flex!important;align-items:center!important;gap:6px!important;}
   .plano-secao{border-bottom:1px solid #E0E0E0!important;}
@@ -379,6 +297,7 @@ tr:hover td{background:#F8F9FA;}
   .plano-conteudo{display:block!important;padding:10px 14px!important;}
   .plano-badge-total{font-size:12px!important;font-weight:800!important;color:#003366!important;}
   .plano-badge-pct{font-size:10px!important;padding:2px 7px!important;border-radius:4px!important;font-weight:700!important;background:#003366!important;color:#fff!important;}
+  .plano-badge-pct.roxo{background:#6B2D8B!important;}
   .entrada-lista{list-style:none!important;padding:0!important;margin:0!important;}
   .entrada-lista li{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:5px 0!important;border-bottom:1px solid #F0F2F5!important;font-size:12px!important;}
   .entrada-lista li:last-child{border-bottom:none!important;}
@@ -387,13 +306,11 @@ tr:hover td{background:#F8F9FA;}
   .el-venc{font-size:11px!important;color:#777!important;background:#F0F2F5!important;padding:2px 7px!important;border-radius:4px!important;}
   .grupo-wrap{margin-bottom:8px!important;}
   .grupo-titulo{font-size:11px!important;font-weight:700!important;color:#6B2D8B!important;margin-bottom:5px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;}
-  .grupo-titulo .gt-total{font-size:12px!important;color:#6B2D8B!important;}
+  .grupo-titulo .gt-total{font-size:12px!important;color:#6B2D8B!important;display:flex!important;align-items:center!important;gap:6px!important;}
   .grupo-row{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:5px 0!important;border-bottom:1px solid #F0F2F5!important;font-size:12px!important;}
   .grupo-row:last-child{border-bottom:none!important;}
   .gr-val{font-weight:700!important;color:#003366!important;}
   .gr-venc{font-size:11px!important;color:#777!important;background:#F0F2F5!important;padding:2px 7px!important;border-radius:4px!important;}
-
-  /* ── Resultado ── */
   .resultado{display:block!important;background:#fff!important;border-radius:12px!important;padding:18px 14px!important;box-shadow:0 2px 8px rgba(0,0,0,0.08)!important;break-inside:avoid!important;}
   .resultado-title{font-size:14px!important;font-weight:800!important;color:#006b3f!important;text-align:center!important;margin-bottom:14px!important;padding-bottom:10px!important;border-bottom:2px solid #F5F5F5!important;}
   .res-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;margin-bottom:12px!important;}
@@ -402,8 +319,6 @@ tr:hover td{background:#F8F9FA;}
   .res-item .val{font-size:16px!important;font-weight:800!important;color:#003366!important;}
   .res-item.destaque{background:#E6F4ED!important;}
   .res-item.destaque .val{color:#006b3f!important;}
-
-  /* ── PSA/PSB resultado ── */
   .psa-psb-resultado{display:grid!important;grid-template-columns:1fr 1fr!important;gap:9px!important;margin-bottom:12px!important;}
   .psa-res{background:#F3EDF7!important;border-radius:9px!important;padding:12px!important;text-align:center!important;}
   .psb-res{background:#E6F4ED!important;border-radius:9px!important;padding:12px!important;text-align:center!important;}
@@ -412,27 +327,19 @@ tr:hover td{background:#F8F9FA;}
   .psa-res .pr-val{font-size:15px!important;font-weight:800!important;color:#6B2D8B!important;}
   .psb-res .pr-val{font-size:15px!important;font-weight:800!important;color:#006b3f!important;}
   .psa-res .pr-sub,.psb-res .pr-sub{font-size:10px!important;color:#888!important;margin-top:2px!important;}
-
-  /* ── Comprometimento ── */
   .comprom-box{background:#F5F5F5!important;border-radius:9px!important;padding:14px!important;text-align:center!important;margin-bottom:11px!important;}
   .comprom-box label{font-size:12px!important;color:#777!important;display:block!important;margin-bottom:3px!important;}
   .comprom-box .val-grande{font-size:32px!important;font-weight:900!important;color:#003366!important;}
-
-  /* ── Barra de progresso ── */
   .progress-wrap{background:#e0e0e0!important;border-radius:20px!important;height:12px!important;overflow:hidden!important;margin-bottom:5px!important;}
   .progress-bar{height:100%!important;border-radius:20px!important;}
   .progress-bar.verde{background:#006b3f!important;}
   .progress-bar.amarelo{background:#F9A825!important;}
   .progress-bar.vermelho{background:#D32F2F!important;}
   .progress-labels{display:flex!important;justify-content:space-between!important;font-size:10px!important;color:#aaa!important;margin-bottom:12px!important;}
-
-  /* ── Badge resultado ── */
   .badge-resultado{text-align:center!important;padding:13px!important;border-radius:10px!important;font-size:17px!important;font-weight:800!important;margin-bottom:14px!important;}
   .badge-resultado.aprovado{background:#E6F4ED!important;color:#006b3f!important;}
   .badge-resultado.atencao{background:#FFFDE7!important;color:#E65100!important;}
   .badge-resultado.reprovado{background:#FDECEA!important;color:#D32F2F!important;}
-
-  /* ── Desconto ── */
   .desconto-section{border-radius:10px!important;padding:14px!important;margin-bottom:0!important;border:2px solid!important;break-inside:avoid!important;}
   .desconto-section.ok{background:#E6F4ED!important;border-color:#006b3f!important;}
   .desconto-section.nok{background:#FDECEA!important;border-color:#D32F2F!important;}
@@ -446,8 +353,193 @@ tr:hover td{background:#F8F9FA;}
   .desconto-row .dr-label{color:#555!important;font-weight:500!important;}
   .desconto-row .dr-val{font-weight:800!important;font-size:13px!important;}
   .projecao-aviso{margin-top:12px!important;padding:9px 12px!important;background:rgba(0,0,0,0.05)!important;border-radius:7px!important;font-size:11px!important;color:#555!important;line-height:1.5!important;border-left:3px solid #F9A825!important;}
-} 
-  const SHEETS_URL='https://script.google.com/macros/s/AKfycbyIkN0UQnB3XBqTJgH57OQe2LbeGVqU1Y9qP5lNvI5bnCl1VZw91otCy3pRlgY0Nahc-A/exec';
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-container">
+    <img class="logo-img" id="logoImg"
+         src="https://raw.githubusercontent.com/misaelguedes-git/calculadoraMRV/28c91fb6679626b4096a672dbd9fd8f3fd8a5733/assets/LogoMRV.png"
+         alt="MRV&CO"
+         onerror="this.style.display='none';document.getElementById('logoFallback').style.display='inline';">
+    <span class="logo-fallback" id="logoFallback">
+      <span class="mrv">MRV</span><span class="eco">&amp;CO</span>
+    </span>
+  </div>
+  <div class="header-div"></div>
+  <div class="header-text">
+    <h1>Calculadora de Comprometimento de Renda — MRV</h1>
+    <p>Upload do contrato para preenchimento automático</p>
+  </div>
+</header>
+
+<div class="toast-sheets" id="toastSheets">
+  <span class="toast-icon" id="toastIcon">⏳</span>
+  <span id="toastMsg">Salvando...</span>
+</div>
+
+<div class="container">
+
+  <div class="upload-card" onclick="document.getElementById('pdfInput').click()">
+    <div class="upload-icon">📄</div>
+    <h2>Carregue aqui o Contrato MRV</h2>
+    <p>Selecione o PDF do contrato do cliente para preenchimento automático</p>
+    <p style="font-size:11px;color:#bbb;margin-top:4px;">🔒 Processamento 100% local — nenhum dado é enviado para a internet</p>
+    <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('pdfInput').click()">
+      📎 Selecionar PDF
+    </button>
+    <input type="file" id="pdfInput" accept=".pdf" onchange="lerPDF(this)">
+  </div>
+
+  <div class="status-bar" id="statusBar">
+    <div class="spinner" id="spinner"></div>
+    <span id="statusMsg">Lendo contrato...</span>
+  </div>
+
+  <form id="formCalc" onsubmit="calcular(event)">
+
+    <div class="card">
+      <div class="card-title verde">👤 Dados do Cliente</div>
+      <div class="grid">
+        <div class="field"><label>Nome do Cliente <span class="tag auto">AUTO</span></label><input type="text" id="nomeCliente" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>CPF <span class="tag auto">AUTO</span></label><input type="text" id="cpf" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Gerente Responsável <span class="tag manual">MANUAL</span></label><input type="text" id="gerente" placeholder="Nome do gerente" class="manual-field" required></div>
+        <div class="field"><label>Número do Contrato <span class="tag auto">AUTO</span></label><input type="text" id="numContrato" placeholder="Lido do contrato..." readonly></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title laranja">🏠 Dados do Imóvel</div>
+      <div class="grid">
+        <div class="field"><label>Empreendimento <span class="tag auto">AUTO</span></label><input type="text" id="empreendimento" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Bloco / Módulo <span class="tag auto">AUTO</span></label><input type="text" id="modulo" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Valor do Imóvel (R$) <span class="tag auto">AUTO</span></label><input type="text" id="valorImovel" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Data de Entrega Prevista <span class="tag auto">AUTO</span></label><input type="text" id="dataEntrega" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Valor de Avaliação (R$) <span class="tag manual">MANUAL</span></label><input type="text" id="valorAvaliacao" placeholder="R$ 0,00" class="manual-field" oninput="mascaraMoeda(this)" required></div>
+        <div class="field"><label>Teto Faixa do Cliente (R$) <span class="tag manual">MANUAL</span></label><input type="text" id="tetoFaixa" placeholder="R$ 0,00" class="manual-field" oninput="mascaraMoeda(this)" required></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title roxo">💰 Dados Financeiros</div>
+      <div class="grid">
+        <div class="field"><label>Valor Financiado (R$) <span class="tag auto">AUTO</span></label><input type="text" id="valorFinanciado" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Saldo Carteira MRV (R$) <span class="tag auto">AUTO</span></label><input type="text" id="saldoCarteira" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Parcela MRV pós-entrega (R$) <span class="tag auto">AUTO</span></label><input type="text" id="parcelaMRV" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Quantidade de Parcelas <span class="tag auto">AUTO</span></label><input type="text" id="qtdParcelas" placeholder="Lido do contrato..." readonly></div>
+        <div class="field"><label>Parcela Caixa (R$) <span class="tag manual">MANUAL</span></label><input type="text" id="parcelaCaixa" placeholder="R$ 0,00" class="manual-field" oninput="mascaraMoeda(this)" required></div>
+        <div class="field"><label>Renda do Cliente (R$) <span class="tag manual">MANUAL</span></label><input type="text" id="renda" placeholder="R$ 0,00" class="manual-field" oninput="mascaraMoeda(this)" required></div>
+
+        <div class="psa-psb-grid" id="psaPsbWrap" style="display:none;">
+          <div class="psa-box">
+            <div class="psa-psb-title">📅 PSA — Pró-Soluto A (Pré-entrega)</div>
+            <div class="psa-psb-row"><span class="psa-psb-label">Qtd. parcelas</span><span class="psa-psb-val" id="psaQtd">—</span></div>
+            <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="psaSaldo">—</span></div>
+          </div>
+          <div class="psb-box">
+            <div class="psa-psb-title">🏠 PSB — Pró-Soluto B (Pós-entrega)</div>
+            <div class="psa-psb-row"><span class="psa-psb-label">Qtd. parcelas</span><span class="psa-psb-val" id="psbQtd">—</span></div>
+            <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="psbSaldo">—</span></div>
+          </div>
+        </div>
+
+        <div class="financiado-wrap" id="financiadoWrap">
+          <div class="financiado-info">
+            <span>% do imóvel financiado pelo cliente</span>
+            <strong id="pctFinanciadoDisplay">—</strong>
+          </div>
+          <div class="financiado-badge" id="financiadoBadge">—</div>
+        </div>
+
+        <div class="plano-wrap" id="planoWrap">
+          <div class="plano-header">📄 Plano de Pagamento</div>
+          <div class="plano-body" id="planoBody"></div>
+        </div>
+
+        <div class="debug-toolbar" id="debugToolbar">
+          <span style="color:#00ff88;font-size:11px;font-weight:700;font-family:monospace;">🔍 DEBUG PDF</span>
+          <button type="button" class="debug-btn active" id="btnTexto"    onclick="debugMostrar('texto')">📄 Texto</button>
+          <button type="button" class="debug-btn"        id="btnParcelas" onclick="debugMostrar('parcelas')">📊 Parcelas</button>
+          <button type="button" class="debug-btn"        id="btnEntrada"  onclick="debugMostrar('entrada')">💰 Entrada</button>
+          <button type="button" class="debug-btn"        id="btnInter"    onclick="debugMostrar('inter')">🔀 Intermediárias</button>
+          <button type="button" class="debug-btn fechar" onclick="fecharDebug()">✕ Fechar</button>
+        </div>
+        <div class="debug-box" id="debugBox"></div>
+      </div>
+    </div>
+
+    <div class="botoes">
+      <button type="submit" class="btn btn-verde">📊 Calcular Comprometimento</button>
+      <button type="button" class="btn btn-azul" onclick="abrirDebug()">🔍 Debug PDF</button>
+      <button type="button" class="btn btn-cinza" onclick="limpar()">🗑️ Limpar</button>
+    </div>
+  </form>
+
+  <div class="resultado" id="resultado">
+    <div class="resultado-title">📋 ANÁLISE DE COMPROMETIMENTO DE RENDA</div>
+    <div class="res-grid">
+      <div class="res-item"><label>Parcela Caixa</label><div class="val" id="res-caixa">—</div></div>
+      <div class="res-item"><label>Parcela MRV pós-entrega</label><div class="val" id="res-mrv">—</div></div>
+      <div class="res-item destaque"><label>Total de Parcelas</label><div class="val" id="res-total">—</div></div>
+      <div class="res-item"><label>Renda do Cliente</label><div class="val" id="res-renda">—</div></div>
+    </div>
+    <div class="psa-psb-resultado" id="resPsaPsb" style="display:none;">
+      <div class="psa-res">
+        <div class="pr-title">📅 PSA — Pré-entrega</div>
+        <div class="pr-val" id="res-psa-saldo">—</div>
+        <div class="pr-sub" id="res-psa-qtd">— parcelas</div>
+      </div>
+      <div class="psb-res">
+        <div class="pr-title">🏠 PSB — Pós-entrega</div>
+        <div class="pr-val" id="res-psb-saldo">—</div>
+        <div class="pr-sub" id="res-psb-qtd">— parcelas</div>
+      </div>
+    </div>
+    <div class="comprom-box">
+      <label>Comprometimento de Renda</label>
+      <div class="val-grande" id="res-pct">—</div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-labels"><span>0%</span><span>35% ✔</span><span>40% ⚠</span><span>50%+</span></div>
+    <div class="badge-resultado" id="badgeResultado">—</div>
+    <div class="desconto-section" id="descontoSection" style="display:none;">
+      <div class="desconto-titulo" id="descontoTitulo">—</div>
+      <div id="descontoConteudo"></div>
+    </div>
+    <div class="botoes">
+      <button class="btn btn-verde" onclick="salvarHistorico()">💾 Salvar</button>
+      <button class="btn btn-roxo"  onclick="window.print()">🖨️ Imprimir</button>
+      <button class="btn btn-laranja" onclick="copiarResultado()">📋 Copiar</button>
+    </div>
+  </div>
+
+  <div class="historico-card" id="historicoCard">
+    <div class="historico-title">
+      <span>📁 Histórico de Análises</span>
+      <button class="btn btn-cinza" style="padding:7px 14px;font-size:12px;" onclick="exportarCSV()">⬇️ Exportar CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Data/Hora</th><th>Cliente</th><th>Empreendimento</th><th>Gerente</th>
+            <th>P.Caixa</th><th>P.MRV</th><th>Renda</th><th>Comprom.%</th>
+            <th>%Financ.</th><th>PSA</th><th>PSB</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="corpoHistorico"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const SHEETS_URL='https://script.google.com/macros/s/AKfycbyIkN0UQnB3XBqTJgH57OQe2LbeGVqU1Y9qP5lNvI5bnCl1VZw91otCy3pRlgY0Nahc-A/exec';
 
 let _textoDebug='',_debugAba='texto';
 let _psaQtd=0,_psaSaldo=0,_psbQtd=0,_psbSaldo=0;
@@ -456,7 +548,6 @@ let _dataEntregaISO=null,_obraPronta=false;
 let _entrada={total:0,pct:'',parcelas:[]};
 let _intermediarias=[];
 
-// ── DEBUG ────────────────────────────────────────────────────────
 function abrirDebug(){
   document.getElementById('debugToolbar').classList.add('show');
   document.getElementById('debugBox').classList.add('show');
@@ -498,7 +589,6 @@ function debugMostrar(aba){
   }
 }
 
-// ── TOAST ────────────────────────────────────────────────────────
 function mostrarToast(msg,tipo='loading'){
   const toast=document.getElementById('toastSheets');
   document.getElementById('toastIcon').textContent=tipo==='loading'?'⏳':tipo==='ok'?'✅':'⚠️';
@@ -514,7 +604,6 @@ async function enviarParaSheets(dados){
   }catch(err){mostrarToast('Falha ao salvar. Verifique a conexão.','erro');}
 }
 
-// ── LEITURA PDF ──────────────────────────────────────────────────
 async function lerPDF(input){
   const file=input.files[0];if(!file)return;
   mostrarStatus('⏳ Lendo contrato PDF...','loading');
@@ -537,7 +626,6 @@ async function lerPDF(input){
   }catch(e){clearTimeout(timeout);mostrarStatus('❌ Erro: '+e.message,'error');}
 }
 
-// ── EXTRAÇÃO ─────────────────────────────────────────────────────
 function extrairDados(texto){
   try{
     const nomeM=texto.match(/COMPRADOR\(A\):\s*([A-ZÁÉÍÓÚÃÕÂÊÎÔÛÇ][A-ZÁÉÍÓÚÃÕÂÊÎÔÛÇa-záéíóúãõâêîôûç\s]+?)(?=\s*Nacionalidade|\s*CPF)/i);
@@ -649,10 +737,22 @@ function renderizarPlano(){
   const temInter=_intermediarias.length>0;
   if(!temEntrada&&!temInter){wrap.style.display='none';return;}
   wrap.style.display='block';
+
+  // Valor do imóvel para calcular %
+  const valorImovel=parseMoeda(document.getElementById('valorImovel').value);
+
   let html='';
+
+  // ── ENTRADA ──
   if(temEntrada){
     const totalStr=_entrada.total>0?formatMoeda(_entrada.total):'—';
-    const pctStr=_entrada.pct?`<span class="plano-badge-pct">${_entrada.pct}</span>`:'';
+    let pctStr='';
+    if(_entrada.pct){
+      pctStr=`<span class="plano-badge-pct">${_entrada.pct}</span>`;
+    }else if(valorImovel>0&&_entrada.total>0){
+      const pctCalc=((_entrada.total/valorImovel)*100).toFixed(2).replace('.',',');
+      pctStr=`<span class="plano-badge-pct">${pctCalc} %</span>`;
+    }
     html+=`<div class="plano-secao open" id="secaoEntrada">
       <div class="plano-secao-titulo" onclick="toggleSecao('secaoEntrada')">
         <span class="ps-esq">💰 Entrada</span>
@@ -669,18 +769,34 @@ function renderizarPlano(){
     }
     html+=`</ul></div></div>`;
   }
+
+  // ── INTERMEDIÁRIAS ──
   const totalInter=_intermediarias.reduce((s,g)=>s+g.total,0);
+  let pctInterStr='';
+  if(valorImovel>0&&totalInter>0){
+    const pctCalc=((totalInter/valorImovel)*100).toFixed(2).replace('.',',');
+    pctInterStr=`<span class="plano-badge-pct roxo">${pctCalc} %</span>`;
+  }
   html+=`<div class="plano-secao open" id="secaoInter">
     <div class="plano-secao-titulo" onclick="toggleSecao('secaoInter')">
       <span class="ps-esq">🔀 Intermediárias</span>
-      <span class="ps-dir"><span class="plano-badge-total">${totalInter>0?formatMoeda(totalInter):'—'}</span><span class="plano-chevron">▼</span></span>
+      <span class="ps-dir"><span class="plano-badge-total">${totalInter>0?formatMoeda(totalInter):'—'}</span>${pctInterStr}<span class="plano-chevron">▼</span></span>
     </div>
     <div class="plano-conteudo">`;
   if(!temInter){
     html+=`<p class="sem-intermediarias">ℹ️ Não há intermediárias neste contrato.</p>`;
   }else{
     _intermediarias.forEach(g=>{
-      html+=`<div class="grupo-wrap"><div class="grupo-titulo"><span>📦 Grupo ${g.grupo}</span><span class="gt-total">${g.total>0?formatMoeda(g.total):'—'}</span></div>`;
+      let pctGrupoStr='';
+      if(valorImovel>0&&g.total>0){
+        const pctG=((g.total/valorImovel)*100).toFixed(2).replace('.',',');
+        pctGrupoStr=`<span style="font-size:11px;font-weight:700;color:#6B2D8B;background:#F3EDF7;padding:2px 7px;border-radius:4px;">${pctG} %</span>`;
+      }
+      html+=`<div class="grupo-wrap">
+        <div class="grupo-titulo">
+          <span>📦 Grupo ${g.grupo}</span>
+          <span class="gt-total">${pctGrupoStr}${g.total>0?formatMoeda(g.total):'—'}</span>
+        </div>`;
       if(g.parcelas.length>0){
         g.parcelas.forEach((p,i)=>{
           const u=i===g.parcelas.length-1;
@@ -810,9 +926,10 @@ function calcular(e){
     ds.className='desconto-section bloqueado';
     dt.innerHTML='🔒 Desconto bloqueado — limite de financiamento atingido (80%)';
     descontoCobreNecessario='Bloqueado';
-    dc.innerHTML=`<div class="desconto-row"><span class="dr-label">% Financiado atual</span><span class="dr-val" style="color:var(--vermelho)">${pctFin.toFixed(2).replace('.',',')} %</span></div>
+    dc.innerHTML=`<div class="desconto-row"><span class="dr-label">% Financiado atual</span><span class="dr-val_
+        style="color:#D32F2F">${pctFin.toFixed(2).replace('.',',')} %</span></div>
       <div class="desconto-row"><span class="dr-label">Limite máximo</span><span class="dr-val" style="color:#888">80,00 %</span></div>
-      <div class="desconto-row"><span class="dr-label">Desconto disponível</span><span class="dr-val" style="color:var(--vermelho)">R$ 0,00</span></div>
+      <div class="desconto-row"><span class="dr-label">Desconto disponível</span><span class="dr-val" style="color:#D32F2F">R$ 0,00</span></div>
       <div class="projecao-aviso">🔒 O cliente atingiu o limite máximo de financiamento (80%). Para viabilizar desconto, o cliente precisaria aumentar o valor de entrada.</div>`;
   }else if(pct<=35){
     ds.className='desconto-section ok';
