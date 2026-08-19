@@ -173,6 +173,9 @@ input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
 .comprom-box{background:var(--cinza);border-radius:10px;padding:16px;text-align:center;margin-bottom:13px;}
 .comprom-box label{font-size:13px;color:#777;display:block;margin-bottom:4px;font-weight:600;}
 .comprom-box .val-grande{font-size:36px;font-weight:900;color:var(--azul);}
+.comprom-box-secundario{background:var(--roxo-claro);border:1.5px dashed var(--roxo);margin-top:4px;}
+.comprom-box-secundario label{color:var(--roxo);}
+.comprom-box-secundario .val-grande{color:var(--roxo);}
 .progress-wrap{background:#e0e0e0;border-radius:20px;height:14px;overflow:hidden;margin-bottom:6px;}
 .progress-bar{height:100%;border-radius:20px;transition:width 1s ease;width:0%;}
 .progress-bar.verde{background:linear-gradient(90deg,var(--verde),#5cb85c);}
@@ -192,6 +195,13 @@ input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
 .psa-res .pr-val{font-size:16px;font-weight:800;color:var(--roxo);}
 .psb-res .pr-val{font-size:16px;font-weight:800;color:var(--verde);}
 .psa-res .pr-sub,.psb-res .pr-sub{font-size:11px;color:#888;margin-top:3px;}
+.separador-calculo{
+  display:flex;align-items:center;gap:10px;margin:8px 0;
+  font-size:11px;font-weight:700;color:#aaa;
+}
+.separador-calculo::before,.separador-calculo::after{
+  content:'';flex:1;height:1px;background:var(--cinza-borda);
+}
 .desconto-section{border-radius:12px;padding:18px;margin-bottom:16px;border:2px solid;}
 .desconto-section.ok{background:var(--verde-claro);border-color:var(--verde);}
 .desconto-section.nok{background:var(--vermelho-claro);border-color:var(--vermelho);}
@@ -288,7 +298,6 @@ tr:hover td{background:#F8F9FA;}
   .financiado-badge.ok{background:#006b3f!important;color:#fff!important;}
   .financiado-badge.aviso{background:#F9A825!important;color:#fff!important;}
   .financiado-badge.nok{background:#D32F2F!important;color:#fff!important;}
-  /* ── Plano de Pagamento compacto ── */
   .plano-wrap{display:block!important;grid-column:1/-1!important;border-radius:10px!important;overflow:hidden!important;border:1.5px solid #E0E0E0!important;margin-top:4px!important;break-inside:avoid!important;break-before:page!important;}
   .plano-header{background:#003366!important;color:#fff!important;padding:6px 10px!important;font-size:11px!important;font-weight:700!important;display:flex!important;align-items:center!important;gap:6px!important;}
   .plano-secao{border-bottom:1px solid #E0E0E0!important;break-inside:avoid!important;}
@@ -313,7 +322,6 @@ tr:hover td{background:#F8F9FA;}
   .gr-val{font-weight:700!important;color:#003366!important;font-size:11px!important;}
   .gr-venc{font-size:10px!important;color:#777!important;background:#F0F2F5!important;padding:1px 5px!important;border-radius:4px!important;}
   .sem-intermediarias{font-size:11px!important;color:#999!important;font-style:italic!important;padding:4px 0!important;text-align:center!important;}
-  /* ── Resultado compacto ── */
   .resultado{display:block!important;background:#fff!important;border-radius:12px!important;padding:8px 10px!important;box-shadow:0 2px 8px rgba(0,0,0,0.08)!important;break-inside:avoid!important;}
   .resultado-title{font-size:11px!important;font-weight:800!important;color:#006b3f!important;text-align:center!important;margin-bottom:6px!important;padding-bottom:5px!important;border-bottom:2px solid #F5F5F5!important;}
   .res-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;margin-bottom:6px!important;}
@@ -331,8 +339,12 @@ tr:hover td{background:#F8F9FA;}
   .psb-res .pr-val{font-size:12px!important;font-weight:800!important;color:#006b3f!important;}
   .psa-res .pr-sub,.psb-res .pr-sub{font-size:8px!important;color:#888!important;margin-top:1px!important;}
   .comprom-box{background:#F5F5F5!important;border-radius:6px!important;padding:6px!important;text-align:center!important;margin-bottom:6px!important;}
+  .comprom-box-secundario{background:#F3EDF7!important;border:1.5px dashed #6B2D8B!important;}
   .comprom-box label{font-size:9px!important;color:#777!important;display:block!important;margin-bottom:1px!important;}
+  .comprom-box-secundario label{color:#6B2D8B!important;}
   .comprom-box .val-grande{font-size:20px!important;font-weight:900!important;color:#003366!important;}
+  .comprom-box-secundario .val-grande{color:#6B2D8B!important;}
+  .separador-calculo{font-size:9px!important;margin:4px 0!important;}
   .progress-wrap{background:#e0e0e0!important;border-radius:20px!important;height:7px!important;overflow:hidden!important;margin-bottom:2px!important;}
   .progress-bar{height:100%!important;border-radius:20px!important;}
   .progress-bar.verde{background:#006b3f!important;}
@@ -402,7 +414,6 @@ tr:hover td{background:#F8F9FA;}
   </div>
 
   <form id="formCalc" onsubmit="calcular(event)">
-
     <div class="card">
       <div class="card-title verde">👤 Dados do Cliente</div>
       <div class="grid">
@@ -500,13 +511,28 @@ tr:hover td{background:#F8F9FA;}
         <div class="pr-sub" id="res-psb-qtd">— parcelas</div>
       </div>
     </div>
+
+    <!-- CÁLCULO 1: 1ª Parcela PSB -->
     <div class="comprom-box">
-      <label>Comprometimento de Renda</label>
+      <label>Comprometimento de Renda <span style="font-size:10px;background:#003366;color:#fff;padding:2px 8px;border-radius:4px;font-weight:700;margin-left:6px;">1ª Parcela PSB</span></label>
       <div class="val-grande" id="res-pct">—</div>
     </div>
     <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
     <div class="progress-labels"><span>0%</span><span>35% ✔</span><span>40% ⚠</span><span>50%+</span></div>
     <div class="badge-resultado" id="badgeResultado">—</div>
+
+    <!-- SEPARADOR -->
+    <div class="separador-calculo" id="separadorMedia" style="display:none;">📊 VERSÃO SECUNDÁRIA — Média das Parcelas PSB</div>
+
+    <!-- CÁLCULO 2: Média PSB -->
+    <div class="comprom-box comprom-box-secundario" id="compromMediaWrap" style="display:none;">
+      <label>Comprometimento de Renda <span style="font-size:10px;background:var(--roxo);color:#fff;padding:2px 8px;border-radius:4px;font-weight:700;margin-left:6px;">Média PSB</span> <span style="font-size:10px;color:#aaa;font-weight:400;margin-left:4px;">— versão secundária</span></label>
+      <div class="val-grande" id="res-pct-media">—</div>
+    </div>
+    <div class="progress-wrap" id="progressWrapMedia" style="display:none;"><div class="progress-bar" id="progressBarMedia"></div></div>
+    <div class="progress-labels" id="progressLabelsMedia" style="display:none;"><span>0%</span><span>35% ✔</span><span>40% ⚠</span><span>50%+</span></div>
+    <div class="badge-resultado" id="badgeResultadoMedia" style="display:none;">—</div>
+
     <div class="desconto-section" id="descontoSection" style="display:none;">
       <div class="desconto-titulo" id="descontoTitulo">—</div>
       <div id="descontoConteudo"></div>
@@ -529,7 +555,7 @@ tr:hover td{background:#F8F9FA;}
           <tr>
             <th>Data/Hora</th><th>Cliente</th><th>Empreendimento</th><th>Gerente</th>
             <th>P.Caixa</th><th>P.MRV</th><th>Renda</th><th>Comprom.%</th>
-            <th>%Financ.</th><th>PSA</th><th>PSB</th><th>Status</th>
+            <th>Média PSB%</th><th>%Financ.</th><th>PSA</th><th>PSB</th><th>Status</th>
           </tr>
         </thead>
         <tbody id="corpoHistorico"></tbody>
@@ -745,12 +771,8 @@ function renderizarPlano(){
   if(temEntrada){
     const totalStr=_entrada.total>0?formatMoeda(_entrada.total):'—';
     let pctStr='';
-    if(_entrada.pct){
-      pctStr=`<span class="plano-badge-pct">${_entrada.pct}</span>`;
-    }else if(valorImovel>0&&_entrada.total>0){
-      const pctCalc=((_entrada.total/valorImovel)*100).toFixed(2).replace('.',',');
-      pctStr=`<span class="plano-badge-pct">${pctCalc} %</span>`;
-    }
+    if(_entrada.pct){pctStr=`<span class="plano-badge-pct">${_entrada.pct}</span>`;}
+    else if(valorImovel>0&&_entrada.total>0){const pctCalc=((_entrada.total/valorImovel)*100).toFixed(2).replace('.',',');pctStr=`<span class="plano-badge-pct">${pctCalc} %</span>`;}
     html+=`<div class="plano-secao open" id="secaoEntrada">
       <div class="plano-secao-titulo" onclick="toggleSecao('secaoEntrada')">
         <span class="ps-esq">💰 Entrada</span>
@@ -762,45 +784,30 @@ function renderizarPlano(){
         const u=i===_entrada.parcelas.length-1;
         html+=`<li><span class="el-num">${u?'└':'├'}</span><span class="el-val">${formatMoeda(p.valor)}</span><span class="el-venc">📅 ${p.venc}</span></li>`;
       });
-    }else{
-      html+=`<li style="color:#999;font-style:italic;justify-content:center;">Parcelas da entrada não identificadas individualmente.</li>`;
-    }
+    }else{html+=`<li style="color:#999;font-style:italic;justify-content:center;">Parcelas da entrada não identificadas individualmente.</li>`;}
     html+=`</ul></div></div>`;
   }
   const totalInter=_intermediarias.reduce((s,g)=>s+g.total,0);
   let pctInterStr='';
-  if(valorImovel>0&&totalInter>0){
-    const pctCalc=((totalInter/valorImovel)*100).toFixed(2).replace('.',',');
-    pctInterStr=`<span class="plano-badge-pct roxo">${pctCalc} %</span>`;
-  }
+  if(valorImovel>0&&totalInter>0){const pctCalc=((totalInter/valorImovel)*100).toFixed(2).replace('.',',');pctInterStr=`<span class="plano-badge-pct roxo">${pctCalc} %</span>`;}
   html+=`<div class="plano-secao open" id="secaoInter">
     <div class="plano-secao-titulo" onclick="toggleSecao('secaoInter')">
       <span class="ps-esq">🔀 Intermediárias</span>
       <span class="ps-dir"><span class="plano-badge-total">${totalInter>0?formatMoeda(totalInter):'—'}</span>${pctInterStr}<span class="plano-chevron">▼</span></span>
     </div>
     <div class="plano-conteudo">`;
-  if(!temInter){
-    html+=`<p class="sem-intermediarias">ℹ️ Não há intermediárias neste contrato.</p>`;
-  }else{
+  if(!temInter){html+=`<p class="sem-intermediarias">ℹ️ Não há intermediárias neste contrato.</p>`;}
+  else{
     _intermediarias.forEach(g=>{
       let pctGrupoStr='';
-      if(valorImovel>0&&g.total>0){
-        const pctG=((g.total/valorImovel)*100).toFixed(2).replace('.',',');
-        pctGrupoStr=`<span style="font-size:11px;font-weight:700;color:#6B2D8B;background:#F3EDF7;padding:2px 7px;border-radius:4px;">${pctG} %</span>`;
-      }
-      html+=`<div class="grupo-wrap">
-        <div class="grupo-titulo">
-          <span>📦 Grupo ${g.grupo}</span>
-          <span class="gt-total">${pctGrupoStr}${g.total>0?formatMoeda(g.total):'—'}</span>
-        </div>`;
+      if(valorImovel>0&&g.total>0){const pctG=((g.total/valorImovel)*100).toFixed(2).replace('.',',');pctGrupoStr=`<span style="font-size:11px;font-weight:700;color:#6B2D8B;background:#F3EDF7;padding:2px 7px;border-radius:4px;">${pctG} %</span>`;}
+      html+=`<div class="grupo-wrap"><div class="grupo-titulo"><span>📦 Grupo ${g.grupo}</span><span class="gt-total">${pctGrupoStr}${g.total>0?formatMoeda(g.total):'—'}</span></div>`;
       if(g.parcelas.length>0){
         g.parcelas.forEach((p,i)=>{
           const u=i===g.parcelas.length-1;
           html+=`<div class="grupo-row"><span style="font-size:11px;color:#aaa;min-width:16px;">${u?'└':'├'}</span><span class="gr-val">${formatMoeda(p.valor)}</span><span class="gr-venc">📅 ${p.venc}</span></div>`;
         });
-      }else{
-        html+=`<div style="font-size:12px;color:#999;font-style:italic;padding:4px 0;">Parcelas não identificadas individualmente.</div>`;
-      }
+      }else{html+=`<div style="font-size:12px;color:#999;font-style:italic;padding:4px 0;">Parcelas não identificadas individualmente.</div>`;}
       html+=`</div>`;
     });
   }
@@ -882,11 +889,13 @@ function calcular(e){
   if(!caixa||!mrv||!renda){alert('⚠️ Preencha todos os campos obrigatórios.');return;}
   const total=caixa+mrv;
   const pct=(total/renda)*100;
+
   document.getElementById('res-caixa').textContent=formatMoeda(caixa);
   document.getElementById('res-mrv').textContent=formatMoeda(mrv);
   document.getElementById('res-total').textContent=formatMoeda(total);
   document.getElementById('res-renda').textContent=formatMoeda(renda);
   document.getElementById('res-pct').textContent=pct.toFixed(2).replace('.',',')+' %';
+
   if(_psbQtd>0||_psaQtd>0){
     document.getElementById('res-psa-saldo').textContent=_psaSaldo>0?formatMoeda(_psaSaldo):'—';
     document.getElementById('res-psa-qtd').textContent=_psaQtd>0?_psaQtd+' parcelas':'—';
@@ -894,6 +903,8 @@ function calcular(e){
     document.getElementById('res-psb-qtd').textContent=_psbQtd>0?_psbQtd+' parcelas':'—';
     document.getElementById('resPsaPsb').style.display='grid';
   }
+
+  // ── Cálculo 1: 1ª Parcela PSB ──
   const bar=document.getElementById('progressBar');
   const badge=document.getElementById('badgeResultado');
   bar.style.width=Math.min(pct*2,100)+'%';
@@ -901,6 +912,35 @@ function calcular(e){
   if(pct<=35){badge.className='badge-resultado aprovado';badge.textContent='✔ APROVADO — '+pct.toFixed(2).replace('.',',')+' %';bar.className='progress-bar verde';statusTexto='APROVADO';}
   else if(pct<=40){badge.className='badge-resultado atencao';badge.textContent='⚠ ATENÇÃO — '+pct.toFixed(2).replace('.',',')+' %';bar.className='progress-bar amarelo';statusTexto='ATENÇÃO';}
   else{badge.className='badge-resultado reprovado';badge.textContent='✘ REPROVADO — '+pct.toFixed(2).replace('.',',')+' %';bar.className='progress-bar vermelho';statusTexto='REPROVADO';}
+
+  // ── Cálculo 2: Média PSB ──
+  let pctMedia=null;
+  let statusMedia='—';
+  const mrvMedia=(_psbQtd>0&&_psbSaldo>0)?(_psbSaldo/_psbQtd):0;
+  if(mrvMedia>0){
+    const totalMedia=caixa+mrvMedia;
+    pctMedia=(totalMedia/renda)*100;
+    document.getElementById('res-pct-media').textContent=pctMedia.toFixed(2).replace('.',',')+' %';
+    const barMedia=document.getElementById('progressBarMedia');
+    const badgeMedia=document.getElementById('badgeResultadoMedia');
+    barMedia.style.width=Math.min(pctMedia*2,100)+'%';
+    if(pctMedia<=35){badgeMedia.className='badge-resultado aprovado';badgeMedia.textContent='✔ APROVADO (média PSB) — '+pctMedia.toFixed(2).replace('.',',')+' %';barMedia.className='progress-bar verde';statusMedia='APROVADO';}
+    else if(pctMedia<=40){badgeMedia.className='badge-resultado atencao';badgeMedia.textContent='⚠ ATENÇÃO (média PSB) — '+pctMedia.toFixed(2).replace('.',',')+' %';barMedia.className='progress-bar amarelo';statusMedia='ATENÇÃO';}
+    else{badgeMedia.className='badge-resultado reprovado';badgeMedia.textContent='✘ REPROVADO (média PSB) — '+pctMedia.toFixed(2).replace('.',',')+' %';barMedia.className='progress-bar vermelho';statusMedia='REPROVADO';}
+    document.getElementById('compromMediaWrap').style.display='block';
+    document.getElementById('progressWrapMedia').style.display='block';
+    document.getElementById('progressLabelsMedia').style.display='flex';
+    document.getElementById('separadorMedia').style.display='flex';
+    badgeMedia.style.display='block';
+  }else{
+    document.getElementById('compromMediaWrap').style.display='none';
+    document.getElementById('progressWrapMedia').style.display='none';
+    document.getElementById('progressLabelsMedia').style.display='none';
+    document.getElementById('separadorMedia').style.display='none';
+    document.getElementById('badgeResultadoMedia').style.display='none';
+  }
+
+  // ── Desconto ──
   const fin=parseMoeda(document.getElementById('valorFinanciado').value);
   const imo=parseMoeda(document.getElementById('valorImovel').value);
   const pctFin=(fin&&imo)?(fin/imo)*100:null;
@@ -955,9 +995,11 @@ function calcular(e){
     html+=`<div class="projecao-aviso">📌 <strong>Projeção estimada.</strong> A redução por parcela é calculada proporcionalmente. Contratos com curva de queda terão redução proporcional em cada parcela individualmente. Solicite simulação exata ao financeiro MRV para confirmação.</div>`;
     dc.innerHTML=html;
   }
+
   document.getElementById('resultado').className='resultado show';
   document.getElementById('resultado').scrollIntoView({behavior:'smooth'});
   const pctFinStr=pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—';
+  const pctMediaStr=pctMedia!==null?pctMedia.toFixed(2).replace('.',',')+' %':'—';
   enviarParaSheets({
     dataHora:new Date().toLocaleString('pt-BR'),
     nomeCliente:document.getElementById('nomeCliente').value||'—',
@@ -981,9 +1023,12 @@ function calcular(e){
     psaSaldoTotal:_psaSaldo>0?formatMoeda(_psaSaldo):'—',
     psbQtdParcelas:_psbQtd,
     psbSaldoTotal:_psbSaldo>0?formatMoeda(_psbSaldo):'—',
+    mediaPSB:mrvMedia>0?formatMoeda(mrvMedia):'—',
     totalParcelas:formatMoeda(total),
     comprometimentoPercent:pct.toFixed(2).replace('.',',')+' %',
+    comprometimentoMediaPSB:pctMediaStr,
     status:statusTexto,
+    statusMediaPSB:statusMedia,
     descontoEstimadoPSB:descontoEstimadoPSB>0?formatMoeda(descontoEstimadoPSB):'—',
     descontoDisponivel:descontoDisponivel!==null?formatMoeda(descontoDisponivel):'—',
     descontoCobreNecessario,
@@ -994,6 +1039,8 @@ function calcular(e){
 function salvarHistorico(){
   const h=JSON.parse(localStorage.getItem('mrv_hist')||'[]');
   const pct=parseFloat(document.getElementById('res-pct').textContent.replace(',','.').replace('%','').trim());
+  const pctMediaEl=document.getElementById('res-pct-media').textContent;
+  const pctMedia=pctMediaEl!=='—'?pctMediaEl:'—';
   const fin=parseMoeda(document.getElementById('valorFinanciado').value);
   const imo=parseMoeda(document.getElementById('valorImovel').value);
   const pctFin=(fin&&imo)?((fin/imo)*100).toFixed(2).replace('.',',')+'%':'—';
@@ -1006,6 +1053,7 @@ function salvarHistorico(){
     mrv:document.getElementById('parcelaMRV').value,
     renda:document.getElementById('renda').value,
     pct:document.getElementById('res-pct').textContent,
+    pctMedia,
     pctFin,
     psa:_psaSaldo>0?formatMoeda(_psaSaldo)+' ('+_psaQtd+'p)':'—',
     psb:_psbSaldo>0?formatMoeda(_psbSaldo)+' ('+_psbQtd+'p)':'—',
@@ -1022,21 +1070,22 @@ function renderHistorico(){
   document.getElementById('historicoCard').style.display='block';
   document.getElementById('corpoHistorico').innerHTML=h.map(r=>{
     const c=r.status==='APROVADO'?'a':r.status==='ATENÇÃO'?'t':'r';
-    return`<tr><td>${r.data}</td><td>${r.cliente}</td><td>${r.emp}</td><td>${r.gerente}</td><td>${r.caixa}</td><td>${r.mrv}</td><td>${r.renda}</td><td><strong>${r.pct}</strong></td><td>${r.pctFin||'—'}</td><td>${r.psa||'—'}</td><td>${r.psb||'—'}</td><td><span class="badge-sm ${c}">${r.status}</span></td></tr>`;
+    return`<tr><td>${r.data}</td><td>${r.cliente}</td><td>${r.emp}</td><td>${r.gerente}</td><td>${r.caixa}</td><td>${r.mrv}</td><td>${r.renda}</td><td><strong>${r.pct}</strong></td><td>${r.pctMedia||'—'}</td><td>${r.pctFin||'—'}</td><td>${r.psa||'—'}</td><td>${r.psb||'—'}</td><td><span class="badge-sm ${c}">${r.status}</span></td></tr>`;
   }).join('');
 }
 
 function exportarCSV(){
   const h=JSON.parse(localStorage.getItem('mrv_hist')||'[]');
   if(!h.length){alert('Nenhum registro.');return;}
-  const cab='Data,Cliente,Empreendimento,Gerente,P.Caixa,P.MRV,Renda,Comprometimento,% Financiado,PSA,PSB,Status\n';
-  const rows=h.map(r=>`"${r.data}","${r.cliente}","${r.emp}","${r.gerente}","${r.caixa}","${r.mrv}","${r.renda}","${r.pct}","${r.pctFin||''}","${r.psa||''}","${r.psb||''}","${r.status}"`).join('\n');
+  const cab='Data,Cliente,Empreendimento,Gerente,P.Caixa,P.MRV,Renda,Comprometimento,Media PSB%,% Financiado,PSA,PSB,Status\n';
+  const rows=h.map(r=>`"${r.data}","${r.cliente}","${r.emp}","${r.gerente}","${r.caixa}","${r.mrv}","${r.renda}","${r.pct}","${r.pctMedia||''}","${r.pctFin||''}","${r.psa||''}","${r.psb||''}","${r.status}"`).join('\n');
   const blob=new Blob(['\uFEFF'+cab+rows],{type:'text/csv;charset=utf-8;'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
   a.download='mrv_historico_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
 
 function copiarResultado(){
+  const pctMediaTxt=document.getElementById('res-pct-media').textContent;
   const txt=`ANÁLISE MRV — ${new Date().toLocaleString('pt-BR')}
 Cliente: ${document.getElementById('nomeCliente').value}
 CPF: ${document.getElementById('cpf').value}
@@ -1051,8 +1100,10 @@ Renda: ${document.getElementById('res-renda').textContent}
 PSA: ${document.getElementById('res-psa-saldo').textContent} (${document.getElementById('res-psa-qtd').textContent})
 PSB: ${document.getElementById('res-psb-saldo').textContent} (${document.getElementById('res-psb-qtd').textContent})
 ─────────────────────────────
-Comprometimento: ${document.getElementById('res-pct').textContent}
+Comprometimento (1ª Parcela PSB): ${document.getElementById('res-pct').textContent}
 Status: ${document.getElementById('badgeResultado').textContent}
+Comprometimento (Média PSB): ${pctMediaTxt}
+Status Média: ${document.getElementById('badgeResultadoMedia').textContent}
 * Projeções são estimativas. Solicite simulação ao financeiro MRV.`;
   navigator.clipboard.writeText(txt).then(()=>alert('✅ Copiado!'));
 }
@@ -1086,6 +1137,12 @@ function limpar(){
   document.getElementById('descontoSection').style.display='none';
   document.getElementById('planoWrap').style.display='none';
   document.getElementById('planoBody').innerHTML='';
+  document.getElementById('compromMediaWrap').style.display='none';
+  document.getElementById('progressWrapMedia').style.display='none';
+  document.getElementById('progressLabelsMedia').style.display='none';
+  document.getElementById('separadorMedia').style.display='none';
+  document.getElementById('badgeResultadoMedia').style.display='none';
+  document.getElementById('res-pct-media').textContent='—';
   fecharDebug();
   _textoDebug='';_psaQtd=0;_psaSaldo=0;_psbQtd=0;_psbSaldo=0;
   _parcelasPSB=[];_parcelasTodas=[];_dataEntregaISO=null;_obraPronta=false;
