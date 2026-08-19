@@ -926,8 +926,7 @@ function calcular(e){
     ds.className='desconto-section bloqueado';
     dt.innerHTML='🔒 Desconto bloqueado — limite de financiamento atingido (80%)';
     descontoCobreNecessario='Bloqueado';
-    dc.innerHTML=`<div class="desconto-row"><span class="dr-label">% Financiado atual</span><span class="dr-val_
-        style="color:#D32F2F">${pctFin.toFixed(2).replace('.',',')} %</span></div>
+    dc.innerHTML=`<div class="desconto-row"><span class="dr-label">% Financiado atual</span><span class="dr-val" style="color:#D32F2F">${pctFin.toFixed(2).replace('.',',')} %</span></div>
       <div class="desconto-row"><span class="dr-label">Limite máximo</span><span class="dr-val" style="color:#888">80,00 %</span></div>
       <div class="desconto-row"><span class="dr-label">Desconto disponível</span><span class="dr-val" style="color:#D32F2F">R$ 0,00</span></div>
       <div class="projecao-aviso">🔒 O cliente atingiu o limite máximo de financiamento (80%). Para viabilizar desconto, o cliente precisaria aumentar o valor de entrada.</div>`;
