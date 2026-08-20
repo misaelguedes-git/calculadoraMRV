@@ -62,11 +62,7 @@ header{
 .status-bar.show{display:flex;}
 .status-bar.success{border-color:var(--verde);}
 .status-bar.error{border-color:var(--vermelho);}
-.spinner{
-  width:20px;height:20px;flex-shrink:0;
-  border:3px solid #eee;border-top-color:var(--verde);
-  border-radius:50%;animation:spin .8s linear infinite;
-}
+.spinner{width:20px;height:20px;flex-shrink:0;border:3px solid #eee;border-top-color:var(--verde);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .card{background:#fff;border-radius:14px;padding:20px 18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.07);}
 .card-title{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--cinza);display:flex;align-items:center;gap:8px;}
@@ -170,22 +166,6 @@ input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
 .res-item .val{font-size:18px;font-weight:800;color:var(--azul);}
 .res-item.destaque{background:var(--verde-claro);}
 .res-item.destaque .val{color:var(--verde);}
-.comprom-box{background:var(--cinza);border-radius:10px;padding:16px;text-align:center;margin-bottom:13px;}
-.comprom-box label{font-size:13px;color:#777;display:block;margin-bottom:4px;font-weight:600;}
-.comprom-box .val-grande{font-size:36px;font-weight:900;color:var(--azul);}
-.comprom-box-secundario{background:var(--roxo-claro);border:1.5px dashed var(--roxo);margin-top:4px;}
-.comprom-box-secundario label{color:var(--roxo);}
-.comprom-box-secundario .val-grande{color:var(--roxo);}
-.progress-wrap{background:#e0e0e0;border-radius:20px;height:14px;overflow:hidden;margin-bottom:6px;}
-.progress-bar{height:100%;border-radius:20px;transition:width 1s ease;width:0%;}
-.progress-bar.verde{background:linear-gradient(90deg,var(--verde),#5cb85c);}
-.progress-bar.amarelo{background:linear-gradient(90deg,var(--amarelo),#ffd54f);}
-.progress-bar.vermelho{background:linear-gradient(90deg,var(--vermelho),#e57373);}
-.progress-labels{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-bottom:14px;}
-.badge-resultado{text-align:center;padding:15px;border-radius:12px;font-size:19px;font-weight:800;margin-bottom:16px;}
-.badge-resultado.aprovado{background:var(--verde-claro);color:var(--verde);}
-.badge-resultado.atencao{background:var(--amarelo-claro);color:var(--amarelo-medio);}
-.badge-resultado.reprovado{background:var(--vermelho-claro);color:var(--vermelho);}
 .psa-psb-resultado{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px;}
 .psa-res,.psb-res{border-radius:10px;padding:14px;text-align:center;}
 .psa-res{background:var(--roxo-claro);}
@@ -195,13 +175,72 @@ input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
 .psa-res .pr-val{font-size:16px;font-weight:800;color:var(--roxo);}
 .psb-res .pr-val{font-size:16px;font-weight:800;color:var(--verde);}
 .psa-res .pr-sub,.psb-res .pr-sub{font-size:11px;color:#888;margin-top:3px;}
-.separador-calculo{
-  display:flex;align-items:center;gap:10px;margin:8px 0;
-  font-size:11px;font-weight:700;color:#aaa;
+
+/* ── CAIXA COMPROMETIMENTO UNIFICADA ── */
+.comprom-unified{
+  border-radius:12px;padding:0;margin-bottom:13px;
+  overflow:hidden;border:2px solid var(--cinza-borda);
 }
-.separador-calculo::before,.separador-calculo::after{
-  content:'';flex:1;height:1px;background:var(--cinza-borda);
+.comprom-unified-header{
+  padding:8px 16px;font-size:11px;font-weight:700;
+  display:flex;align-items:center;gap:8px;
+  background:var(--cinza);color:#777;
+  border-bottom:1px solid var(--cinza-borda);
 }
+.comprom-unified-body{
+  display:flex;align-items:stretch;
+  min-height:90px;
+}
+.comprom-pct-side{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:16px 20px;
+}
+.comprom-pct-label{font-size:11px;font-weight:700;color:#777;margin-bottom:4px;}
+.comprom-pct-val{font-size:38px;font-weight:900;line-height:1;}
+.comprom-status-side{
+  width:200px;flex-shrink:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:16px;text-align:center;
+  border-left:2px solid;
+  gap:6px;
+}
+.comprom-status-icon{font-size:26px;line-height:1;}
+.comprom-status-text{font-size:14px;font-weight:800;line-height:1.2;}
+
+/* Variantes de cor */
+.comprom-unified.aprovado{border-color:var(--verde);}
+.comprom-unified.aprovado .comprom-unified-header{background:var(--verde-claro);color:var(--verde);}
+.comprom-unified.aprovado .comprom-pct-val{color:var(--verde);}
+.comprom-unified.aprovado .comprom-status-side{background:var(--verde-claro);border-color:var(--verde);color:var(--verde);}
+
+.comprom-unified.atencao{border-color:var(--amarelo);}
+.comprom-unified.atencao .comprom-unified-header{background:var(--amarelo-claro);color:var(--amarelo-medio);}
+.comprom-unified.atencao .comprom-pct-val{color:var(--amarelo-medio);}
+.comprom-unified.atencao .comprom-status-side{background:var(--amarelo-claro);border-color:var(--amarelo);color:var(--amarelo-medio);}
+
+.comprom-unified.reprovado{border-color:var(--vermelho);}
+.comprom-unified.reprovado .comprom-unified-header{background:var(--vermelho-claro);color:var(--vermelho);}
+.comprom-unified.reprovado .comprom-pct-val{color:var(--vermelho);}
+.comprom-unified.reprovado .comprom-status-side{background:var(--vermelho-claro);border-color:var(--vermelho);color:var(--vermelho);}
+
+/* Variante secundária (roxo) */
+.comprom-unified.secundario{border-color:var(--roxo);}
+.comprom-unified.secundario .comprom-unified-header{background:var(--roxo-claro);color:var(--roxo);}
+.comprom-unified.secundario .comprom-pct-val{color:var(--roxo);}
+.comprom-unified.secundario .comprom-status-side{background:var(--roxo-claro);border-color:var(--roxo);color:var(--roxo);}
+
+.separador-calculo{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:11px;font-weight:700;color:#aaa;}
+.separador-calculo::before,.separador-calculo::after{content:'';flex:1;height:1px;background:var(--cinza-borda);}
+
+.progress-wrap{background:#e0e0e0;border-radius:20px;height:14px;overflow:hidden;margin-bottom:6px;}
+.progress-bar{height:100%;border-radius:20px;transition:width 1s ease;width:0%;}
+.progress-bar.verde{background:linear-gradient(90deg,var(--verde),#5cb85c);}
+.progress-bar.amarelo{background:linear-gradient(90deg,var(--amarelo),#ffd54f);}
+.progress-bar.vermelho{background:linear-gradient(90deg,var(--vermelho),#e57373);}
+.progress-labels{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-bottom:14px;}
+
 .desconto-section{border-radius:12px;padding:18px;margin-bottom:16px;border:2px solid;}
 .desconto-section.ok{background:var(--verde-claro);border-color:var(--verde);}
 .desconto-section.nok{background:var(--vermelho-claro);border-color:var(--vermelho);}
@@ -230,6 +269,7 @@ tr:hover td{background:#F8F9FA;}
 .badge-sm.a{background:var(--verde-claro);color:var(--verde);}
 .badge-sm.t{background:var(--amarelo-claro);color:var(--amarelo-medio);}
 .badge-sm.r{background:var(--vermelho-claro);color:var(--vermelho);}
+
 @media(max-width:600px){
   header{padding:0 14px;gap:12px;height:58px;}
   .logo-container{height:44px;padding:5px 10px;}
@@ -240,8 +280,12 @@ tr:hover td{background:#F8F9FA;}
   .grid,.psa-psb-grid,.res-grid,.psa-psb-resultado{grid-template-columns:1fr;}
   .field.full,.psa-psb-grid,.financiado-wrap,.plano-wrap,.debug-toolbar,.debug-box{grid-column:1;}
   .financiado-wrap{flex-direction:column;align-items:flex-start;}
-  .comprom-box .val-grande{font-size:28px;}
-  .badge-resultado{font-size:16px;}
+  .comprom-unified-body{flex-direction:column;}
+  .comprom-status-side{width:100%;border-left:none;border-top:2px solid;}
+  .comprom-unified.aprovado .comprom-status-side{border-color:var(--verde);}
+  .comprom-unified.atencao .comprom-status-side{border-color:var(--amarelo);}
+  .comprom-unified.reprovado .comprom-status-side{border-color:var(--vermelho);}
+  .comprom-unified.secundario .comprom-status-side{border-color:var(--roxo);}
   .btn{padding:12px 16px;font-size:13px;}
   .desconto-row{flex-direction:column;align-items:flex-start;}
   .toast-sheets{bottom:12px;right:12px;left:12px;max-width:100%;}
@@ -250,124 +294,22 @@ tr:hover td{background:#F8F9FA;}
 @media print{
   .upload-card,.status-bar,.botoes,.historico-card,
   .debug-toolbar,.debug-box,.toast-sheets,#pdfInput{display:none!important;}
-  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important;}
-  @page{size:A4 portrait;margin:8mm 8mm 8mm 8mm;}
-  html,body{background:#ECEEF2!important;font-size:12px;width:100%;}
-  header{position:relative!important;display:flex!important;background:#006b3f!important;height:60px!important;padding:0 20px!important;border-radius:10px!important;margin-bottom:14px!important;box-shadow:0 2px 8px rgba(0,0,0,0.3)!important;align-items:center!important;gap:16px!important;}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  @page{size:A4 portrait;margin:8mm;}
+  html,body{background:#ECEEF2!important;font-size:12px;}
+  header{position:relative!important;display:flex!important;background:#006b3f!important;height:60px!important;padding:0 20px!important;border-radius:10px!important;margin-bottom:14px!important;align-items:center!important;gap:16px!important;}
   .logo-container{display:flex!important;background:#fff!important;border-radius:7px!important;padding:5px 12px!important;height:44px!important;align-items:center!important;}
   .logo-img{height:30px!important;width:auto!important;display:block!important;}
-  .logo-fallback{display:none!important;}
   .header-div{display:block!important;width:2px!important;height:34px!important;background:rgba(255,255,255,0.3)!important;border-radius:2px!important;}
   .header-text h1{color:#fff!important;font-size:13px!important;font-weight:700!important;}
-  .header-text p{color:rgba(255,255,255,0.75)!important;font-size:10px!important;display:block!important;}
+  .header-text p{color:rgba(255,255,255,0.75)!important;font-size:10px!important;}
   .container{max-width:100%!important;margin:0!important;padding:0!important;}
-  .card{background:#fff!important;border-radius:12px!important;padding:14px!important;margin-bottom:10px!important;box-shadow:0 2px 8px rgba(0,0,0,0.08)!important;break-inside:avoid!important;}
-  .card-title{font-size:13px!important;font-weight:700!important;padding-bottom:8px!important;margin-bottom:10px!important;border-bottom:2px solid #F5F5F5!important;display:flex!important;align-items:center!important;gap:6px!important;}
-  .card-title.verde{color:#006b3f!important;}
-  .card-title.laranja{color:#E87722!important;}
-  .card-title.roxo{color:#6B2D8B!important;}
-  .grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;}
-  label{font-size:11px!important;font-weight:700!important;color:#555!important;display:flex!important;align-items:center!important;gap:4px!important;}
-  .tag{font-size:9px!important;padding:1px 6px!important;border-radius:4px!important;font-weight:700!important;}
-  .tag.auto{background:#E6F4ED!important;color:#006b3f!important;}
-  .tag.manual{background:#FEF3E8!important;color:#E87722!important;}
-  input[type=text]{padding:8px 10px!important;border:1.5px solid #E0E0E0!important;border-radius:7px!important;font-size:12px!important;width:100%!important;background:#fff!important;color:#333!important;display:block!important;}
-  input.auto-filled{background:#E6F4ED!important;border-color:#006b3f!important;color:#1a5c2a!important;}
-  input.manual-field{background:#FEF3E8!important;border-color:#E87722!important;color:#333!important;}
-  .psa-psb-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;grid-column:1/-1!important;}
-  .psa-box{background:#F3EDF7!important;border:1.5px solid #6B2D8B!important;border-radius:10px!important;padding:12px 14px!important;}
-  .psb-box{background:#E6F4ED!important;border:1.5px solid #006b3f!important;border-radius:10px!important;padding:12px 14px!important;}
-  .psa-psb-title{font-size:11px!important;font-weight:700!important;margin-bottom:8px!important;}
-  .psa-box .psa-psb-title{color:#6B2D8B!important;}
-  .psb-box .psa-psb-title{color:#006b3f!important;}
-  .psa-psb-row{display:flex!important;justify-content:space-between!important;margin-bottom:4px!important;}
-  .psa-psb-label{font-size:11px!important;color:#666!important;}
-  .psa-psb-val{font-size:13px!important;font-weight:700!important;}
-  .psa-box .psa-psb-val{color:#6B2D8B!important;}
-  .psb-box .psa-psb-val{color:#006b3f!important;}
-  .financiado-wrap{display:flex!important;grid-column:1/-1!important;border-radius:10px!important;padding:12px 14px!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;border:2px solid!important;break-inside:avoid!important;}
-  .financiado-wrap.fin-verde{background:#E6F4ED!important;border-color:#006b3f!important;}
-  .financiado-wrap.fin-amarelo{background:#FFFDE7!important;border-color:#F9A825!important;}
-  .financiado-wrap.fin-vermelho{background:#FDECEA!important;border-color:#D32F2F!important;}
-  .financiado-info{font-size:12px!important;color:#555!important;}
-  .financiado-info strong{font-size:20px!important;display:block!important;margin-top:2px!important;}
-  .financiado-wrap.fin-verde .financiado-info strong{color:#006b3f!important;}
-  .financiado-wrap.fin-amarelo .financiado-info strong{color:#E65100!important;}
-  .financiado-wrap.fin-vermelho .financiado-info strong{color:#D32F2F!important;}
-  .financiado-badge{padding:7px 14px!important;border-radius:7px!important;font-size:12px!important;font-weight:700!important;}
-  .financiado-badge.ok{background:#006b3f!important;color:#fff!important;}
-  .financiado-badge.aviso{background:#F9A825!important;color:#fff!important;}
-  .financiado-badge.nok{background:#D32F2F!important;color:#fff!important;}
-  .plano-wrap{display:block!important;grid-column:1/-1!important;border-radius:10px!important;overflow:hidden!important;border:1.5px solid #E0E0E0!important;margin-top:4px!important;break-inside:avoid!important;break-before:page!important;}
-  .plano-header{background:#003366!important;color:#fff!important;padding:6px 10px!important;font-size:11px!important;font-weight:700!important;display:flex!important;align-items:center!important;gap:6px!important;}
-  .plano-secao{border-bottom:1px solid #E0E0E0!important;break-inside:avoid!important;}
-  .plano-secao:last-child{border-bottom:none!important;}
-  .plano-secao-titulo{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:6px 10px!important;background:#FAFAFA!important;font-size:11px!important;font-weight:700!important;border-bottom:1px solid #E0E0E0!important;}
-  .plano-chevron{display:none!important;}
-  .plano-conteudo{display:block!important;padding:6px 10px!important;}
-  .plano-badge-total{font-size:11px!important;font-weight:800!important;color:#003366!important;}
-  .plano-badge-pct{font-size:9px!important;padding:1px 5px!important;border-radius:4px!important;font-weight:700!important;background:#003366!important;color:#fff!important;}
-  .plano-badge-pct.roxo{background:#6B2D8B!important;}
-  .entrada-lista{list-style:none!important;padding:0!important;margin:0!important;}
-  .entrada-lista li{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:3px 0!important;border-bottom:1px solid #F0F2F5!important;font-size:11px!important;}
-  .entrada-lista li:last-child{border-bottom:none!important;}
-  .el-num{font-size:9px!important;color:#aaa!important;min-width:14px!important;}
-  .el-val{font-weight:700!important;color:#003366!important;font-size:11px!important;}
-  .el-venc{font-size:10px!important;color:#777!important;background:#F0F2F5!important;padding:1px 5px!important;border-radius:4px!important;}
-  .grupo-wrap{margin-bottom:5px!important;}
-  .grupo-titulo{font-size:10px!important;font-weight:700!important;color:#6B2D8B!important;margin-bottom:3px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;}
-  .grupo-titulo .gt-total{font-size:11px!important;color:#6B2D8B!important;display:flex!important;align-items:center!important;gap:6px!important;}
-  .grupo-row{display:flex!important;align-items:center!important;justify-content:space-between!important;padding:3px 0!important;border-bottom:1px solid #F0F2F5!important;font-size:11px!important;}
-  .grupo-row:last-child{border-bottom:none!important;}
-  .gr-val{font-weight:700!important;color:#003366!important;font-size:11px!important;}
-  .gr-venc{font-size:10px!important;color:#777!important;background:#F0F2F5!important;padding:1px 5px!important;border-radius:4px!important;}
-  .sem-intermediarias{font-size:11px!important;color:#999!important;font-style:italic!important;padding:4px 0!important;text-align:center!important;}
-  .resultado{display:block!important;background:#fff!important;border-radius:12px!important;padding:8px 10px!important;box-shadow:0 2px 8px rgba(0,0,0,0.08)!important;break-inside:avoid!important;}
-  .resultado-title{font-size:11px!important;font-weight:800!important;color:#006b3f!important;text-align:center!important;margin-bottom:6px!important;padding-bottom:5px!important;border-bottom:2px solid #F5F5F5!important;}
-  .res-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;margin-bottom:6px!important;}
-  .res-item{background:#F5F5F5!important;border-radius:6px!important;padding:5px 8px!important;text-align:center!important;}
-  .res-item label{font-size:8px!important;color:#777!important;display:block!important;margin-bottom:1px!important;font-weight:600!important;}
-  .res-item .val{font-size:12px!important;font-weight:800!important;color:#003366!important;}
-  .res-item.destaque{background:#E6F4ED!important;}
-  .res-item.destaque .val{color:#006b3f!important;}
-  .psa-psb-resultado{display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;margin-bottom:6px!important;}
-  .psa-res{background:#F3EDF7!important;border-radius:6px!important;padding:5px 8px!important;text-align:center!important;}
-  .psb-res{background:#E6F4ED!important;border-radius:6px!important;padding:5px 8px!important;text-align:center!important;}
-  .psa-res .pr-title{font-size:9px!important;font-weight:700!important;color:#6B2D8B!important;margin-bottom:3px!important;}
-  .psb-res .pr-title{font-size:9px!important;font-weight:700!important;color:#006b3f!important;margin-bottom:3px!important;}
-  .psa-res .pr-val{font-size:12px!important;font-weight:800!important;color:#6B2D8B!important;}
-  .psb-res .pr-val{font-size:12px!important;font-weight:800!important;color:#006b3f!important;}
-  .psa-res .pr-sub,.psb-res .pr-sub{font-size:8px!important;color:#888!important;margin-top:1px!important;}
-  .comprom-box{background:#F5F5F5!important;border-radius:6px!important;padding:6px!important;text-align:center!important;margin-bottom:6px!important;}
-  .comprom-box-secundario{background:#F3EDF7!important;border:1.5px dashed #6B2D8B!important;}
-  .comprom-box label{font-size:9px!important;color:#777!important;display:block!important;margin-bottom:1px!important;}
-  .comprom-box-secundario label{color:#6B2D8B!important;}
-  .comprom-box .val-grande{font-size:20px!important;font-weight:900!important;color:#003366!important;}
-  .comprom-box-secundario .val-grande{color:#6B2D8B!important;}
-  .separador-calculo{font-size:9px!important;margin:4px 0!important;}
-  .progress-wrap{background:#e0e0e0!important;border-radius:20px!important;height:7px!important;overflow:hidden!important;margin-bottom:2px!important;}
-  .progress-bar{height:100%!important;border-radius:20px!important;}
-  .progress-bar.verde{background:#006b3f!important;}
-  .progress-bar.amarelo{background:#F9A825!important;}
-  .progress-bar.vermelho{background:#D32F2F!important;}
-  .progress-labels{display:flex!important;justify-content:space-between!important;font-size:8px!important;color:#aaa!important;margin-bottom:6px!important;}
-  .badge-resultado{text-align:center!important;padding:6px!important;border-radius:7px!important;font-size:12px!important;font-weight:800!important;margin-bottom:6px!important;}
-  .badge-resultado.aprovado{background:#E6F4ED!important;color:#006b3f!important;}
-  .badge-resultado.atencao{background:#FFFDE7!important;color:#E65100!important;}
-  .badge-resultado.reprovado{background:#FDECEA!important;color:#D32F2F!important;}
-  .desconto-section{border-radius:7px!important;padding:8px 10px!important;margin-bottom:0!important;border:2px solid!important;break-inside:avoid!important;}
-  .desconto-section.ok{background:#E6F4ED!important;border-color:#006b3f!important;}
-  .desconto-section.nok{background:#FDECEA!important;border-color:#D32F2F!important;}
-  .desconto-section.bloqueado{background:#F5F5F5!important;border-color:#ccc!important;}
-  .desconto-titulo{font-size:10px!important;font-weight:800!important;margin-bottom:6px!important;display:flex!important;align-items:center!important;gap:6px!important;}
-  .desconto-section.ok .desconto-titulo{color:#006b3f!important;}
-  .desconto-section.nok .desconto-titulo{color:#D32F2F!important;}
-  .desconto-section.bloqueado .desconto-titulo{color:#888!important;}
-  .desconto-row{display:flex!important;justify-content:space-between!important;align-items:center!important;padding:3px 0!important;border-bottom:1px solid rgba(0,0,0,0.07)!important;font-size:10px!important;gap:3px!important;}
-  .desconto-row:last-child{border-bottom:none!important;padding-bottom:0!important;}
-  .desconto-row .dr-label{color:#555!important;font-weight:500!important;font-size:10px!important;}
-  .desconto-row .dr-val{font-weight:800!important;font-size:11px!important;}
-  .projecao-aviso{margin-top:6px!important;padding:5px 8px!important;background:rgba(0,0,0,0.05)!important;border-radius:6px!important;font-size:9px!important;color:#555!important;line-height:1.3!important;border-left:3px solid #F9A825!important;}
+  .card{background:#fff!important;border-radius:12px!important;padding:14px!important;margin-bottom:10px!important;break-inside:avoid!important;}
+  .resultado{display:block!important;background:#fff!important;border-radius:12px!important;padding:10px!important;break-inside:avoid!important;}
+  .comprom-unified{break-inside:avoid!important;}
+  .comprom-pct-val{font-size:26px!important;}
+  .comprom-status-text{font-size:12px!important;}
+  .comprom-status-icon{font-size:20px!important;}
 }
 </style>
 </head>
@@ -402,9 +344,7 @@ tr:hover td{background:#F8F9FA;}
     <h2>Carregue aqui o Contrato MRV</h2>
     <p>Selecione o PDF do contrato do cliente para preenchimento automático</p>
     <p style="font-size:11px;color:#bbb;margin-top:4px;">🔒 Processamento 100% local — nenhum dado é enviado para a internet</p>
-    <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('pdfInput').click()">
-      📎 Selecionar PDF
-    </button>
+    <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('pdfInput').click()">📎 Selecionar PDF</button>
     <input type="file" id="pdfInput" accept=".pdf" onchange="lerPDF(this)">
   </div>
 
@@ -491,14 +431,17 @@ tr:hover td{background:#F8F9FA;}
     </div>
   </form>
 
+  <!-- RESULTADO -->
   <div class="resultado" id="resultado">
     <div class="resultado-title">📋 ANÁLISE DE COMPROMETIMENTO DE RENDA</div>
+
     <div class="res-grid">
       <div class="res-item"><label>Parcela Caixa</label><div class="val" id="res-caixa">—</div></div>
       <div class="res-item"><label>Parcela MRV pós-entrega</label><div class="val" id="res-mrv">—</div></div>
       <div class="res-item destaque"><label>Total de Parcelas</label><div class="val" id="res-total">—</div></div>
       <div class="res-item"><label>Renda do Cliente</label><div class="val" id="res-renda">—</div></div>
     </div>
+
     <div class="psa-psb-resultado" id="resPsaPsb" style="display:none;">
       <div class="psa-res">
         <div class="pr-title">📅 PSA — Pré-entrega</div>
@@ -512,31 +455,57 @@ tr:hover td{background:#F8F9FA;}
       </div>
     </div>
 
-    <!-- CÁLCULO 1: 1ª Parcela PSB -->
-    <div class="comprom-box">
-      <label>Comprometimento de Renda <span style="font-size:10px;background:#003366;color:#fff;padding:2px 8px;border-radius:4px;font-weight:700;margin-left:6px;">1ª Parcela PSB</span></label>
-      <div class="val-grande" id="res-pct">—</div>
+    <!-- CAIXA UNIFICADA — 1ª Parcela PSB -->
+    <div class="comprom-unified" id="compUnif1">
+      <div class="comprom-unified-header">
+        📊 Comprometimento de Renda
+        <span style="background:var(--azul);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">1ª Parcela PSB</span>
+      </div>
+      <div class="comprom-unified-body">
+        <div class="comprom-pct-side">
+          <div class="comprom-pct-label">Comprometimento atual</div>
+          <div class="comprom-pct-val" id="res-pct">—</div>
+        </div>
+        <div class="comprom-status-side" id="compStatus1">
+          <div class="comprom-status-icon" id="compIcon1">—</div>
+          <div class="comprom-status-text" id="compText1">—</div>
+        </div>
+      </div>
     </div>
+
     <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
     <div class="progress-labels"><span>0%</span><span>35% ✔</span><span>40% ⚠</span><span>50%+</span></div>
-    <div class="badge-resultado" id="badgeResultado">—</div>
 
     <!-- SEPARADOR -->
     <div class="separador-calculo" id="separadorMedia" style="display:none;">📊 VERSÃO SECUNDÁRIA — Média das Parcelas PSB</div>
 
-    <!-- CÁLCULO 2: Média PSB -->
-    <div class="comprom-box comprom-box-secundario" id="compromMediaWrap" style="display:none;">
-      <label>Comprometimento de Renda <span style="font-size:10px;background:var(--roxo);color:#fff;padding:2px 8px;border-radius:4px;font-weight:700;margin-left:6px;">Média PSB</span> <span style="font-size:10px;color:#aaa;font-weight:400;margin-left:4px;">— versão secundária</span></label>
-      <div class="val-grande" id="res-pct-media">—</div>
+    <!-- CAIXA UNIFICADA — Média PSB -->
+    <div class="comprom-unified secundario" id="compUnif2" style="display:none;">
+      <div class="comprom-unified-header">
+        📊 Comprometimento de Renda
+        <span style="background:var(--roxo);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">Média PSB</span>
+        <span style="font-size:10px;color:#aaa;font-weight:400;">— versão secundária</span>
+      </div>
+      <div class="comprom-unified-body">
+        <div class="comprom-pct-side">
+          <div class="comprom-pct-label">Comprometimento (média)</div>
+          <div class="comprom-pct-val" id="res-pct-media">—</div>
+        </div>
+        <div class="comprom-status-side" id="compStatus2">
+          <div class="comprom-status-icon" id="compIcon2">—</div>
+          <div class="comprom-status-text" id="compText2">—</div>
+        </div>
+      </div>
     </div>
+
     <div class="progress-wrap" id="progressWrapMedia" style="display:none;"><div class="progress-bar" id="progressBarMedia"></div></div>
     <div class="progress-labels" id="progressLabelsMedia" style="display:none;"><span>0%</span><span>35% ✔</span><span>40% ⚠</span><span>50%+</span></div>
-    <div class="badge-resultado" id="badgeResultadoMedia" style="display:none;">—</div>
 
     <div class="desconto-section" id="descontoSection" style="display:none;">
       <div class="desconto-titulo" id="descontoTitulo">—</div>
       <div id="descontoConteudo"></div>
     </div>
+
     <div class="botoes">
       <button class="btn btn-verde" onclick="salvarHistorico()">💾 Salvar</button>
       <button class="btn btn-roxo"  onclick="window.print()">🖨️ Imprimir</button>
@@ -567,7 +536,6 @@ tr:hover td{background:#F8F9FA;}
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
 const SHEETS_URL='https://script.google.com/macros/s/AKfycbyIkN0UQnB3XBqTJgH57OQe2LbeGVqU1Y9qP5lNvI5bnCl1VZw91otCy3pRlgY0Nahc-A/exec';
 
 let _textoDebug='',_debugAba='texto';
@@ -576,6 +544,37 @@ let _parcelasPSB=[],_parcelasTodas=[];
 let _dataEntregaISO=null,_obraPronta=false;
 let _entrada={total:0,pct:'',parcelas:[]};
 let _intermediarias=[];
+
+// ── HELPER: aplica status na caixa unificada ──
+function aplicarStatusUnificado(num, pct){
+  const unif = document.getElementById('compUnif'+num);
+  const icon = document.getElementById('compIcon'+num);
+  const text = document.getElementById('compText'+num);
+  const bar  = document.getElementById(num===1?'progressBar':'progressBarMedia');
+  let classe, iconeTxt, textoTxt, barClasse;
+  if(pct<=35){
+    classe='aprovado'; iconeTxt='✔'; textoTxt='APROVADO'; barClasse='verde';
+  }else if(pct<=40){
+    classe='atencao'; iconeTxt='⚠'; textoTxt='ATENÇÃO'; barClasse='amarelo';
+  }else{
+    classe='reprovado'; iconeTxt='✘'; textoTxt='REPROVADO'; barClasse='vermelho';
+  }
+  // Para o secundário mantém classe roxo no header mas muda o status side
+  if(num===2){
+    unif.className='comprom-unified secundario';
+    // Override status side color
+    const side=document.getElementById('compStatus'+num);
+    side.style.background=classe==='aprovado'?'var(--verde-claro)':classe==='atencao'?'var(--amarelo-claro)':'var(--vermelho-claro)';
+    side.style.borderColor=classe==='aprovado'?'var(--verde)':classe==='atencao'?'var(--amarelo)':'var(--vermelho)';
+    side.style.color=classe==='aprovado'?'var(--verde)':classe==='atencao'?'var(--amarelo-medio)':'var(--vermelho)';
+  }else{
+    unif.className='comprom-unified '+classe;
+  }
+  icon.textContent=iconeTxt;
+  text.textContent=textoTxt;
+  if(bar){bar.className='progress-bar '+barClasse;bar.style.width=Math.min(pct*2,100)+'%';}
+  return textoTxt;
+}
 
 function abrirDebug(){
   document.getElementById('debugToolbar').classList.add('show');
@@ -887,6 +886,7 @@ function calcular(e){
   const mrvNum=mrvStr.match(/R\$\s*([\d.,]+)/);
   const mrv=mrvNum?parseMoeda(mrvNum[1]):0;
   if(!caixa||!mrv||!renda){alert('⚠️ Preencha todos os campos obrigatórios.');return;}
+
   const total=caixa+mrv;
   const pct=(total/renda)*100;
 
@@ -904,16 +904,10 @@ function calcular(e){
     document.getElementById('resPsaPsb').style.display='grid';
   }
 
-  // ── Cálculo 1: 1ª Parcela PSB ──
-  const bar=document.getElementById('progressBar');
-  const badge=document.getElementById('badgeResultado');
-  bar.style.width=Math.min(pct*2,100)+'%';
-  let statusTexto='';
-  if(pct<=35){badge.className='badge-resultado aprovado';badge.textContent='✔ APROVADO — '+pct.toFixed(2).replace('.',',')+' %';bar.className='progress-bar verde';statusTexto='APROVADO';}
-  else if(pct<=40){badge.className='badge-resultado atencao';badge.textContent='⚠ ATENÇÃO — '+pct.toFixed(2).replace('.',',')+' %';bar.className='progress-bar amarelo';statusTexto='ATENÇÃO';}
-  else{badge.className='badge-resultado reprovado';badge.textContent='✘ REPROVADO — '+pct.toFixed(2).replace('.',',')+' %';bar.className='progress-bar vermelho';statusTexto='REPROVADO';}
+  // ── Caixa 1: 1ª Parcela PSB ──
+  const statusTexto = aplicarStatusUnificado(1, pct);
 
-  // ── Cálculo 2: Média PSB ──
+  // ── Caixa 2: Média PSB ──
   let pctMedia=null;
   let statusMedia='—';
   const mrvMedia=(_psbQtd>0&&_psbSaldo>0)?(_psbSaldo/_psbQtd):0;
@@ -921,23 +915,16 @@ function calcular(e){
     const totalMedia=caixa+mrvMedia;
     pctMedia=(totalMedia/renda)*100;
     document.getElementById('res-pct-media').textContent=pctMedia.toFixed(2).replace('.',',')+' %';
-    const barMedia=document.getElementById('progressBarMedia');
-    const badgeMedia=document.getElementById('badgeResultadoMedia');
-    barMedia.style.width=Math.min(pctMedia*2,100)+'%';
-    if(pctMedia<=35){badgeMedia.className='badge-resultado aprovado';badgeMedia.textContent='✔ APROVADO (média PSB) — '+pctMedia.toFixed(2).replace('.',',')+' %';barMedia.className='progress-bar verde';statusMedia='APROVADO';}
-    else if(pctMedia<=40){badgeMedia.className='badge-resultado atencao';badgeMedia.textContent='⚠ ATENÇÃO (média PSB) — '+pctMedia.toFixed(2).replace('.',',')+' %';barMedia.className='progress-bar amarelo';statusMedia='ATENÇÃO';}
-    else{badgeMedia.className='badge-resultado reprovado';badgeMedia.textContent='✘ REPROVADO (média PSB) — '+pctMedia.toFixed(2).replace('.',',')+' %';barMedia.className='progress-bar vermelho';statusMedia='REPROVADO';}
-    document.getElementById('compromMediaWrap').style.display='block';
+    statusMedia=aplicarStatusUnificado(2,pctMedia);
+    document.getElementById('compUnif2').style.display='block';
     document.getElementById('progressWrapMedia').style.display='block';
     document.getElementById('progressLabelsMedia').style.display='flex';
     document.getElementById('separadorMedia').style.display='flex';
-    badgeMedia.style.display='block';
   }else{
-    document.getElementById('compromMediaWrap').style.display='none';
+    document.getElementById('compUnif2').style.display='none';
     document.getElementById('progressWrapMedia').style.display='none';
     document.getElementById('progressLabelsMedia').style.display='none';
     document.getElementById('separadorMedia').style.display='none';
-    document.getElementById('badgeResultadoMedia').style.display='none';
   }
 
   // ── Desconto ──
@@ -970,10 +957,9 @@ function calcular(e){
     ds.className='desconto-section ok';
     dt.innerHTML='✔ Cliente enquadrado — desconto não necessário';
     descontoCobreNecessario='Não necessário';
-    const html=`<div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} %</span></div>
+    dc.innerHTML=`<div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} %</span></div>
       <div class="desconto-row"><span class="dr-label">% Financiado</span><span class="dr-val" style="color:var(--verde)">${pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—'}</span></div>
       ${descontoDisponivel>0?`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(descontoDisponivel)}</span></div>`:''}`;
-    dc.innerHTML=html;
   }else{
     ds.className='desconto-section nok';
     dt.innerHTML='⚠️ Desconto necessário para enquadramento';
@@ -987,7 +973,7 @@ function calcular(e){
         <div class="desconto-row"><span class="dr-label">💡 Desconto estimado no PSB</span><span class="dr-val" style="color:var(--laranja);font-size:18px;">${formatMoeda(descontoEstimadoPSB)}</span></div>`;
       if(descontoDisponivel!==null){
         const coberto=descontoEstimadoPSB<=descontoDisponivel;
-        descontoCobreNecessario=coberto?'Sim':'Não';
+                descontoCobreNecessario=coberto?'Sim':'Não';
         html+=`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${formatMoeda(descontoDisponivel)}</span></div>
           <div class="desconto-row"><span class="dr-label">Desconto cobre o necessário?</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${coberto?'✔ Sim':'✘ Não'}</span></div>`;
       }
@@ -998,6 +984,7 @@ function calcular(e){
 
   document.getElementById('resultado').className='resultado show';
   document.getElementById('resultado').scrollIntoView({behavior:'smooth'});
+
   const pctFinStr=pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—';
   const pctMediaStr=pctMedia!==null?pctMedia.toFixed(2).replace('.',',')+' %':'—';
   enviarParaSheets({
@@ -1070,7 +1057,13 @@ function renderHistorico(){
   document.getElementById('historicoCard').style.display='block';
   document.getElementById('corpoHistorico').innerHTML=h.map(r=>{
     const c=r.status==='APROVADO'?'a':r.status==='ATENÇÃO'?'t':'r';
-    return`<tr><td>${r.data}</td><td>${r.cliente}</td><td>${r.emp}</td><td>${r.gerente}</td><td>${r.caixa}</td><td>${r.mrv}</td><td>${r.renda}</td><td><strong>${r.pct}</strong></td><td>${r.pctMedia||'—'}</td><td>${r.pctFin||'—'}</td><td>${r.psa||'—'}</td><td>${r.psb||'—'}</td><td><span class="badge-sm ${c}">${r.status}</span></td></tr>`;
+    return`<tr>
+      <td>${r.data}</td><td>${r.cliente}</td><td>${r.emp}</td><td>${r.gerente}</td>
+      <td>${r.caixa}</td><td>${r.mrv}</td><td>${r.renda}</td>
+      <td><strong>${r.pct}</strong></td><td>${r.pctMedia||'—'}</td>
+      <td>${r.pctFin||'—'}</td><td>${r.psa||'—'}</td><td>${r.psb||'—'}</td>
+      <td><span class="badge-sm ${c}">${r.status}</span></td>
+    </tr>`;
   }).join('');
 }
 
@@ -1080,8 +1073,10 @@ function exportarCSV(){
   const cab='Data,Cliente,Empreendimento,Gerente,P.Caixa,P.MRV,Renda,Comprometimento,Media PSB%,% Financiado,PSA,PSB,Status\n';
   const rows=h.map(r=>`"${r.data}","${r.cliente}","${r.emp}","${r.gerente}","${r.caixa}","${r.mrv}","${r.renda}","${r.pct}","${r.pctMedia||''}","${r.pctFin||''}","${r.psa||''}","${r.psb||''}","${r.status}"`).join('\n');
   const blob=new Blob(['\uFEFF'+cab+rows],{type:'text/csv;charset=utf-8;'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='mrv_historico_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='mrv_historico_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
 }
 
 function copiarResultado(){
@@ -1101,14 +1096,17 @@ PSA: ${document.getElementById('res-psa-saldo').textContent} (${document.getElem
 PSB: ${document.getElementById('res-psb-saldo').textContent} (${document.getElementById('res-psb-qtd').textContent})
 ─────────────────────────────
 Comprometimento (1ª Parcela PSB): ${document.getElementById('res-pct').textContent}
-Status: ${document.getElementById('badgeResultado').textContent}
+Status: ${document.getElementById('compText1').textContent}
 Comprometimento (Média PSB): ${pctMediaTxt}
-Status Média: ${document.getElementById('badgeResultadoMedia').textContent}
+Status Média: ${document.getElementById('compText2').textContent}
 * Projeções são estimativas. Solicite simulação ao financeiro MRV.`;
   navigator.clipboard.writeText(txt).then(()=>alert('✅ Copiado!'));
 }
 
-function setAuto(id,val){const el=document.getElementById(id);if(el){el.value=val;el.classList.add('auto-filled');}}
+function setAuto(id,val){
+  const el=document.getElementById(id);
+  if(el){el.value=val;el.classList.add('auto-filled');}
+}
 function mostrarStatus(msg,tipo){
   const bar=document.getElementById('statusBar');
   bar.className='status-bar show'+(tipo==='success'?' success':tipo==='error'?' error':'');
@@ -1121,10 +1119,14 @@ function mascaraMoeda(el){
   el.value='R$ '+v.replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 }
 function parseMoeda(str){
-  if(!str)return 0;const m=str.match(/([\d.]+,[\d]{2})/);
-  if(!m)return 0;return parseFloat(m[1].replace(/\./g,'').replace(',','.'))||0;
+  if(!str)return 0;
+  const m=str.match(/([\d.]+,[\d]{2})/);
+  if(!m)return 0;
+  return parseFloat(m[1].replace(/\./g,'').replace(',','.'))||0;
 }
-function formatMoeda(v){return'R$ '+v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function formatMoeda(v){
+  return'R$ '+v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
 function limpar(){
   document.getElementById('formCalc').reset();
   document.querySelectorAll('input').forEach(el=>el.classList.remove('auto-filled'));
@@ -1137,12 +1139,18 @@ function limpar(){
   document.getElementById('descontoSection').style.display='none';
   document.getElementById('planoWrap').style.display='none';
   document.getElementById('planoBody').innerHTML='';
-  document.getElementById('compromMediaWrap').style.display='none';
+  document.getElementById('compUnif2').style.display='none';
   document.getElementById('progressWrapMedia').style.display='none';
   document.getElementById('progressLabelsMedia').style.display='none';
   document.getElementById('separadorMedia').style.display='none';
-  document.getElementById('badgeResultadoMedia').style.display='none';
+  document.getElementById('res-pct').textContent='—';
   document.getElementById('res-pct-media').textContent='—';
+  document.getElementById('compIcon1').textContent='—';
+  document.getElementById('compText1').textContent='—';
+  document.getElementById('compIcon2').textContent='—';
+  document.getElementById('compText2').textContent='—';
+  document.getElementById('compUnif1').className='comprom-unified';
+  document.getElementById('compUnif2').className='comprom-unified secundario';
   fecharDebug();
   _textoDebug='';_psaQtd=0;_psaSaldo=0;_psbQtd=0;_psbSaldo=0;
   _parcelasPSB=[];_parcelasTodas=[];_dataEntregaISO=null;_obraPronta=false;
