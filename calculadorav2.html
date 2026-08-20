@@ -796,7 +796,9 @@ function calcularPctFinanciado(){
   const imo=parseMoeda(document.getElementById('valorImovel').value);
   if(!fin||!imo)return;
   const pct=(fin/imo)*100;
-  const wrap=document.getElementById('financiadoWrap');const badge=document.getElementById('financiadoBadge');
+  const wrap=document.getElementById('financiadoWrap');
+  const badge=document.getElementById('financiadoBadge');
+  document.getElementById('pctFinanciadoDisplay').textContent=pct.toFixed(2).replace('.',',')+' %';
   wrap.style.display='flex';
   if(pct<75){wrap.className='financiado-wrap fin-verde';badge.className='financiado-badge ok';badge.textContent='✔ Desconto disponível';}
   else if(pct<80){wrap.className='financiado-wrap fin-amarelo';badge.className='financiado-badge aviso';badge.textContent='⚠ Margem reduzida para desconto';}
