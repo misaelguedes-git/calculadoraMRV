@@ -628,12 +628,22 @@ function extrairDadosContrato(texto){
     const contM=texto.match(/CONT[:\s]*([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
     if(contM)setAuto('numContrato',contM[1]);
     const prodM=texto.match(/Produto:\s*([^\n]+?)(?=CONT:|$)/is);
+const prodM=texto.match(/Produto:\s*([^\n]+?)(?=CONT:|$)/is);
     if(prodM){
-      const prod=prodM[1].trim().replace(/\s+/g,' ');
-      const blocoM=prod.match(/(.*?)\s*[-–]\s*(BLOCO\s*\d+.*)/i);
-      if(blocoM){setAuto('empreendimento',blocoM[1].trim());setAuto('modulo',blocoM[2].trim());}
-      else setAuto('empreendimento',prod);
-    }
+    const prod=prodM[1].trim().replace(/\s+/g,' ');
+    // Separa em: NOME DO EMPREENDIMENTO | TORRE/BLOCO + UNIDADE | CIDADE (descartada)
+    const sepM=prod.match(/^(.*?)\s*[-–]\s*((?:TORRE|BLOCO)\s*[\s\S]*?)(?:\s*[-–]\s*[A-Za-záéíóúãõâêîôûç\s]+\s*-\s*[A-Z]{2})?$/i);
+    if(sepM){
+    setAuto('empreendimento', sepM[1].trim());
+    // Remove cidade/UF do final do módulo
+    const modulo=sepM[2].replace(/\s*[-–]\s*[A-Za-záéíóúãõâêîôûç\s]+\s*-\s*[A-Z]{2}\s*$/i,'').trim();
+    setAuto('modulo', modulo);
+  }else{
+    // Fallback: tenta remover cidade do final
+    const semCidade=prod.replace(/\s*[-–]\s*[A-Za-záéíóúãõâêîôûç\s]+\s*-\s*[A-Z]{2}\s*$/i,'').trim();
+    setAuto('empreendimento', semCidade);
+  }
+}
     const valM=texto.match(/PRE[ÇC]O\s*DO\s*IM[OÓ]VEL[^R]*R\$\s*([\d.,]+)/i);
     if(valM)setAuto('valorImovel','R$ '+valM[1].trim());
     const finM=texto.match(/4\.1\.4[^R]*R\$\s*([\d.,]+)/is)||texto.match(/valor\s*financiado[^R]*R\$\s*([\d.,]+)/i)||texto.match(/Financiamento\s*Habitacional[^R]*R\$\s*([\d.,]+)/i);
@@ -910,10 +920,25 @@ function calcular(e){
       <div class="desconto-row"><span class="dr-label">Parcela MRV ideal (para 35%)</span><span class="dr-val" style="color:var(--verde)">${mrvIdeal>0?formatMoeda(mrvIdeal):'Inviável — parcela Caixa já excede 35%'}</span></div>`;
 
     if(mrvIdeal>0&&_parcelasPSB.length>0){
+      // Parcelas PSB ideal = Saldo PSB ÷ Parcela MRV ideal
+      const psbIdeal = mrvIdeal > 0 ? Math.ceil(_psbSaldo / mrvIdeal) : 0;
+      // Total ideal do contrato = PSA + PSB ideal
+      const totalIdeal = _psaQtd + psbIdeal;
+      const qtdContratoTotal = parseInt(document.getElementById('qtdParcelas').value) || 0;
+
       html+=`
       <div class="desconto-row"><span class="dr-label">Redução necessária por parcela</span><span class="dr-val" style="color:var(--laranja)">${formatMoeda(reducaoNecessaria)}</span></div>
-      <div class="desconto-row"><span class="dr-label">Parcelas PSB</span><span class="dr-val" style="color:var(--roxo)">${_psbQtd} parcelas</span></div>
-      <div class="desconto-row"><span class="dr-label">💡 Desconto estimado no PSB</span><span class="dr-val" style="color:var(--laranja);font-size:18px;">${formatMoeda(descontoEstimadoPSB)}</span></div>`;
+        <div class="desconto-row">
+          <span class="dr-label">Parcelas PSB ideal (para 35%)</span>
+          <span class="dr-val" style="color:var(--roxo)">${psbIdeal} parcelas</span>
+      </div>
+      <div class="desconto-row">
+        <span class="dr-label">Total de parcelas do contrato ideal</span>
+        <span class="dr-val" style="color:var(--roxo)">${totalIdeal} parcelas</span>
+      </div>
+
+    <div class="desconto-row"><span class="dr-label">💡 Desconto estimado no PSB</span><span class="dr-val" style="color:var(--laranja);font-size:18px;">${formatMoeda(descontoEstimadoPSB)}</span></div>`;
+
       if(descontoDisponivel!==null){
         const coberto=descontoEstimadoPSB<=descontoDisponivel;
         descontoCobreNecessario=coberto?'Sim':'Não';
