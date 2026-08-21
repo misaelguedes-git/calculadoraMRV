@@ -923,18 +923,22 @@ function calcular(e){
       const psbIdeal = mrvIdeal > 0 ? Math.ceil(_psbSaldo / mrvIdeal) : 0;
       // Total ideal do contrato = PSA + PSB ideal
       const totalIdeal = _psaQtd + psbIdeal;
-      const qtdContratoTotal = parseInt(document.getElementById('qtdParcelas').value) || 0;
 
-      html+=`
+      // Qtd atual de parcelas PSB e total do contrato
+      const psbAtual = _psbQtd;
+      const totalAtual = parseInt(document.getElementById('qtdParcelas').value) || 0;
+
+  html+=`
       <div class="desconto-row"><span class="dr-label">Redução necessária por parcela</span><span class="dr-val" style="color:var(--laranja)">${formatMoeda(reducaoNecessaria)}</span></div>
         <div class="desconto-row">
           <span class="dr-label">Parcelas PSB ideal (para 35%)</span>
-          <span class="dr-val" style="color:var(--roxo)">${psbIdeal} parcelas</span>
+          <span class="dr-val" style="color:var(--roxo)">${psbIdeal} parcelas <span style="font-size:12px;font-weight:500;color:#999;">(vs ${psbAtual} atuais)</span></span>
       </div>
       <div class="desconto-row">
         <span class="dr-label">Total de parcelas do contrato ideal</span>
-        <span class="dr-val" style="color:var(--roxo)">${totalIdeal} parcelas</span>
+        <span class="dr-val" style="color:var(--roxo)">${totalIdeal} parcelas <span style="font-size:12px;font-weight:500;color:#999;">(vs ${totalAtual} atuais)</span></span>
       </div>
+
 
     <div class="desconto-row"><span class="dr-label">💡 Desconto estimado no PSB</span><span class="dr-val" style="color:var(--laranja);font-size:18px;">${formatMoeda(descontoEstimadoPSB)}</span></div>`;
 
