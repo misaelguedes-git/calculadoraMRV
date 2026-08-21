@@ -628,7 +628,6 @@ function extrairDadosContrato(texto){
     const contM=texto.match(/CONT[:\s]*([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
     if(contM)setAuto('numContrato',contM[1]);
     const prodM=texto.match(/Produto:\s*([^\n]+?)(?=CONT:|$)/is);
-const prodM=texto.match(/Produto:\s*([^\n]+?)(?=CONT:|$)/is);
     if(prodM){
     const prod=prodM[1].trim().replace(/\s+/g,' ');
     // Separa em: NOME DO EMPREENDIMENTO | TORRE/BLOCO + UNIDADE | CIDADE (descartada)
