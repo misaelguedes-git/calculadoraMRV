@@ -626,22 +626,70 @@ function extrairDadosContrato(texto){
     if(cpfM)setAuto('cpf',cpfM[1].replace(/\s/g,''));
     const contM=texto.match(/CONT[:\s]*([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
     if(contM)setAuto('numContrato',contM[1]);
-    const prodM=texto.match(/Produto:\s*([^\n]+?)(?=CONT:|$)/is);
-    if(prodM){
-    const prod=prodM[1].trim().replace(/\s+/g,' ');
-    // Separa em: NOME DO EMPREENDIMENTO | TORRE/BLOCO + UNIDADE | CIDADE (descartada)
-    const sepM=prod.match(/^(.*?)\s*[-–]\s*((?:TORRE|BLOCO)\s*[\s\S]*?)(?:\s*[-–]\s*[A-Za-záéíóúãõâêîôûç\s]+\s*-\s*[A-Z]{2})?$/i);
-    if(sepM){
-    setAuto('empreendimento', sepM[1].trim());
-    // Remove cidade/UF do final do módulo
-    const modulo=sepM[2].replace(/\s*[-–]\s*[A-Za-záéíóúãõâêîôûç\s]+\s*-\s*[A-Z]{2}\s*$/i,'').trim();
-    setAuto('modulo', modulo);
-  }else{
-    // Fallback: tenta remover cidade do final
-    const semCidade=prod.replace(/\s*[-–]\s*[A-Za-záéíóúãõâêîôûç\s]+\s*-\s*[A-Z]{2}\s*$/i,'').trim();
-    setAuto('empreendimento', semCidade);
-  }
-}
+   const prodM = texto.match(/Produto:\s*([\s\S]+?)(?=CONT:|$)/i);
+    if (prodM) {
+      // Limpa quebras de linha e espaços duplos gerados pela leitura do PDF
+      let prod = prodM[1].replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+      
+      // Encontra a posição do primeiro hífen (suporta traço comum e meia-risca)
+      let indiceHifen = prod.indexOf('-');
+      if (indiceHifen === -1) indiceHifen = prod.indexOf('–');
+
+      if (indiceHifen !== -1) {
+        // Empreendimento: tudo antes do primeiro hífen
+        let emp = prod.substring(0, indiceHifen).trim();
+        
+        // Módulo: tudo depois do primeiro hífen
+        let modulo = prod.substring(indiceHifen + 1).trim();
+
+        // Remove a cidade cortando tudo que vier após o número da unidade (ex: APTO 301)
+        const matchUnidade = modulo.match(/(.*?(?:APTO|CASA|UNIDADE|VAGA)\s*\d+[A-Z]*)/i);
+        if (matchUnidade) {
+          modulo = matchUnidade[1].trim();
+        } else {
+          // Fallback: se não tiver a palavra APTO/CASA, limpa sufixos de cidades mais comuns
+          modulo = modulo.replace(/\s*(?:Rio de Janeiro|Maca[eé]|Campos dos Goytacazes|-?\s*RJ).*$/i, '').trim();
+        }
+
+        setAuto('empreendimento', emp);
+        setAuto('modulo', modulo);
+      } else {
+        setAuto('empreendimento', prod);
+        setAuto('modulo', '—');
+      }
+    }const prodM = texto.match(/Produto:\s*([\s\S]+?)(?=CONT:|$)/i);
+    if (prodM) {
+      // Limpa quebras de linha e espaços duplos gerados pela leitura do PDF
+      let prod = prodM[1].replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+      
+      // Encontra a posição do primeiro hífen (suporta traço comum e meia-risca)
+      let indiceHifen = prod.indexOf('-');
+      if (indiceHifen === -1) indiceHifen = prod.indexOf('–');
+
+      if (indiceHifen !== -1) {
+        // Empreendimento: tudo antes do primeiro hífen
+        let emp = prod.substring(0, indiceHifen).trim();
+        
+        // Módulo: tudo depois do primeiro hífen
+        let modulo = prod.substring(indiceHifen + 1).trim();
+
+        // Remove a cidade cortando tudo que vier após o número da unidade (ex: APTO 301)
+        const matchUnidade = modulo.match(/(.*?(?:APTO|CASA|UNIDADE|VAGA)\s*\d+[A-Z]*)/i);
+        if (matchUnidade) {
+          modulo = matchUnidade[1].trim();
+        } else {
+          // Fallback: se não tiver a palavra APTO/CASA, limpa sufixos de cidades mais comuns
+          modulo = modulo.replace(/\s*(?:Rio de Janeiro|Maca[eé]|Campos dos Goytacazes|-?\s*RJ).*$/i, '').trim();
+        }
+
+        setAuto('empreendimento', emp);
+        setAuto('modulo', modulo);
+      } else {
+        setAuto('empreendimento', prod);
+        setAuto('modulo', '—');
+      }
+    }
+    
     const valM=texto.match(/PRE[ÇC]O\s*DO\s*IM[OÓ]VEL[^R]*R\$\s*([\d.,]+)/i);
     if(valM)setAuto('valorImovel','R$ '+valM[1].trim());
     const finM=texto.match(/4\.1\.4[^R]*R\$\s*([\d.,]+)/is)||texto.match(/valor\s*financiado[^R]*R\$\s*([\d.,]+)/i)||texto.match(/Financiamento\s*Habitacional[^R]*R\$\s*([\d.,]+)/i);
