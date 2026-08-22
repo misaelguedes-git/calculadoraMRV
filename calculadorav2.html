@@ -465,7 +465,7 @@ tr:hover td{background:#F8F9FA;}
     </div>
     <div class="botoes">
       <button class="btn btn-verde" onclick="salvarHistorico()">💾 Salvar</button>
-      <button class="btn btn-roxo" onclick="window.print()">🖨️ Imprimir</button>
+      <button class="btn btn-roxo" onclick="prepararImpressao()">🖨️ Imprimir</button>
       <button class="btn btn-laranja" onclick="copiarResultado()">📋 Copiar</button>
     </div>
   </div>
@@ -949,7 +949,7 @@ function calcular(e){
       <div class="desconto-row"><span class="dr-label">Desconto cobre o necessário?</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${coberto?'✔ Sim':'✘ Não'}</span></div>`;
       }
     }
-    html+=`<div class="projecao-aviso">📌 <strong>Projeção estimada.</strong> A redução por parcela é calculada proporcionalmente com base na parcela atual. Contratos com curva de queda terão redução proporcional em cada parcela individualmente. Os valores reais podem variar — solicite simulação exata ao financeiro MRV para confirmação.</div>`;
+    html+=`<div class="projecao-aviso">📌 <strong>Projeção estimada.</strong> A redução por parcela é calculada proporcionalmente com base na parcela atual. Contratos com curva de queda terão redução proporcional em cada parcela individualmente. Os valores reais podem variar.</div>`;
     dc.innerHTML=html;
   }
 
@@ -1050,6 +1050,13 @@ function exportarCSV(){
   a.download='mrv_historico_'+new Date().toISOString().slice(0,10)+'.csv';
   a.click();
 }
+
+function prepararImpressao(){
+  const nome=(document.getElementById('nomeCliente').value||'Cliente').trim();
+  document.title = nome + ' - Comprometimento de Renda';
+  window.print();
+}
+window.addEventListener('afterprint', ()=>{ document.title='Calculadora MRV — Comprometimento de Renda'; });
 
 function copiarResultado(){
   const pctMediaTxt=document.getElementById('res-pct-media').textContent;
