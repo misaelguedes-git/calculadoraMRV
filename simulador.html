@@ -799,13 +799,13 @@ async function lerPDFProposta(input){
 // ══ EXTRAI DADOS DA PROPOSTA ══
 function extrairDadosProposta(texto){
   try{
-    // Empreendimento
-    const empM=texto.match(/Empreendimento[:\s]+([^\n\r]+)/i);
-    if(empM)setAutoProp('prop-empreendimento',empM[1].trim());
+  // Empreendimento: pega tudo até encontrar a palavra "Unidade:" ou quebra de linha
+    const empM = texto.match(/Empreendimento[:\s]+(.*?)(?=\s*Unidade[:\s]|\n|$)/i);
+    if (empM) setAutoProp('prop-empreendimento', empM[1].trim());
 
-    // Unidade
-    const unidM=texto.match(/Unidade[:\s]+([^\n\r]+)/i);
-    if(unidM)setAutoProp('prop-unidade',unidM[1].trim());
+    // Unidade: pega tudo até encontrar a palavra "Cliente:" ou quebra de linha
+    const unidM = texto.match(/Unidade[:\s]+(.*?)(?=\s*Cliente[:\s]|\n|$)/i);
+    if (unidM) setAutoProp('prop-unidade', unidM[1].trim());
 
     // Valor do Imóvel
     const vimM=texto.match(/Valor\s*Im[oó]vel[:\s]*R\$\s*([\d.,]+)/i);
