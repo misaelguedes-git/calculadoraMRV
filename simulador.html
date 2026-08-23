@@ -442,7 +442,7 @@ tr:hover td{background:#F8F9FA;}
         <div class="grid">
           <div class="field">
             <label>Data Prevista de Entrega <span class="tag manual">MANUAL</span></label>
-            <input type="text" id="prop-dataEntrega" placeholder="DD/MM/AAAA" class="manual-field" required>
+            <input type="text" id="prop-dataEntrega" placeholder="DD/MM/AAAA" class="manual-field" oninput="mascaraData(this)" maxlength="10" required>
           </div>
           <div class="field">
             <label>Renda do Cliente (R$) <span class="tag manual">MANUAL</span></label>
@@ -1162,6 +1162,29 @@ function mascaraMoedaProp(el){
   el.value='R$ '+v.replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 }
 
+  // ══ MÁSCARA DATA ══
+function mascaraData(el){
+  // Remove tudo que não for número
+  let v = el.value.replace(/\D/g, '');
+  
+  // Limita a 8 dígitos numéricos (DDMMAAAA)
+  if(v.length > 8) v = v.substring(0, 8);
+  
+  // Coloca as barras automaticamente
+  if(v.length >= 5) {
+    el.value = v.substring(0, 2) + '/' + v.substring(2, 4) + '/' + v.substring(4, 8);
+  } else if(v.length >= 3) {
+    el.value = v.substring(0, 2) + '/' + v.substring(2, 4);
+  } else {
+    el.value = v;
+  }
+  
+  // (Opcional legal) Recalcula a tabela do fluxo automaticamente 
+  // assim que o usuário termina de digitar o ano (10 caracteres)
+  if(el.value.length === 10) {
+    el.dispatchEvent(new Event('change'));
+  }
+}
 // ══ LISTENER: recalcula PSA/PSB ao digitar data de entrega ══
 document.getElementById('prop-dataEntrega').addEventListener('change',function(){
   if(_propFluxo.length>0&&this.value&&/^\d{2}\/\d{2}\/\d{4}$/.test(this.value)){
