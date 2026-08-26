@@ -752,8 +752,13 @@ tr:hover td{background:#F8F9FA;}
               <span class="tag bpm">BPM</span>
               <span class="tag emcash">EMCASH</span>
             </label>
-            <input type="text" id="dataEntrega" placeholder="Lido automaticamente do contrato..." readonly>
-            <small style="color:#aaa;font-size:10px;">OIC/BPM: item 5.1 · Emcash: não consta — informar manualmente se necessário</small>
+            <input type="text" id="dataEntrega" 
+                   placeholder="Lido automaticamente ou DD/MM/AAAA" 
+                   oninput="mascaraData(this)" maxlength="10">
+            <small style="color:#aaa;font-size:10px;">
+              OIC/BPM: preenchido automaticamente (item 5.1) · 
+              Emcash: digite manualmente no formato DD/MM/AAAA
+            </small>
           </div>
 
           <div class="field">
@@ -1048,23 +1053,64 @@ function extrairDadosContrato(texto){
     // ── EMPREENDIMENTO / IMÓVEL ───────────────────────────
     // OIC/BPM: "Produto: JARDIM DAS AMOREIRAS - BLOCO 04 - 2 Q - APTO 303 CONT:..."
     // EMCASH:  "Encantos Da Zona Norte, Travessa Everest, 2481, Apto: 704, Bloco: 02"
-    if(tipo === 'EMCASH'){
-      // Emcash: pega a descrição do imóvel na seção V
-      const emcEmpM =
-        texto.match(/Descri[çc][aã]o\s*do\s*im[oó]vel[^:]*:\s*([^\n]+)/i)
-        || texto.match(/Travessa\s+\w+[^,\n]+,\s*Apto[^,\n]+/i);
-      if(emcEmpM){
-        const desc = emcEmpM[0] || emcEmpM[1];
-        // Tenta separar empreendimento do bloco/apto
-        const blocoM = desc.match(/Apto[:\s]*(\d+[A-Z]*)[,\s]*Bloco[:\s]*(\d+[A-Z]*)/i);
-        if(blocoM){
-          setAuto('empreendimento', desc.replace(/,?\s*Apto[:\s]*\d+[A-Z]*[,\s]*Bloco[:\s]*\d+[A-Z]*/i,'').trim());
-          setAuto('modulo','Apto '+blocoM[1]+' — Bloco '+blocoM[2]);
-        } else {
-          setAuto('empreendimento', desc.trim());
-        }
+     if(tipo === 'EMCASH'){
+    // ── EMCASH: Nome do empreendimento ──────────────────
+    // Aparece como: "Encantos Da Zona Norte, Travessa Everest..."
+    // Queremos só o nome antes do endereço (antes da vírgula ou "Travessa/Rua/Av")
+    // Também pode aparecer como nome do empreendimento no texto da seção V
+  
+    let nomeEmp = '';
+    let nomeBloco = '';
+  
+    // Tenta pegar o nome do empreendimento da seção V
+    // Formato: "Encantos Da Zona Norte, Travessa Everest, 2481, Apto: 704, Bloco: 02"
+    const descM = texto.match(
+      /Descri[çc][aã]o\s*do\s*im[oó]vel[^:]*:\s*\n?\s*([^\n]+)/i
+    );
+  
+    if(descM){
+      const desc = descM[1].trim();
+  
+      // Pega só o nome — tudo antes de "Travessa", "Rua", "Av", "Estrada" ou vírgula+número
+      const nomeMatch = desc.match(
+        /^([^,]+?)(?:\s*,\s*(?:Travessa|Rua|Av(?:enida)?|Estrada|Alameda|Al\.|R\.)|\s*,\s*\d)/i
+      );
+  
+      if(nomeMatch){
+        nomeEmp = nomeMatch[1].trim();
+      } else {
+        // Se não achou padrão, pega tudo antes da primeira vírgula
+        nomeEmp = desc.split(',')[0].trim();
       }
-    } else {
+  
+      // Bloco e Apto
+      const aptoM = desc.match(/Apto[:\s]*(\d+[A-Z]*)/i);
+      const blocoM = desc.match(/Bloco[:\s]*(\d+[A-Z]*)/i);
+      if(aptoM && blocoM){
+        nomeBloco = 'Apto ' + aptoM[1] + ' — Bloco ' + blocoM[2];
+      } else if(aptoM){
+        nomeBloco = 'Apto ' + aptoM[1];
+      }
+    }
+  
+    // Fallback: tenta pegar o nome do empreendimento de outra forma
+    if(!nomeEmp){
+      // Emcash às vezes tem o nome do empreendimento no texto da CCB
+      const empFallM = texto.match(
+        /(?:empreendimento|residencial|condomínio)[:\s"]*([A-ZÁÉÍÓÚ][A-ZÁÉÍÓÚa-záéíóúãõ\s]+?)(?=,|\n|"|\.|Travessa|Rua)/i
+      );
+      if(empFallM) nomeEmp = empFallM[1].trim();
+    }
+  
+    if(nomeEmp) setAuto('empreendimento', nomeEmp);
+    if(nomeBloco) setAuto('modulo', nomeBloco);
+  
+    // Se ainda não tem bloco, tenta extrair do texto geral
+    if(!nomeBloco){
+      const aptoGeral = texto.match(/Apto[:\s]*(\d+[A-Z]*)[,\s]*Bloco[:\s]*(\d+[A-Z]*)/i);
+      if(aptoGeral) setAuto('modulo', 'Apto ' + aptoGeral[1] + ' — Bloco ' + aptoGeral[2]);
+        }
+      } else {
       // OIC / BPM
       const prodM = texto.match(/Produto[:\s]+([\s\S]+?)(?=CONT[-:\s]|$)/i);
       if(prodM){
@@ -1140,19 +1186,19 @@ function extrairDadosContrato(texto){
     }
 
     if(_obraPronta){
-      setAuto('dataEntrega','Obra já entregue');
+      setAutoData('dataEntrega','Obra já entregue');
       _dataEntregaISO = null;
       calcularPsaPsb(parcelas, null, true);
       buscarPrimeiraParcela(parcelas);
     } else if(entM){
-      setAuto('dataEntrega', entM[1]);
+      setAutoData('dataEntrega', entM[1]);
       const[d,m,a] = entM[1].split('/').map(Number);
       _dataEntregaISO = new Date(a,m-1,d);
       calcularPsaPsb(parcelas, _dataEntregaISO, false);
       buscarParcelaPosEntrega(parcelas, entM[1]);
     } else if(tipo === 'EMCASH'){
       // Emcash: obra pronta ou data manual — usa 1ª parcela diretamente
-      setAuto('dataEntrega','Verificar manualmente');
+      setAutoData('dataEntrega','Verificar manualmente');
       // Tenta pegar "Valor da Primeira Parcela"
       const primM = texto.match(/Valor\s*da\s*Primeira\s*Parcela[:\s]*R\$\s*([\d.,]+)/i);
       if(primM){
@@ -2068,9 +2114,17 @@ function mascaraMoedaGen(el){
   el.value='R$ '+v.replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 }
 
-function setAuto(id,val){
-  const el=document.getElementById(id);
-  if(el){el.value=val;el.classList.remove('auto-filled-caixa');el.classList.add('auto-filled');}
+function setAutoData(id, val) {
+  const el = document.getElementById(id);
+  if(el){ el.value = val; el.classList.add('auto-filled'); }
+}
+  function setAuto(id, val){
+  const el = document.getElementById(id);
+  if(el){
+    el.value = val;
+    el.classList.remove('auto-filled-caixa');
+    el.classList.add('auto-filled');
+  }
 }
 function setAutoCaixa(id,val){
   const el=document.getElementById(id);
