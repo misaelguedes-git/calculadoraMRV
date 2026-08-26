@@ -2232,23 +2232,53 @@ function mostrarStatusProp(msg,tipo){
 }
 
 function parseMoeda(str){
-  if(!str)return 0;
-  // Suporta: "1.772,07" | "1772,07" | "1,772.07" | "1772.07"
-  const s=String(str).trim();
-  // Formato brasileiro: ponto como milhar, vírgula como decimal
-  if(/[\d.]+,\d{2}$/.test(s)){
-    return parseFloat(s.replace(/\./g,'').replace(',','.'))||0;
+  if(!str) return 0;
+  
+  // Remove espaços e símbolo R$
+  let s = String(str).trim().replace(/R\$\s*/g,'').trim();
+  
+  if(!s) return 0;
+
+  // Caso 1: "2.505,10" — ponto milhar, vírgula decimal (BR padrão)
+  if(/^\d{1,3}(\.\d{3})*(,\d{1,2})?$/.test(s)){
+    return parseFloat(s.replace(/\./g,'').replace(',','.')) || 0;
   }
-  // Formato americano: vírgula como milhar, ponto como decimal
-  if(/[\d,]+\.\d{2}$/.test(s)){
-    return parseFloat(s.replace(/,/g,''))||0;
+
+  // Caso 2: "751,52" — sem ponto de milhar, vírgula decimal
+  if(/^\d+(,\d{1,2})?$/.test(s)){
+    return parseFloat(s.replace(',','.')) || 0;
   }
-  // Tenta extrair qualquer número
-  const m=s.match(/([\d.,]+)/);
-  if(!m)return 0;
-  const v=m[1];
-  if(v.includes(',')&&!v.includes('.')){return parseFloat(v.replace(',','.'))||0;}
-  return parseFloat(v.replace(/,/g,''))||0;
+
+  // Caso 3: "2,505.10" — vírgula milhar, ponto decimal (US)
+  if(/^\d{1,3}(,\d{3})*(\.\d{1,2})?$/.test(s)){
+    return parseFloat(s.replace(/,/g,'')) || 0;
+  }
+
+  // Caso 4: "751.52" — ponto decimal simples
+  if(/^\d+\.\d{1,2}$/.test(s)){
+    return parseFloat(s) || 0;
+  }
+
+  // Fallback: remove tudo exceto dígitos e último separador
+  // Tenta vírgula como decimal
+  if(s.includes(',')){
+    const partes = s.split(',');
+    const inteiro = partes[0].replace(/\D/g,'');
+    const decimal = partes[partes.length-1].replace(/\D/g,'');
+    return parseFloat(inteiro + '.' + decimal) || 0;
+  }
+
+  // Tenta ponto como decimal
+  if(s.includes('.')){
+    const partes = s.split('.');
+    const inteiro = partes[0].replace(/\D/g,'');
+    const decimal = partes[partes.length-1].replace(/\D/g,'');
+    return parseFloat(inteiro + '.' + decimal) || 0;
+  }
+
+  // Último recurso: só dígitos
+  const soDigitos = s.replace(/\D/g,'');
+  return soDigitos ? parseInt(soDigitos) / 100 : 0;
 }
 
 function formatMoeda(v){
