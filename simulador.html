@@ -6,35 +6,69 @@
 <meta name="theme-color" content="#006b3f">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Comprom. MRV">
-<title>Calculadora MRV — Comprometimento de Renda</title>
+<title>Calculadora MRV/Emcash — Comprometimento de Renda</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 :root{
   --verde:#006b3f;--verde-claro:#E6F4ED;--verde-hover:#005530;
   --laranja:#E87722;--laranja-claro:#FEF3E8;
   --roxo:#6B2D8B;--roxo-claro:#F3EDF7;
-  --azul:#003366;--azul-claro:#E8EEF5;--cinza:#F5F5F5;--cinza-borda:#E0E0E0;
+  --azul:#003366;--azul-claro:#E8EEF5;
+  --cinza:#F5F5F5;--cinza-borda:#E0E0E0;
   --texto:#333;--branco:#FFF;
   --vermelho:#D32F2F;--vermelho-claro:#FDECEA;
   --amarelo:#F9A825;--amarelo-claro:#FFFDE7;--amarelo-medio:#E65100;
+  --emcash:#1A3A6B;--emcash-claro:#E8EDF5;
+  --bpm:#2E7D32;--bpm-claro:#E8F5E9;
+  --oic:#4A148C;--oic-claro:#F3E5F5;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#ECEEF2;color:var(--texto);font-size:15px;}
-header{background:var(--verde);padding:0 24px;display:flex;align-items:center;gap:20px;height:68px;box-shadow:0 2px 10px rgba(0,0,0,0.22);position:sticky;top:0;z-index:100;}
-.logo-container{background:#fff;border-radius:8px;padding:6px 14px;display:flex;align-items:center;flex-shrink:0;height:50px;}
+
+/* ── HEADER ── */
+header{
+  background:var(--verde);padding:0 24px;display:flex;align-items:center;gap:20px;
+  height:68px;box-shadow:0 2px 10px rgba(0,0,0,0.22);position:sticky;top:0;z-index:100;
+}
+.logo-container{
+  background:#fff;border-radius:8px;padding:6px 14px;
+  display:flex;align-items:center;flex-shrink:0;height:50px;
+}
 .logo-img{height:36px;width:auto;display:block;}
-.logo-fallback{display:none;font-family:'Arial Black',Arial;font-weight:900;font-size:20px;letter-spacing:-0.5px;}
-.logo-fallback .mrv{color:#006b3f;}.logo-fallback .eco{color:#E87722;}
+.logo-fallback{
+  display:none;font-family:'Arial Black',Arial;font-weight:900;
+  font-size:20px;letter-spacing:-0.5px;
+}
+.logo-fallback .mrv{color:#006b3f;}
+.logo-fallback .eco{color:#E87722;}
 .header-div{width:2px;height:38px;background:rgba(255,255,255,0.25);border-radius:2px;flex-shrink:0;}
 .header-text h1{color:#fff;font-size:15px;font-weight:700;line-height:1.3;}
 .header-text p{color:rgba(255,255,255,0.78);font-size:11px;margin-top:2px;}
-.container{max-width:880px;margin:22px auto;padding:0 14px 80px;}
+
+/* ── BADGE TIPO CONTRATO ── */
+.tipo-contrato-badge{
+  display:none;margin-left:auto;padding:6px 14px;border-radius:20px;
+  font-size:12px;font-weight:700;flex-shrink:0;align-items:center;gap:6px;
+}
+.tipo-contrato-badge.show{display:flex;}
+.tipo-contrato-badge.oic{background:var(--oic-claro);color:var(--oic);border:1.5px solid var(--oic);}
+.tipo-contrato-badge.bpm{background:var(--bpm-claro);color:var(--bpm);border:1.5px solid var(--bpm);}
+.tipo-contrato-badge.emcash{background:var(--emcash-claro);color:var(--emcash);border:1.5px solid var(--emcash);}
+
+/* ── CONTAINER ── */
+.container{max-width:920px;margin:22px auto;padding:0 14px 80px;}
 
 /* ── TAB SWITCH ── */
-.tab-switch{display:flex;background:#fff;border-radius:14px;padding:6px;gap:6px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.08);}
-.tab-btn{flex:1;padding:12px 10px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;transition:.25s;background:transparent;color:#888;display:flex;align-items:center;justify-content:center;gap:7px;}
+.tab-switch{
+  display:flex;background:#fff;border-radius:14px;padding:6px;gap:6px;
+  margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
+.tab-btn{
+  flex:1;padding:12px 10px;border-radius:10px;border:none;font-size:13px;
+  font-weight:700;cursor:pointer;transition:.25s;background:transparent;
+  color:#888;display:flex;align-items:center;justify-content:center;gap:7px;
+}
 .tab-btn.active-proposta{background:var(--laranja);color:#fff;box-shadow:0 2px 8px rgba(232,119,34,0.35);}
 .tab-btn.active-contrato{background:var(--verde);color:#fff;box-shadow:0 2px 8px rgba(0,107,63,0.35);}
 .tab-btn:not(.active-proposta):not(.active-contrato):hover{background:var(--cinza);color:var(--texto);}
@@ -42,7 +76,10 @@ header{background:var(--verde);padding:0 24px;display:flex;align-items:center;ga
 
 /* ── UPLOADS ── */
 .uploads-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
-.upload-card{background:#fff;border-radius:14px;border:2px dashed;padding:22px 16px;text-align:center;cursor:pointer;transition:.25s;}
+.upload-card{
+  background:#fff;border-radius:14px;border:2px dashed;
+  padding:22px 16px;text-align:center;cursor:pointer;transition:.25s;
+}
 .upload-card.mrv{border-color:var(--verde);}
 .upload-card.caixa{border-color:var(--azul);}
 .upload-card.proposta{border-color:var(--laranja);}
@@ -58,7 +95,11 @@ header{background:var(--verde);padding:0 24px;display:flex;align-items:center;ga
 .upload-card.proposta h2{color:var(--laranja);}
 .upload-card p{color:#777;font-size:11px;}
 .upload-card input{display:none;}
-.btn-upload{display:inline-flex;align-items:center;gap:6px;margin-top:10px;color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:.2s;}
+.btn-upload{
+  display:inline-flex;align-items:center;gap:6px;margin-top:10px;
+  color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;
+  cursor:pointer;border:none;transition:.2s;
+}
 .btn-upload.mrv{background:var(--verde);}
 .btn-upload.mrv:hover{background:var(--laranja);}
 .btn-upload.caixa{background:var(--azul);}
@@ -70,30 +111,59 @@ header{background:var(--verde);padding:0 24px;display:flex;align-items:center;ga
 .upload-status-badge.ok-caixa{display:inline-block;background:var(--azul-claro);color:var(--azul);}
 .upload-status-badge.ok-proposta{display:inline-block;background:var(--laranja-claro);color:var(--laranja);}
 
-.status-bar{display:none;align-items:center;gap:12px;background:#fff;border-radius:10px;padding:13px 18px;margin-bottom:16px;border-left:4px solid var(--verde);font-size:14px;font-weight:500;}
+/* ── STATUS BAR ── */
+.status-bar{
+  display:none;align-items:center;gap:12px;background:#fff;
+  border-radius:10px;padding:13px 18px;margin-bottom:16px;
+  border-left:4px solid var(--verde);font-size:14px;font-weight:500;
+}
 .status-bar.show{display:flex;}
 .status-bar.success{border-color:var(--verde);}
 .status-bar.error{border-color:var(--vermelho);}
 .status-bar.info{border-color:var(--azul);}
-.spinner{width:20px;height:20px;flex-shrink:0;border:3px solid #eee;border-top-color:var(--verde);border-radius:50%;animation:spin .8s linear infinite;}
+.spinner{
+  width:20px;height:20px;flex-shrink:0;border:3px solid #eee;
+  border-top-color:var(--verde);border-radius:50%;animation:spin .8s linear infinite;
+}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-.card{background:#fff;border-radius:14px;padding:20px 18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.07);}
-.card-title{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--cinza);display:flex;align-items:center;gap:8px;}
+/* ── CARDS ── */
+.card{
+  background:#fff;border-radius:14px;padding:20px 18px;
+  margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,0.07);
+}
+.card-title{
+  font-size:15px;font-weight:700;margin-bottom:16px;
+  padding-bottom:10px;border-bottom:2px solid var(--cinza);
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
 .card-title.verde{color:var(--verde);}
 .card-title.laranja{color:var(--laranja);}
 .card-title.roxo{color:var(--roxo);}
 .card-title.azul{color:var(--azul);}
+
+/* ── GRID ── */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
 .field{display:flex;flex-direction:column;gap:5px;}
 .field.full{grid-column:1/-1;}
+
+/* ── LABELS / TAGS ── */
 label{font-size:12px;font-weight:700;color:#555;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
 .tag{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;}
 .tag.auto{background:var(--verde-claro);color:var(--verde);}
 .tag.auto-caixa{background:var(--azul-claro);color:var(--azul);}
 .tag.auto-prop{background:var(--laranja-claro);color:var(--laranja);}
 .tag.manual{background:var(--amarelo-claro);color:var(--amarelo-medio);}
-input[type=text]{padding:11px 13px;border:1.5px solid var(--cinza-borda);border-radius:8px;font-size:14px;transition:border .2s;width:100%;background:#fff;color:var(--texto);}
+.tag.oic{background:var(--oic-claro);color:var(--oic);}
+.tag.bpm{background:var(--bpm-claro);color:var(--bpm);}
+.tag.emcash{background:var(--emcash-claro);color:var(--emcash);}
+
+/* ── INPUTS ── */
+input[type=text]{
+  padding:11px 13px;border:1.5px solid var(--cinza-borda);
+  border-radius:8px;font-size:14px;transition:border .2s;
+  width:100%;background:#fff;color:var(--texto);
+}
 input[type=text]:focus{outline:none;border-color:var(--verde);}
 input.auto-filled{background:var(--verde-claro);border-color:var(--verde);color:#1a5c2a;}
 input.auto-filled-caixa{background:var(--azul-claro);border-color:var(--azul);color:#003366;}
@@ -102,39 +172,22 @@ input.manual-field{background:var(--amarelo-claro);border-color:var(--amarelo);}
 input[readonly]{background:#F8F9FA;color:#555;cursor:default;}
 input.auto-filled[readonly]{background:var(--verde-claro);color:#1a5c2a;}
 input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
-input.auto-filled-prop[readonly]{background:var(--laranja-claro);color:#7a3000;}
 
-/* ── RESUMO PROPOSTA ── */
-.resumo-proposta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;grid-column:1/-1;margin-bottom:4px;}
-.resumo-item{background:var(--cinza);border-radius:10px;padding:12px;text-align:center;}
-.resumo-item label{font-size:10px;color:#777;display:block;margin-bottom:4px;font-weight:700;}
-.resumo-item .rv{font-size:15px;font-weight:800;color:var(--azul);}
-.resumo-item.destaque{background:var(--laranja-claro);}
-.resumo-item.destaque .rv{color:var(--laranja);}
-.resumo-item.bom-pag{background:var(--roxo-claro);}
-.resumo-item.bom-pag .rv{color:var(--roxo);}
+/* ── INFO BOX TIPO CONTRATO ── */
+.tipo-info-box{
+  grid-column:1/-1;border-radius:10px;padding:12px 16px;
+  display:none;border:1.5px solid;margin-bottom:4px;
+}
+.tipo-info-box.oic{background:var(--oic-claro);border-color:var(--oic);}
+.tipo-info-box.bpm{background:var(--bpm-claro);border-color:var(--bpm);}
+.tipo-info-box.emcash{background:var(--emcash-claro);border-color:var(--emcash);}
+.tipo-info-box .tib-titulo{font-size:12px;font-weight:700;margin-bottom:4px;}
+.tipo-info-box.oic .tib-titulo{color:var(--oic);}
+.tipo-info-box.bpm .tib-titulo{color:var(--bpm);}
+.tipo-info-box.emcash .tib-titulo{color:var(--emcash);}
+.tipo-info-box .tib-desc{font-size:12px;color:#555;}
 
-/* ── FLUXO MÊS A MÊS ── */
-.fluxo-wrap{grid-column:1/-1;border-radius:12px;overflow:hidden;border:1.5px solid var(--cinza-borda);display:none;}
-.fluxo-header{background:var(--laranja);color:#fff;padding:11px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;}
-.fluxo-header .fh-right{font-size:11px;opacity:.8;}
-.fluxo-body{display:none;max-height:420px;overflow-y:auto;}
-.fluxo-body.open{display:block;}
-.fluxo-table{width:100%;border-collapse:collapse;font-size:12px;}
-.fluxo-table th{background:#f8f0e8;color:var(--laranja);padding:8px 12px;text-align:left;font-weight:700;position:sticky;top:0;z-index:1;}
-.fluxo-table td{padding:7px 12px;border-bottom:1px solid #F0F2F5;}
-.fluxo-table tr:hover td{background:#FEF9F5;}
-.fluxo-table tr.tipo-sinal td{background:#FFFDE7;}
-.fluxo-table tr.tipo-bom td{background:var(--roxo-claro);}
-.fluxo-table tr.tipo-psb td{background:var(--verde-claro);}
-.fluxo-table tr.tipo-psa td{}
-.tipo-badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;}
-.tipo-badge.sinal{background:var(--amarelo-claro);color:var(--amarelo-medio);}
-.tipo-badge.mensal-psa{background:#E8EEF5;color:var(--azul);}
-.tipo-badge.mensal-psb{background:var(--verde-claro);color:var(--verde);}
-.tipo-badge.bom{background:var(--roxo-claro);color:var(--roxo);}
-
-/* ── PSA/PSB PROPOSTA ── */
+/* ── PSA / PSB ── */
 .psa-psb-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;grid-column:1/-1;}
 .psa-box,.psb-box{border-radius:10px;padding:14px 16px;}
 .psa-box{background:var(--roxo-claro);border:1.5px solid var(--roxo);}
@@ -148,8 +201,76 @@ input.auto-filled-prop[readonly]{background:var(--laranja-claro);color:#7a3000;}
 .psa-box .psa-psb-val{color:var(--roxo);}
 .psb-box .psa-psb-val{color:var(--verde);}
 
-/* ── RESULTADO PROPOSTA ── */
-.resultado{display:none;background:#fff;border-radius:14px;padding:24px 18px;margin-bottom:18px;box-shadow:0 4px 18px rgba(0,0,0,0.1);}
+/* ── % FINANCIADO ── */
+.financiado-wrap{
+  grid-column:1/-1;border-radius:10px;padding:14px 16px;display:none;
+  align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border:2px solid;
+}
+.financiado-wrap.fin-verde{background:var(--verde-claro);border-color:var(--verde);}
+.financiado-wrap.fin-amarelo{background:var(--amarelo-claro);border-color:var(--amarelo);}
+.financiado-wrap.fin-vermelho{background:var(--vermelho-claro);border-color:var(--vermelho);}
+.financiado-info{font-size:13px;color:#555;}
+.financiado-info strong{font-size:22px;display:block;margin-top:2px;}
+.financiado-wrap.fin-verde .financiado-info strong{color:var(--verde);}
+.financiado-wrap.fin-amarelo .financiado-info strong{color:var(--amarelo-medio);}
+.financiado-wrap.fin-vermelho .financiado-info strong{color:var(--vermelho);}
+.financiado-badge{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;}
+.financiado-badge.ok{background:var(--verde);color:#fff;}
+.financiado-badge.aviso{background:var(--amarelo);color:#fff;}
+.financiado-badge.nok{background:var(--vermelho);color:#fff;}
+
+/* ── FAIXA INFO ── */
+.faixa-info-box{
+  grid-column:1/-1;border-radius:10px;padding:12px 16px;
+  display:none;border:1.5px solid var(--azul);background:var(--azul-claro);
+}
+.faixa-info-box .faixa-titulo{font-size:12px;font-weight:700;color:var(--azul);margin-bottom:6px;}
+.faixa-info-box .faixa-detalhe{font-size:13px;color:var(--azul);font-weight:600;}
+
+/* ── PLANO DE PAGAMENTO ── */
+.plano-wrap{grid-column:1/-1;display:none;border-radius:12px;overflow:hidden;border:1.5px solid var(--cinza-borda);margin-top:4px;}
+.plano-header{background:var(--azul);color:#fff;padding:11px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.plano-secao{border-bottom:1px solid var(--cinza-borda);}
+.plano-secao:last-child{border-bottom:none;}
+.plano-secao-titulo{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;background:#FAFAFA;font-size:13px;font-weight:700;
+  cursor:pointer;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--cinza-borda);transition:background .2s;
+}
+.plano-secao-titulo:hover{background:#F0F2F5;}
+.plano-secao-titulo .ps-esq{display:flex;align-items:center;gap:8px;}
+.plano-secao-titulo .ps-dir{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.plano-badge-total{font-size:13px;font-weight:800;color:var(--azul);}
+.plano-badge-pct{font-size:11px;padding:2px 8px;border-radius:4px;background:var(--azul);color:#fff;font-weight:700;}
+.plano-badge-pct.roxo{background:var(--roxo);}
+.plano-chevron{font-size:11px;color:#aaa;transition:transform .25s;}
+.plano-secao.open .plano-chevron{transform:rotate(180deg);}
+.plano-conteudo{display:none;padding:12px 16px;}
+.plano-secao.open .plano-conteudo{display:block;}
+.entrada-lista{list-style:none;padding:0;margin:0;}
+.entrada-lista li{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 0;border-bottom:1px solid #F0F2F5;font-size:13px;flex-wrap:wrap;gap:4px;
+}
+.entrada-lista li:last-child{border-bottom:none;}
+.entrada-lista .el-num{font-size:11px;color:#aaa;font-weight:600;min-width:22px;}
+.entrada-lista .el-val{font-weight:700;color:var(--azul);}
+.entrada-lista .el-venc{font-size:12px;color:#777;background:#F0F2F5;padding:2px 8px;border-radius:4px;}
+.grupo-wrap{margin-bottom:10px;}
+.grupo-wrap:last-child{margin-bottom:0;}
+.grupo-titulo{font-size:12px;font-weight:700;color:var(--roxo);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;}
+.grupo-titulo .gt-total{font-size:13px;color:var(--roxo);display:flex;align-items:center;gap:8px;}
+.grupo-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F0F2F5;font-size:13px;flex-wrap:wrap;gap:4px;}
+.grupo-row:last-child{border-bottom:none;}
+.grupo-row .gr-val{font-weight:700;color:var(--azul);}
+.grupo-row .gr-venc{font-size:12px;color:#777;background:#F0F2F5;padding:2px 8px;border-radius:4px;}
+.sem-intermediarias{font-size:13px;color:#999;font-style:italic;padding:8px 0;text-align:center;}
+
+/* ── RESULTADO ── */
+.resultado{
+  display:none;background:#fff;border-radius:14px;
+  padding:24px 18px;margin-bottom:18px;box-shadow:0 4px 18px rgba(0,0,0,0.1);
+}
 .resultado.show{display:block;}
 .resultado-title{font-size:16px;font-weight:800;text-align:center;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid var(--cinza);}
 .resultado-title.laranja{color:var(--laranja);}
@@ -161,9 +282,9 @@ input.auto-filled-prop[readonly]{background:var(--laranja-claro);color:#7a3000;}
 .res-item.destaque{background:var(--laranja-claro);}.res-item.destaque .val{color:var(--laranja);}
 .res-item.destaque-verde{background:var(--verde-claro);}.res-item.destaque-verde .val{color:var(--verde);}
 
-/* ── COMPROM UNIFICADO (reutilizado) ── */
+/* ── COMPROMETIMENTO UNIFICADO ── */
 .comprom-unified{border-radius:12px;padding:0;margin-bottom:13px;overflow:hidden;border:2px solid var(--cinza-borda);}
-.comprom-unified-header{padding:8px 16px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:8px;background:var(--cinza);color:#777;border-bottom:1px solid var(--cinza-borda);}
+.comprom-unified-header{padding:8px 16px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:8px;background:var(--cinza);color:#777;border-bottom:1px solid var(--cinza-borda);flex-wrap:wrap;}
 .comprom-unified-body{display:flex;align-items:stretch;min-height:90px;}
 .comprom-pct-side{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 20px;}
 .comprom-pct-label{font-size:11px;font-weight:700;color:#777;margin-bottom:4px;}
@@ -187,6 +308,8 @@ input.auto-filled-prop[readonly]{background:var(--laranja-claro);color:#7a3000;}
 .comprom-unified.secundario .comprom-unified-header{background:var(--roxo-claro);color:var(--roxo);}
 .comprom-unified.secundario .comprom-pct-val{color:var(--roxo);}
 .comprom-unified.secundario .comprom-status-side{background:var(--roxo-claro);border-color:var(--roxo);color:var(--roxo);}
+
+/* ── BARRA PROGRESSO ── */
 .separador-calculo{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:11px;font-weight:700;color:#aaa;}
 .separador-calculo::before,.separador-calculo::after{content:'';flex:1;height:1px;background:var(--cinza-borda);}
 .progress-wrap{background:#e0e0e0;border-radius:20px;height:14px;overflow:hidden;margin-bottom:6px;}
@@ -196,90 +319,7 @@ input.auto-filled-prop[readonly]{background:var(--laranja-claro);color:#7a3000;}
 .progress-bar.vermelho{background:linear-gradient(90deg,var(--vermelho),#e57373);}
 .progress-labels{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-bottom:14px;}
 
-/* ── EXCEDENTE BOX ── */
-.excedente-box{border-radius:12px;padding:18px;margin-bottom:16px;border:2px solid;}
-.excedente-box.ok{background:var(--verde-claro);border-color:var(--verde);}
-.excedente-box.nok{background:var(--vermelho-claro);border-color:var(--vermelho);}
-.excedente-titulo{font-size:14px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.excedente-box.ok .excedente-titulo{color:var(--verde);}
-.excedente-box.nok .excedente-titulo{color:var(--vermelho);}
-.excedente-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.07);font-size:13px;flex-wrap:wrap;gap:6px;}
-.excedente-row:last-child{border-bottom:none;padding-bottom:0;}
-.excedente-row .er-label{color:#555;font-weight:500;}
-.excedente-row .er-val{font-weight:800;font-size:15px;}
-.aviso-estimativa{margin-top:14px;padding:11px 14px;background:rgba(0,0,0,0.06);border-radius:8px;font-size:12px;color:#555;line-height:1.6;border-left:3px solid var(--amarelo);}
-
-/* ── CONTRATO (mantido igual) ── */
-.financiado-wrap{grid-column:1/-1;border-radius:10px;padding:14px 16px;display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border:2px solid;}
-.financiado-wrap.fin-verde{background:var(--verde-claro);border-color:var(--verde);}
-.financiado-wrap.fin-amarelo{background:var(--amarelo-claro);border-color:var(--amarelo);}
-.financiado-wrap.fin-vermelho{background:var(--vermelho-claro);border-color:var(--vermelho);}
-.financiado-info{font-size:13px;color:#555;}
-.financiado-info strong{font-size:22px;display:block;margin-top:2px;}
-.financiado-wrap.fin-verde .financiado-info strong{color:var(--verde);}
-.financiado-wrap.fin-amarelo .financiado-info strong{color:var(--amarelo-medio);}
-.financiado-wrap.fin-vermelho .financiado-info strong{color:var(--vermelho);}
-.financiado-badge{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;}
-.financiado-badge.ok{background:var(--verde);color:#fff;}
-.financiado-badge.aviso{background:var(--amarelo);color:#fff;}
-.financiado-badge.nok{background:var(--vermelho);color:#fff;}
-.faixa-info-box{grid-column:1/-1;border-radius:10px;padding:12px 16px;display:none;border:1.5px solid var(--azul);background:var(--azul-claro);}
-.faixa-info-box .faixa-titulo{font-size:12px;font-weight:700;color:var(--azul);margin-bottom:6px;}
-.faixa-info-box .faixa-detalhe{font-size:13px;color:var(--azul);font-weight:600;}
-.plano-wrap{grid-column:1/-1;display:none;border-radius:12px;overflow:hidden;border:1.5px solid var(--cinza-borda);margin-top:4px;}
-.plano-header{background:var(--azul);color:#fff;padding:11px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;}
-.plano-secao{border-bottom:1px solid var(--cinza-borda);}
-.plano-secao:last-child{border-bottom:none;}
-.plano-secao-titulo{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;background:#FAFAFA;font-size:13px;font-weight:700;cursor:pointer;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--cinza-borda);transition:background .2s;}
-.plano-secao-titulo:hover{background:#F0F2F5;}
-.plano-secao-titulo .ps-esq{display:flex;align-items:center;gap:8px;}
-.plano-secao-titulo .ps-dir{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.plano-badge-total{font-size:13px;font-weight:800;color:var(--azul);}
-.plano-badge-pct{font-size:11px;padding:2px 8px;border-radius:4px;background:var(--azul);color:#fff;font-weight:700;}
-.plano-badge-pct.roxo{background:var(--roxo);}
-.plano-chevron{font-size:11px;color:#aaa;transition:transform .25s;}
-.plano-secao.open .plano-chevron{transform:rotate(180deg);}
-.plano-conteudo{display:none;padding:12px 16px;}
-.plano-secao.open .plano-conteudo{display:block;}
-.entrada-lista{list-style:none;padding:0;margin:0;}
-.entrada-lista li{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F0F2F5;font-size:13px;flex-wrap:wrap;gap:4px;}
-.entrada-lista li:last-child{border-bottom:none;}
-.entrada-lista .el-num{font-size:11px;color:#aaa;font-weight:600;min-width:22px;}
-.entrada-lista .el-val{font-weight:700;color:var(--azul);}
-.entrada-lista .el-venc{font-size:12px;color:#777;background:#F0F2F5;padding:2px 8px;border-radius:4px;}
-.grupo-wrap{margin-bottom:10px;}
-.grupo-wrap:last-child{margin-bottom:0;}
-.grupo-titulo{font-size:12px;font-weight:700;color:var(--roxo);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;}
-.grupo-titulo .gt-total{font-size:13px;color:var(--roxo);display:flex;align-items:center;gap:8px;}
-.grupo-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F0F2F5;font-size:13px;flex-wrap:wrap;gap:4px;}
-.grupo-row:last-child{border-bottom:none;}
-.grupo-row .gr-val{font-weight:700;color:var(--azul);}
-.grupo-row .gr-venc{font-size:12px;color:#777;background:#F0F2F5;padding:2px 8px;border-radius:4px;}
-.sem-intermediarias{font-size:13px;color:#999;font-style:italic;padding:8px 0;text-align:center;}
-.debug-toolbar{grid-column:1/-1;display:none;align-items:center;gap:8px;flex-wrap:wrap;background:#1a1a2e;border-radius:10px 10px 0 0;padding:10px 14px;border:2px solid #00ff88;border-bottom:none;margin-top:8px;}
-.debug-toolbar.show{display:flex;}
-.debug-box{grid-column:1/-1;background:#1a1a2e;color:#00ff88;border-radius:0 0 10px 10px;padding:14px 16px;font-size:11px;font-family:'Courier New',monospace;max-height:280px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;border:2px solid #00ff88;border-top:none;display:none;}
-.debug-box.show{display:block;}
-.debug-btn{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #00ff88;background:transparent;color:#00ff88;transition:.2s;font-family:'Courier New',monospace;}
-.debug-btn:hover,.debug-btn.active{background:#00ff88;color:#1a1a2e;}
-.debug-btn.fechar{border-color:#ff4444;color:#ff4444;margin-left:auto;}
-.debug-btn.fechar:hover{background:#ff4444;color:#fff;}
-.botoes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
-.btn{padding:13px 22px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;gap:7px;}
-.btn-verde{background:var(--verde);color:#fff;}.btn-verde:hover{background:var(--verde-hover);}
-.btn-laranja{background:var(--laranja);color:#fff;}.btn-laranja:hover{background:#c45e0f;}
-.btn-roxo{background:var(--roxo);color:#fff;}.btn-roxo:hover{background:#4e1f68;}
-.btn-cinza{background:#6c757d;color:#fff;}.btn-cinza:hover{background:#545b62;}
-.btn-azul{background:var(--azul);color:#fff;}.btn-azul:hover{background:#002244;}
-.psa-psb-resultado{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px;}
-.psa-res,.psb-res{border-radius:10px;padding:14px;text-align:center;}
-.psa-res{background:var(--roxo-claro);}
-.psb-res{background:var(--verde-claro);}
-.psa-res .pr-title{font-size:12px;font-weight:700;color:var(--roxo);margin-bottom:8px;}
-.psb-res .pr-title{font-size:12px;font-weight:700;color:var(--verde);margin-bottom:8px;}
-.psa-res .pr-val{font-size:16px;font-weight:800;color:var(--roxo);}
-.psb-res .pr-val{font-size:16px;font-weight:800;color:var(--verde);}
-.psa-res .pr-sub,.psb-res .pr-sub{font-size:11px;color:#888;margin-top:3px;}
+/* ── DESCONTO / EXCEDENTE ── */
 .desconto-section{border-radius:12px;padding:18px;margin-bottom:16px;border:2px solid;}
 .desconto-section.ok{background:var(--verde-claro);border-color:var(--verde);}
 .desconto-section.nok{background:var(--vermelho-claro);border-color:var(--vermelho);}
@@ -293,10 +333,84 @@ input.auto-filled-prop[readonly]{background:var(--laranja-claro);color:#7a3000;}
 .desconto-row .dr-label{color:#555;font-weight:500;}
 .desconto-row .dr-val{font-weight:800;font-size:15px;}
 .projecao-aviso{margin-top:14px;padding:11px 14px;background:rgba(0,0,0,0.06);border-radius:8px;font-size:12px;color:#555;line-height:1.6;border-left:3px solid var(--amarelo);}
+
+/* ── PSA PSB RESULTADO ── */
+.psa-psb-resultado{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px;}
+.psa-res,.psb-res{border-radius:10px;padding:14px;text-align:center;}
+.psa-res{background:var(--roxo-claro);}
+.psb-res{background:var(--verde-claro);}
+.psa-res .pr-title{font-size:12px;font-weight:700;color:var(--roxo);margin-bottom:8px;}
+.psb-res .pr-title{font-size:12px;font-weight:700;color:var(--verde);margin-bottom:8px;}
+.psa-res .pr-val{font-size:16px;font-weight:800;color:var(--roxo);}
+.psb-res .pr-val{font-size:16px;font-weight:800;color:var(--verde);}
+.psa-res .pr-sub,.psb-res .pr-sub{font-size:11px;color:#888;margin-top:3px;}
+
+/* ── FLUXO PROPOSTA ── */
+.fluxo-wrap{grid-column:1/-1;border-radius:12px;overflow:hidden;border:1.5px solid var(--cinza-borda);display:none;}
+.fluxo-header{background:var(--laranja);color:#fff;padding:11px 16px;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;}
+.fluxo-header .fh-right{font-size:11px;opacity:.8;}
+.fluxo-body{display:none;max-height:420px;overflow-y:auto;}
+.fluxo-body.open{display:block;}
+.fluxo-table{width:100%;border-collapse:collapse;font-size:12px;}
+.fluxo-table th{background:#f8f0e8;color:var(--laranja);padding:8px 12px;text-align:left;font-weight:700;position:sticky;top:0;z-index:1;}
+.fluxo-table td{padding:7px 12px;border-bottom:1px solid #F0F2F5;}
+.fluxo-table tr:hover td{background:#FEF9F5;}
+.fluxo-table tr.tipo-sinal td{background:#FFFDE7;}
+.fluxo-table tr.tipo-bom td{background:var(--roxo-claro);}
+.fluxo-table tr.tipo-psb td{background:var(--verde-claro);}
+.tipo-badge{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;}
+.tipo-badge.sinal{background:var(--amarelo-claro);color:var(--amarelo-medio);}
+.tipo-badge.mensal-psa{background:#E8EEF5;color:var(--azul);}
+.tipo-badge.mensal-psb{background:var(--verde-claro);color:var(--verde);}
+.tipo-badge.bom{background:var(--roxo-claro);color:var(--roxo);}
+
+/* ── RESUMO PROPOSTA ── */
+.resumo-proposta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;grid-column:1/-1;margin-bottom:4px;}
+.resumo-item{background:var(--cinza);border-radius:10px;padding:12px;text-align:center;}
+.resumo-item label{font-size:10px;color:#777;display:block;margin-bottom:4px;font-weight:700;}
+.resumo-item .rv{font-size:15px;font-weight:800;color:var(--azul);}
+.resumo-item.destaque{background:var(--laranja-claro);}.resumo-item.destaque .rv{color:var(--laranja);}
+.resumo-item.bom-pag{background:var(--roxo-claro);}.resumo-item.bom-pag .rv{color:var(--roxo);}
+
+/* ── EXCEDENTE PROPOSTA ── */
+.excedente-box{border-radius:12px;padding:18px;margin-bottom:16px;border:2px solid;}
+.excedente-box.ok{background:var(--verde-claro);border-color:var(--verde);}
+.excedente-box.nok{background:var(--vermelho-claro);border-color:var(--vermelho);}
+.excedente-titulo{font-size:14px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.excedente-box.ok .excedente-titulo{color:var(--verde);}
+.excedente-box.nok .excedente-titulo{color:var(--vermelho);}
+.excedente-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.07);font-size:13px;flex-wrap:wrap;gap:6px;}
+.excedente-row:last-child{border-bottom:none;padding-bottom:0;}
+.excedente-row .er-label{color:#555;font-weight:500;}
+.excedente-row .er-val{font-weight:800;font-size:15px;}
+.aviso-estimativa{margin-top:14px;padding:11px 14px;background:rgba(0,0,0,0.06);border-radius:8px;font-size:12px;color:#555;line-height:1.6;border-left:3px solid var(--amarelo);}
+
+/* ── DEBUG ── */
+.debug-toolbar{grid-column:1/-1;display:none;align-items:center;gap:8px;flex-wrap:wrap;background:#1a1a2e;border-radius:10px 10px 0 0;padding:10px 14px;border:2px solid #00ff88;border-bottom:none;margin-top:8px;}
+.debug-toolbar.show{display:flex;}
+.debug-box{grid-column:1/-1;background:#1a1a2e;color:#00ff88;border-radius:0 0 10px 10px;padding:14px 16px;font-size:11px;font-family:'Courier New',monospace;max-height:280px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;border:2px solid #00ff88;border-top:none;display:none;}
+.debug-box.show{display:block;}
+.debug-btn{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid #00ff88;background:transparent;color:#00ff88;transition:.2s;font-family:'Courier New',monospace;}
+.debug-btn:hover,.debug-btn.active{background:#00ff88;color:#1a1a2e;}
+.debug-btn.fechar{border-color:#ff4444;color:#ff4444;margin-left:auto;}
+.debug-btn.fechar:hover{background:#ff4444;color:#fff;}
+
+/* ── BOTÕES ── */
+.botoes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+.btn{padding:13px 22px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:.2s;display:inline-flex;align-items:center;gap:7px;}
+.btn-verde{background:var(--verde);color:#fff;}.btn-verde:hover{background:var(--verde-hover);}
+.btn-laranja{background:var(--laranja);color:#fff;}.btn-laranja:hover{background:#c45e0f;}
+.btn-roxo{background:var(--roxo);color:#fff;}.btn-roxo:hover{background:#4e1f68;}
+.btn-cinza{background:#6c757d;color:#fff;}.btn-cinza:hover{background:#545b62;}
+.btn-azul{background:var(--azul);color:#fff;}.btn-azul:hover{background:#002244;}
+
+/* ── TOAST ── */
 .toast-sheets{position:fixed;bottom:24px;right:24px;z-index:9999;background:#fff;border-radius:12px;padding:14px 18px;box-shadow:0 4px 20px rgba(0,0,0,0.18);display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;transform:translateY(80px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);border-left:4px solid var(--verde);max-width:320px;}
 .toast-sheets.show{transform:translateY(0);opacity:1;}
 .toast-sheets.erro{border-color:var(--vermelho);}
 .toast-sheets .toast-icon{font-size:20px;flex-shrink:0;}
+
+/* ── HISTÓRICO ── */
 .historico-card{background:#fff;border-radius:14px;padding:18px;margin-top:18px;box-shadow:0 2px 10px rgba(0,0,0,0.07);display:none;}
 .historico-title{font-size:15px;font-weight:700;color:var(--roxo);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
 .table-wrap{overflow-x:auto;}
@@ -308,15 +422,20 @@ tr:hover td{background:#F8F9FA;}
 .badge-sm.a{background:var(--verde-claro);color:var(--verde);}
 .badge-sm.t{background:var(--amarelo-claro);color:var(--amarelo-medio);}
 .badge-sm.r{background:var(--vermelho-claro);color:var(--vermelho);}
+.badge-sm.oic{background:var(--oic-claro);color:var(--oic);}
+.badge-sm.bpm{background:var(--bpm-claro);color:var(--bpm);}
+.badge-sm.emcash{background:var(--emcash-claro);color:var(--emcash);}
 
+/* ── MOBILE ── */
 @media(max-width:600px){
   header{padding:0 14px;gap:12px;height:58px;}
   .logo-container{height:44px;padding:5px 10px;}.logo-img{height:28px;}
-  .header-div{display:none;}.header-text h1{font-size:13px;}
+  .header-div,.tipo-contrato-badge{display:none!important;}
+  .header-text h1{font-size:13px;}
   .container{padding:0 10px 80px;}
   .uploads-grid{grid-template-columns:1fr;}
-  .grid,.psa-psb-grid,.res-grid,.psa-psb-resultado{grid-template-columns:1fr;}
-  .field.full,.psa-psb-grid,.financiado-wrap,.faixa-info-box,.plano-wrap,.debug-toolbar,.debug-box,.fluxo-wrap,.resumo-proposta-grid{grid-column:1;}
+  .grid,.psa-psb-grid,.res-grid,.psa-psb-resultado,.resumo-proposta-grid{grid-template-columns:1fr;}
+  .field.full,.psa-psb-grid,.financiado-wrap,.faixa-info-box,.plano-wrap,.debug-toolbar,.debug-box,.fluxo-wrap,.tipo-info-box{grid-column:1;}
   .resumo-proposta-grid{grid-template-columns:1fr 1fr;}
   .financiado-wrap{flex-direction:column;align-items:flex-start;}
   .comprom-unified-body{flex-direction:column;}
@@ -328,7 +447,7 @@ tr:hover td{background:#F8F9FA;}
 }
 @media(max-width:380px){.res-grid{grid-template-columns:1fr;}.resumo-proposta-grid{grid-template-columns:1fr;}}
 @media print{
-  .upload-card,.status-bar,.botoes,.historico-card,.debug-toolbar,.debug-box,.toast-sheets,.tab-switch{display:none!important;}
+  .upload-card,.status-bar,.botoes,.historico-card,.debug-toolbar,.debug-box,.toast-sheets,.tab-switch,.tipo-contrato-badge{display:none!important;}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
   @page{size:A4 portrait;margin:8mm;}
   html,body{background:#ECEEF2!important;font-size:12px;}
@@ -351,7 +470,7 @@ tr:hover td{background:#F8F9FA;}
 <header>
   <div class="logo-container">
     <img class="logo-img" id="logoImg"
-         src="https://raw.githubusercontent.com/misaelguedes-git/calculadoraMRV/28c91fb6679626b4096a672dbd9fd8f3fd8a5733/assets/LogoMRV.png"
+         src="LogoMRV.png"
          alt="MRV&CO"
          onerror="this.style.display='none';document.getElementById('logoFallback').style.display='inline';">
     <span class="logo-fallback" id="logoFallback">
@@ -360,8 +479,10 @@ tr:hover td{background:#F8F9FA;}
   </div>
   <div class="header-div"></div>
   <div class="header-text">
-    <h1>Calculadora de Comprometimento de Renda — MRV</h1>
+    <h1>Calculadora de Comprometimento de Renda — MRV / Emcash</h1>
+    <p>Suporte a contratos OIC · BPM · Emcash — preenchimento automático</p>
   </div>
+  <div class="tipo-contrato-badge" id="tipoContratoBadge"></div>
 </header>
 
 <div class="toast-sheets" id="toastSheets">
@@ -371,7 +492,7 @@ tr:hover td{background:#F8F9FA;}
 
 <div class="container">
 
-  <!-- ══ TAB SWITCH ══ -->
+  <!-- TAB SWITCH -->
   <div class="tab-switch">
     <button class="tab-btn active-proposta" id="tabBtnProposta" onclick="trocarAba('proposta')">
       📋 Simulação de Proposta
@@ -383,18 +504,12 @@ tr:hover td{background:#F8F9FA;}
     </button>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════════ -->
-  <!--                   ABA: SIMULAÇÃO DE PROPOSTA              -->
-  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- ══ ABA PROPOSTA ══ -->
   <div id="abaProposta">
-
-    <!-- STATUS -->
     <div class="status-bar" id="statusBarProp">
       <div class="spinner" id="spinnerProp"></div>
       <span id="statusMsgProp">Lendo...</span>
     </div>
-
-    <!-- UPLOAD PROPOSTA -->
     <div class="uploads-grid" style="grid-template-columns:1fr;">
       <div class="upload-card proposta" id="uploadCardProp" onclick="document.getElementById('pdfPropostaInput').click()">
         <div class="upload-icon">📋</div>
@@ -405,10 +520,7 @@ tr:hover td{background:#F8F9FA;}
         <div class="upload-status-badge" id="badgeProp">✅ Proposta lida!</div>
       </div>
     </div>
-
     <form id="formProposta" onsubmit="calcularProposta(event)">
-
-      <!-- DADOS DO IMÓVEL (PROPOSTA) -->
       <div class="card">
         <div class="card-title laranja">🏠 Dados do Imóvel</div>
         <div class="grid">
@@ -418,8 +530,6 @@ tr:hover td{background:#F8F9FA;}
           <div class="field"><label>Valor da Proposta (R$) <span class="tag auto-prop">AUTO</span></label><input type="text" id="prop-valorProposta" placeholder="Lido da proposta..." readonly></div>
         </div>
       </div>
-
-      <!-- RESUMO FINANCEIRO -->
       <div class="card">
         <div class="card-title laranja">💰 Resumo Financeiro da Proposta</div>
         <div class="grid">
@@ -435,8 +545,6 @@ tr:hover td{background:#F8F9FA;}
           </div>
         </div>
       </div>
-
-      <!-- DADOS PARA CÁLCULO -->
       <div class="card">
         <div class="card-title laranja">📊 Dados para Análise de Comprometimento</div>
         <div class="grid">
@@ -446,10 +554,8 @@ tr:hover td{background:#F8F9FA;}
           </div>
           <div class="field">
             <label>Renda do Cliente (R$) <span class="tag manual">MANUAL</span></label>
-            <input type="text" id="prop-renda" placeholder="Ex: R$ 5.000,00" class="manual-field" oninput="mascaraMoedaProp(this)" required>
+            <input type="text" id="prop-renda" placeholder="Ex: R$ 5.000,00" class="manual-field" oninput="mascaraMoedaGen(this)" required>
           </div>
-
-          <!-- PSA / PSB PROPOSTA -->
           <div class="psa-psb-grid" id="prop-psaPsbWrap" style="display:none;">
             <div class="psa-box">
               <div class="psa-psb-title">📅 PSA — Pré-entrega (Mensais)</div>
@@ -464,8 +570,6 @@ tr:hover td{background:#F8F9FA;}
               <div class="psa-psb-row"><span class="psa-psb-label">Média PSB</span><span class="psa-psb-val" id="prop-psbMedia">—</span></div>
             </div>
           </div>
-
-          <!-- FLUXO MÊS A MÊS -->
           <div class="fluxo-wrap" id="prop-fluxoWrap">
             <div class="fluxo-header" onclick="toggleFluxo()">
               <span>📅 Fluxo Mês a Mês</span>
@@ -478,113 +582,62 @@ tr:hover td{background:#F8F9FA;}
               </table>
             </div>
           </div>
-
         </div>
       </div>
-
       <div class="botoes">
         <button type="submit" class="btn btn-laranja">📊 Calcular Comprometimento MRV</button>
         <button type="button" class="btn btn-cinza" onclick="limparProposta()">🗑️ Limpar</button>
       </div>
     </form>
-
-    <!-- RESULTADO PROPOSTA -->
     <div class="resultado" id="resultadoProposta">
       <div class="resultado-title laranja">📋 ANÁLISE DE COMPROMETIMENTO — SIMULAÇÃO DE PROPOSTA</div>
-
       <div class="res-grid">
         <div class="res-item"><label>1ª Parcela PSB (Mensal)</label><div class="val" id="prop-res-primeira">—</div></div>
         <div class="res-item"><label>Média das Parcelas PSB</label><div class="val" id="prop-res-media">—</div></div>
         <div class="res-item destaque-verde"><label>Renda do Cliente</label><div class="val" id="prop-res-renda">—</div></div>
         <div class="res-item"><label>Teto MRV (5% da Renda)</label><div class="val" id="prop-res-teto">—</div></div>
       </div>
-
       <div class="psa-psb-resultado">
         <div class="psa-res"><div class="pr-title">📅 PSA — Pré-entrega</div><div class="pr-val" id="prop-res-psa-saldo">—</div><div class="pr-sub" id="prop-res-psa-qtd">— parcelas</div></div>
         <div class="psb-res"><div class="pr-title">🏠 PSB — Pós-entrega</div><div class="pr-val" id="prop-res-psb-saldo">—</div><div class="pr-sub" id="prop-res-psb-qtd">— parcelas</div></div>
       </div>
-
-      <!-- MODO 1: 1ª Parcela PSB -->
       <div class="comprom-unified" id="prop-compUnif1">
-        <div class="comprom-unified-header">
-          📊 Comprometimento MRV
-          <span style="background:var(--laranja);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">1ª Parcela PSB</span>
-          <span style="font-size:10px;color:#aaa;font-weight:400;margin-left:4px;">Teto: 5%</span>
-        </div>
+        <div class="comprom-unified-header">📊 Comprometimento MRV <span style="background:var(--laranja);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">1ª Parcela PSB</span> <span style="font-size:10px;color:#aaa;font-weight:400;margin-left:4px;">Teto: 5%</span></div>
         <div class="comprom-unified-body">
-          <div class="comprom-pct-side">
-            <div class="comprom-pct-label">% da renda comprometida</div>
-            <div class="comprom-pct-val" id="prop-res-pct1">—</div>
-          </div>
-          <div class="comprom-status-side" id="prop-compStatus1">
-            <div class="comprom-status-icon" id="prop-compIcon1">—</div>
-            <div class="comprom-status-text" id="prop-compText1">—</div>
-          </div>
+          <div class="comprom-pct-side"><div class="comprom-pct-label">% da renda comprometida</div><div class="comprom-pct-val" id="prop-res-pct1">—</div></div>
+          <div class="comprom-status-side" id="prop-compStatus1"><div class="comprom-status-icon" id="prop-compIcon1">—</div><div class="comprom-status-text" id="prop-compText1">—</div></div>
         </div>
       </div>
       <div class="progress-wrap"><div class="progress-bar" id="prop-progressBar1"></div></div>
       <div class="progress-labels"><span>0%</span><span>3% ✔</span><span>5% ⚠</span><span>7%+</span></div>
-
-      <!-- EXCEDENTE MODO 1 -->
-      <div class="excedente-box" id="prop-excedenteBox1" style="display:none;">
-        <div class="excedente-titulo" id="prop-excedenteTitulo1">—</div>
-        <div id="prop-excedenteConteudo1"></div>
-      </div>
-
-      <!-- SEPARADOR -->
+      <div class="excedente-box" id="prop-excedenteBox1" style="display:none;"><div class="excedente-titulo" id="prop-excedenteTitulo1">—</div><div id="prop-excedenteConteudo1"></div></div>
       <div class="separador-calculo" id="prop-separadorMedia">📊 VERSÃO SECUNDÁRIA — Média das Parcelas PSB</div>
-
-      <!-- MODO 2: Média PSB -->
       <div class="comprom-unified secundario" id="prop-compUnif2">
-        <div class="comprom-unified-header">
-          📊 Comprometimento MRV
-          <span style="background:var(--roxo);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">Média PSB</span>
-          <span style="font-size:10px;color:#aaa;font-weight:400;margin-left:4px;">versão secundária · Teto: 5%</span>
-        </div>
+        <div class="comprom-unified-header">📊 Comprometimento MRV <span style="background:var(--roxo);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">Média PSB</span> <span style="font-size:10px;color:#aaa;font-weight:400;margin-left:4px;">versão secundária · Teto: 5%</span></div>
         <div class="comprom-unified-body">
-          <div class="comprom-pct-side">
-            <div class="comprom-pct-label">% da renda (média PSB)</div>
-            <div class="comprom-pct-val" id="prop-res-pct2">—</div>
-          </div>
-          <div class="comprom-status-side" id="prop-compStatus2">
-            <div class="comprom-status-icon" id="prop-compIcon2">—</div>
-            <div class="comprom-status-text" id="prop-compText2">—</div>
-          </div>
+          <div class="comprom-pct-side"><div class="comprom-pct-label">% da renda (média PSB)</div><div class="comprom-pct-val" id="prop-res-pct2">—</div></div>
+          <div class="comprom-status-side" id="prop-compStatus2"><div class="comprom-status-icon" id="prop-compIcon2">—</div><div class="comprom-status-text" id="prop-compText2">—</div></div>
         </div>
       </div>
       <div class="progress-wrap"><div class="progress-bar" id="prop-progressBar2"></div></div>
       <div class="progress-labels"><span>0%</span><span>3% ✔</span><span>5% ⚠</span><span>7%+</span></div>
-
-      <!-- EXCEDENTE MODO 2 -->
-      <div class="excedente-box" id="prop-excedenteBox2" style="display:none;">
-        <div class="excedente-titulo" id="prop-excedenteTitulo2">—</div>
-        <div id="prop-excedenteConteudo2"></div>
-      </div>
-
-      <div class="aviso-estimativa">
-        ⚠️ <strong>Projeção/simulação estimada.</strong> Esta análise é baseada na Simulação de Proposta MRV e representa apenas uma pré-análise de viabilidade. Os valores reais de parcelas, subsídios e enquadramento dependem da aprovação formal pelo financeiro MRV e pela Caixa Econômica Federal. Não substitui a Simulação de Contrato.
-      </div>
-
+      <div class="excedente-box" id="prop-excedenteBox2" style="display:none;"><div class="excedente-titulo" id="prop-excedenteTitulo2">—</div><div id="prop-excedenteConteudo2"></div></div>
+      <div class="aviso-estimativa">⚠️ <strong>Projeção/simulação estimada.</strong> Esta análise é baseada na Simulação de Proposta MRV e representa apenas uma pré-análise de viabilidade. Os valores reais dependem da aprovação formal pelo financeiro MRV e pela Caixa Econômica Federal.</div>
       <div class="botoes">
         <button class="btn btn-laranja" onclick="copiarResultadoProposta()">📋 Copiar Resultado</button>
         <button class="btn btn-roxo" onclick="prepararImpressao()">🖨️ Imprimir</button>
       </div>
     </div>
+  </div>
 
-  </div><!-- /abaProposta -->
-
-
-  <!-- ══════════════════════════════════════════════════════════ -->
-  <!--              ABA: COMPROMETIMENTO DE RENDA                -->
-  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- ══ ABA CONTRATO ══ -->
   <div id="abaContrato" style="display:none;">
-
-    <!-- UPLOADS DUPLOS -->
     <div class="uploads-grid">
       <div class="upload-card mrv" id="uploadCardMRV" onclick="document.getElementById('pdfInput').click()">
         <div class="upload-icon">📄</div>
-        <h2>1. Contrato MRV</h2>
-        <p>Dados do imóvel, parcelas, PSA e PSB</p>
+        <h2>1. Contrato MRV / Emcash</h2>
+        <p>Suporte a contratos OIC · BPM · Emcash</p>
+        <p style="font-size:10px;color:#aaa;margin-top:4px;">Detecção automática do tipo de contrato</p>
         <button class="btn-upload mrv" onclick="event.stopPropagation();document.getElementById('pdfInput').click()">📎 Selecionar PDF</button>
         <input type="file" id="pdfInput" accept=".pdf" onchange="lerPDFContrato(this)">
         <div class="upload-status-badge" id="badgeMRV">✅ Contrato lido!</div>
@@ -598,46 +651,197 @@ tr:hover td{background:#F8F9FA;}
         <div class="upload-status-badge" id="badgeCaixa">✅ Simulação lida!</div>
       </div>
     </div>
-
     <div class="status-bar" id="statusBar">
       <div class="spinner" id="spinner"></div>
       <span id="statusMsg">Lendo...</span>
     </div>
 
     <form id="formCalc" onsubmit="calcular(event)">
+
+      <!-- DADOS DO CLIENTE -->
       <div class="card">
         <div class="card-title verde">👤 Dados do Cliente</div>
         <div class="grid">
-          <div class="field"><label>Nome do Cliente <span class="tag auto">AUTO</span></label><input type="text" id="nomeCliente" placeholder="Lido do contrato MRV..." readonly></div>
-          <div class="field"><label>CPF <span class="tag auto">AUTO</span></label><input type="text" id="cpf" placeholder="Lido do contrato MRV..." readonly></div>
-          <div class="field"><label>Gerente / Corretor Responsável <span class="tag manual">MANUAL</span></label><input type="text" id="gerente" placeholder="Nome do gerente ou corretor" class="manual-field" required></div>
-          <div class="field"><label>Número do Contrato <span class="tag auto">AUTO</span></label><input type="text" id="numContrato" placeholder="Lido do contrato MRV..." readonly></div>
+
+          <!-- Tipo de Contrato detectado -->
+          <div class="tipo-info-box full" id="tipoInfoBox">
+            <div class="tib-titulo" id="tipoInfoTitulo">—</div>
+            <div class="tib-desc" id="tipoInfoDesc">—</div>
+          </div>
+
+          <div class="field">
+            <label>
+              Nome do Cliente
+              <span class="tag auto">OIC</span>
+              <span class="tag bpm">BPM</span>
+              <span class="tag emcash">EMCASH</span>
+            </label>
+            <input type="text" id="nomeCliente" placeholder="Lido automaticamente do contrato..." readonly>
+            <small style="color:#aaa;font-size:10px;">OIC: campo COMPRADOR(A) · BPM: campo 1º Cliente · Emcash: campo Nome/Nome Empresarial</small>
+          </div>
+
+          <div class="field">
+            <label>
+              CPF
+              <span class="tag auto">OIC/BPM</span>
+              <span class="tag emcash">EMCASH</span>
+            </label>
+            <input type="text" id="cpf" placeholder="Lido automaticamente do contrato..." readonly>
+            <small style="color:#aaa;font-size:10px;">OIC/BPM: campo CPF · Emcash: campo CPF/CNPJ</small>
+          </div>
+
+          <div class="field">
+            <label>Gerente / Corretor Responsável <span class="tag manual">MANUAL</span></label>
+            <input type="text" id="gerente" placeholder="Nome do gerente ou corretor" class="manual-field" required>
+          </div>
+
+          <div class="field">
+            <label>
+              Número do Contrato
+              <span class="tag oic">OIC</span>
+              <span class="tag bpm">BPM</span>
+              <span class="tag emcash">EMCASH</span>
+            </label>
+            <input type="text" id="numContrato" placeholder="Lido automaticamente do contrato..." readonly>
+            <small style="color:#aaa;font-size:10px;">OIC: UUID · BPM: CONT-XXXXXX-XXXXXX · Emcash: número do contrato</small>
+          </div>
+
         </div>
       </div>
+
+      <!-- DADOS DO IMÓVEL -->
       <div class="card">
         <div class="card-title laranja">🏠 Dados do Imóvel</div>
         <div class="grid">
-          <div class="field"><label>Empreendimento <span class="tag auto">AUTO</span></label><input type="text" id="empreendimento" placeholder="Lido do contrato MRV..." readonly></div>
-          <div class="field"><label>Bloco / Módulo <span class="tag auto">AUTO</span></label><input type="text" id="modulo" placeholder="Lido do contrato MRV..." readonly></div>
-          <div class="field"><label>Valor do Imóvel (R$) <span class="tag auto">AUTO</span></label><input type="text" id="valorImovel" placeholder="Lido do contrato MRV..." readonly></div>
-          <div class="field"><label>Data de Entrega Prevista <span class="tag auto">AUTO</span></label><input type="text" id="dataEntrega" placeholder="Lido do contrato MRV..." readonly></div>
-          <div class="field"><label>Valor de Avaliação (R$) <span class="tag auto-caixa">CAIXA</span></label><input type="text" id="valorAvaliacao" placeholder="Lido da simulação Caixa..."></div>
-          <div class="field"><label>Teto Faixa do Cliente (R$) <span class="tag auto-caixa">CAIXA</span></label><input type="text" id="tetoFaixa" placeholder="Calculado pela renda..."></div>
+
+          <div class="field">
+            <label>
+              Empreendimento
+              <span class="tag auto">OIC/BPM</span>
+              <span class="tag emcash">EMCASH</span>
+            </label>
+            <input type="text" id="empreendimento" placeholder="Lido automaticamente do contrato..." readonly>
+            <small style="color:#aaa;font-size:10px;">OIC/BPM: campo Produto · Emcash: descrição do imóvel (endereço)</small>
+          </div>
+
+          <div class="field">
+            <label>
+              Bloco / Unidade
+              <span class="tag auto">OIC/BPM</span>
+              <span class="tag emcash">EMCASH</span>
+            </label>
+            <input type="text" id="modulo" placeholder="Lido automaticamente do contrato..." readonly>
+            <small style="color:#aaa;font-size:10px;">OIC/BPM: extraído do campo Produto · Emcash: Apto/Bloco da descrição</small>
+          </div>
+
+          <div class="field">
+            <label>
+              Valor do Imóvel (R$)
+              <span class="tag oic">OIC</span>
+              <span class="tag bpm">BPM</span>
+              <span class="tag emcash">EMCASH</span>
+            </label>
+            <input type="text" id="valorImovel" placeholder="Lido automaticamente do contrato..." readonly>
+            <small style="color:#aaa;font-size:10px;">OIC: PREÇO DO IMÓVEL · BPM: item 3.2 · Emcash: Valor Total do imóvel</small>
+          </div>
+
+          <div class="field">
+            <label>
+              Data de Entrega Prevista
+              <span class="tag oic">OIC</span>
+              <span class="tag bpm">BPM</span>
+              <span class="tag emcash">EMCASH</span>
+            </label>
+            <input type="text" id="dataEntrega" 
+                   placeholder="Lido automaticamente ou DD/MM/AAAA" 
+                   oninput="mascaraData(this)" maxlength="10">
+            <small style="color:#aaa;font-size:10px;">
+              OIC/BPM: preenchido automaticamente (item 5.1) · 
+              Emcash: digite manualmente no formato DD/MM/AAAA
+            </small>
+          </div>
+
+          <div class="field">
+            <label>Valor de Avaliação (R$) <span class="tag auto-caixa">CAIXA</span></label>
+            <input type="text" id="valorAvaliacao" placeholder="Lido da simulação Caixa ou digite manualmente"-oninput="mascaraMoedaGen(this)">
+            <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo Valor de Avaliação</small>
+          </div>
+
+          <div class="field">
+            <label>Teto Faixa do Cliente (R$) <span class="tag auto-caixa">CAIXA</span></label>
+            <input type="text" id="tetoFaixa" placeholder="Calculado pela renda...">
+            <small style="color:#aaa;font-size:10px;">Calculado automaticamente pela renda: Faixa 1/2 ≤ R$5.000 → R$275k · Faixa 3 → R$400k</small>
+          </div>
+
         </div>
       </div>
+
+      <!-- DADOS FINANCEIROS -->
       <div class="card">
         <div class="card-title roxo">💰 Dados Financeiros</div>
         <div class="grid">
-          <div class="field"><label>Valor Financiado (R$) <span class="tag auto">AUTO</span></label><input type="text" id="valorFinanciado" placeholder="Lido do contrato MRV..." readonly></div>
-          <div class="field"><label>Saldo Carteira MRV (R$) <span class="tag auto">AUTO</span></label><input type="text" id="saldoCarteira" placeholder="Lido do contrato MRV..." readonly></div>
-          <div class="field"><label>Parcela MRV pós-entrega (R$) <span class="tag auto">AUTO</span></label><input type="text" id="parcelaMRV" placeholder="Lido do contrato MRV..." readonly></div>
-          <div class="field"><label>Quantidade de Parcelas <span class="tag auto">AUTO</span></label><input type="text" id="qtdParcelas" placeholder="Lido do contrato MRV..." readonly></div>
-          <div class="field"><label>Parcela Caixa (R$) <span class="tag auto-caixa">CAIXA</span></label><input type="text" id="parcelaCaixa" placeholder="Lido da simulação Caixa..."></div>
-          <div class="field"><label>Renda do Cliente (R$) <span class="tag auto-caixa">CAIXA</span></label><input type="text" id="renda" placeholder="Lido da simulação Caixa..."></div>
+
+          <div class="field">
+            <label>
+              Valor Financiado (R$)
+              <span class="tag oic">OIC</span>
+              <span class="tag bpm">BPM</span>
+              <span class="tag emcash">EMCASH</span>
+            </label>
+            <input type="text" id="valorFinanciado" placeholder="Lido automaticamente do contrato..." readonly>
+            <small style="color:#aaa;font-size:10px;">OIC/BPM: item 4.1.4 · Emcash: Valor Líquido do Principal</small>
+          </div>
+
+          <div class="field">
+            <label>
+              Saldo Carteira MRV (R$)
+              <span class="tag oic">OIC</span>
+              <span class="tag bpm">BPM</span>
+            </label>
+            <input type="text" id="saldoCarteira" placeholder="Lido automaticamente do contrato..." readonly>
+            <small style="color:#aaa;font-size:10px;">OIC/BPM: item 4.1.2 · Emcash: não se aplica</small>
+          </div>
+
+          <div class="field">
+            <label>
+              Parcela MRV / Emcash pós-entrega (R$)
+              <span class="tag oic">OIC</span>
+              <span class="tag bpm">BPM</span>
+              <span class="tag emcash">EMCASH</span>
+            </label>
+            <input type="text" id="parcelaMRV" placeholder="Lido automaticamente do contrato..." readonly>
+            <small style="color:#aaa;font-size:10px;">OIC/BPM: 1ª parcela após entrega · Emcash: Valor da Primeira Parcela (Principal + Juros)</small>
+          </div>
+
+          <div class="field">
+            <label>
+              Quantidade de Parcelas
+              <span class="tag oic">OIC</span>
+              <span class="tag bpm">BPM</span>
+              <span class="tag emcash">EMCASH</span>
+            </label>
+            <input type="text" id="qtdParcelas" placeholder="Lido automaticamente do contrato..." readonly>
+            <small style="color:#aaa;font-size:10px;">OIC/BPM: maior número de parcela encontrado · Emcash: campo Quantidade de Parcelas</small>
+          </div>
+
+          <div class="field">
+            <label>Parcela Caixa (R$) <span class="tag auto-caixa">CAIXA</span></label>
+            <input type="text" id="parcelaCaixa" placeholder="Lido da simulação Caixa ou digite">
+            <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo 1ª Prestação ou Prestação mensal</small>
+          </div>
+
+          <div class="field">
+            <label>Renda do Cliente (R$) <span class="tag auto-caixa">CAIXA</span></label>
+            <input type="text" id="renda" placeholder="Lido da simulação Caixa ou digite">
+            <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo Renda Bruta / Renda Individual</small>
+          </div>
+
           <div class="faixa-info-box" id="faixaInfoBox">
             <div class="faixa-titulo">🏷️ Enquadramento de Faixa</div>
             <div class="faixa-detalhe" id="faixaDetalhe">—</div>
           </div>
+
+          <!-- PSA / PSB -->
           <div class="psa-psb-grid" id="psaPsbWrap" style="display:none;">
             <div class="psa-box">
               <div class="psa-psb-title">📅 PSA — Pró-Soluto A (Pré-entrega)</div>
@@ -650,6 +854,8 @@ tr:hover td{background:#F8F9FA;}
               <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="psbSaldo">—</span></div>
             </div>
           </div>
+
+          <!-- % FINANCIADO -->
           <div class="financiado-wrap" id="financiadoWrap">
             <div class="financiado-info">
               <span>% do imóvel financiado pelo cliente</span>
@@ -657,10 +863,14 @@ tr:hover td{background:#F8F9FA;}
             </div>
             <div class="financiado-badge" id="financiadoBadge">—</div>
           </div>
+
+          <!-- PLANO DE PAGAMENTO -->
           <div class="plano-wrap" id="planoWrap">
             <div class="plano-header">📄 Plano de Pagamento</div>
             <div class="plano-body" id="planoBody"></div>
           </div>
+
+          <!-- DEBUG -->
           <div class="debug-toolbar" id="debugToolbar">
             <span style="color:#00ff88;font-size:11px;font-weight:700;font-family:monospace;">🔍 DEBUG PDF</span>
             <button type="button" class="debug-btn active" id="btnTexto" onclick="debugMostrar('texto')">📄 Contrato</button>
@@ -671,8 +881,10 @@ tr:hover td{background:#F8F9FA;}
             <button type="button" class="debug-btn fechar" onclick="fecharDebug()">✕ Fechar</button>
           </div>
           <div class="debug-box" id="debugBox"></div>
+
         </div>
       </div>
+
       <div class="botoes">
         <button type="submit" class="btn btn-verde">📊 Calcular Comprometimento</button>
         <button type="button" class="btn btn-azul" onclick="abrirDebug()">🔍 Debug PDF</button>
@@ -685,7 +897,7 @@ tr:hover td{background:#F8F9FA;}
       <div class="resultado-title verde">📋 ANÁLISE DE COMPROMETIMENTO DE RENDA</div>
       <div class="res-grid">
         <div class="res-item"><label>Parcela Caixa</label><div class="val" id="res-caixa">—</div></div>
-        <div class="res-item"><label>Parcela MRV pós-entrega</label><div class="val" id="res-mrv">—</div></div>
+        <div class="res-item"><label>Parcela MRV / Emcash pós-entrega</label><div class="val" id="res-mrv">—</div></div>
         <div class="res-item destaque-verde"><label>Total de Parcelas</label><div class="val" id="res-total">—</div></div>
         <div class="res-item"><label>Renda do Cliente</label><div class="val" id="res-renda">—</div></div>
       </div>
@@ -732,15 +944,14 @@ tr:hover td{background:#F8F9FA;}
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>Data/Hora</th><th>Cliente</th><th>Empreendimento</th><th>Gerente</th>
-            <th>P.Caixa</th><th>P.MRV</th><th>Renda</th><th>Comprom.%</th>
-            <th>Média PSB%</th><th>%Financ.</th><th>PSA</th><th>PSB</th><th>Status</th>
+            <th>Data/Hora</th><th>Tipo</th><th>Cliente</th><th>Empreendimento</th>
+            <th>Gerente</th><th>P.Caixa</th><th>P.MRV</th><th>Renda</th>
+            <th>Comprom.%</th><th>Média PSB%</th><th>%Financ.</th><th>PSA</th><th>PSB</th><th>Status</th>
           </tr></thead>
           <tbody id="corpoHistorico"></tbody>
         </table>
       </div>
     </div>
-
   </div><!-- /abaContrato -->
 
 </div><!-- /container -->
@@ -751,6 +962,7 @@ const SHEETS_URL='https://script.google.com/macros/s/AKfycbyIkN0UQnB3XBqTJgH57OQ
 
 // ══ ESTADO GLOBAL ══
 let _textoDebug='',_textoCaixaDebug='',_debugAba='texto';
+let _tipoContrato=''; // 'OIC' | 'BPM' | 'EMCASH'
 let _psaQtd=0,_psaSaldo=0,_psbQtd=0,_psbSaldo=0;
 let _parcelasPSB=[],_parcelasTodas=[];
 let _dataEntregaISO=null,_obraPronta=false;
@@ -758,516 +970,401 @@ let _entrada={total:0,pct:'',parcelas:[]};
 let _intermediarias=[];
 
 // ══ ESTADO PROPOSTA ══
-let _propTextoDebug='';
-let _propFluxo=[];          // todos os itens do fluxo
-let _propMensaisPSA=[];     // mensais pré-entrega
-let _propMensaisPSB=[];     // mensais pós-entrega
+let _propFluxo=[];
+let _propMensaisPSA=[],_propMensaisPSB=[];
 let _propPsaQtd=0,_propPsaSaldo=0;
 let _propPsbQtd=0,_propPsbSaldo=0;
 let _propPsbPrimeira=0,_propPsbMedia=0;
 let _propDataEntregaISO=null;
 
-// ══ TROCA DE ABA ══
-function trocarAba(aba){
-  document.getElementById('abaProposta').style.display = aba==='proposta'?'block':'none';
-  document.getElementById('abaContrato').style.display = aba==='contrato'?'block':'none';
-  document.getElementById('tabBtnProposta').className = 'tab-btn'+(aba==='proposta'?' active-proposta':'');
-  document.getElementById('tabBtnContrato').className = 'tab-btn'+(aba==='contrato'?' active-contrato':'');
+// ══════════════════════════════════════════════════════════
+//   DETECÇÃO DO TIPO DE CONTRATO
+// ══════════════════════════════════════════════════════════
+function detectarTipoContrato(texto){
+  // EMCASH: contém "EMCASH" e "FUTURO EMITENTE"
+  if(/EMCASH/i.test(texto) && /FUTURO\s*EMITENTE/i.test(texto)) return 'EMCASH';
+  // BPM: contém "VCRM" ou "QUADRO-RESUMO" ou padrão CONT-XXXXX-XXXXX
+  if(/VCRM\s*\d|QUADRO-RESUMO/i.test(texto)) return 'BPM';
+  if(/CONT-[A-Z0-9]{5,}-[A-Z0-9]{3,}/i.test(texto)) return 'BPM';
+  // OIC: contém UUID padrão ou "COMPRADOR(A):"
+  if(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/i.test(texto)) return 'OIC';
+  if(/COMPRADOR\(A\)/i.test(texto)) return 'OIC';
+  return 'DESCONHECIDO';
 }
 
-// ══ TOGGLE FLUXO ══
-function toggleFluxo(){
-  const body=document.getElementById('prop-fluxoBody');
-  body.classList.toggle('open');
+function exibirTipoContrato(tipo){
+  _tipoContrato = tipo;
+  const badge = document.getElementById('tipoContratoBadge');
+  const box   = document.getElementById('tipoInfoBox');
+  const titulo= document.getElementById('tipoInfoTitulo');
+  const desc  = document.getElementById('tipoInfoDesc');
+
+  const info = {
+    OIC:    { emoji:'🟣', label:'Contrato MRV — OIC',   cls:'oic',    descTitulo:'📄 Contrato MRV — Sistema OIC', descTexto:'Formato legado com UUID. Campos: COMPRADOR(A), 4.1.1/4.1.2/4.1.3/4.1.4, parcelas com R$ no formato "N R$ X.XXX,XX DD/MM/AAAA".' },
+    OIC:    { emoji:'🟢', label:'Contrato MRV — OIC',   cls:'oic',    descTitulo:'📄 Contrato MRV — Sistema OIC', descTexto:'Formato VCRM 7.0. Campos: 1º Cliente, CONT-XXXXX-XXXXX, parcelas SEM R$ no formato "NN XXX,XX DD/MM/AAAA", item 5.1 para data de entrega.' },
+    EMCASH: { emoji:'🔵', label:'Contrato Emcash',      cls:'emcash', descTitulo:'📄 Contrato Emcash detectado', descTexto:'Formato Emcash (CCB). Campos: Nome/Nome Empresarial, Nº do Contrato Emcash, Valor Líquido do Principal, parcelas com Principal + Juros. Data de entrega não consta — informar manualmente se necessário.' },
+    DESCONHECIDO: { emoji:'⚠️', label:'Tipo não identificado', cls:'', descTitulo:'⚠️ Tipo de contrato não identificado', descTexto:'Não foi possível identificar o tipo de contrato automaticamente. Use o Debug PDF para verificar o conteúdo extraído e entre em contato com o suporte.' }
+  };
+
+  const i = info[tipo] || info['DESCONHECIDO'];
+  badge.textContent = i.emoji + ' ' + i.label;
+  badge.className   = 'tipo-contrato-badge show ' + i.cls;
+  box.className     = 'tipo-info-box full show ' + i.cls;
+  titulo.textContent= i.descTitulo;
+  desc.textContent  = i.descTexto;
 }
 
-// ══ LER PDF PROPOSTA ══
-async function lerPDFProposta(input){
-  const file=input.files[0];if(!file)return;
-  mostrarStatusProp('⏳ Lendo Simulação de Proposta...','loading');
+// ══════════════════════════════════════════════════════════
+//   EXTRAÇÃO DE DADOS — CONTRATO (3 tipos)
+// ══════════════════════════════════════════════════════════
+function extrairDadosContrato(texto){
+  const tipo = detectarTipoContrato(texto);
+  exibirTipoContrato(tipo);
+
   try{
-    const texto=await extrairTextoPDF(file);
-    if(!texto)return;
-    _propTextoDebug=texto;
-    extrairDadosProposta(texto);
-    document.getElementById('uploadCardProp').className='upload-card proposta lido-proposta';
-    document.getElementById('badgeProp').className='upload-status-badge ok-proposta';
-    mostrarStatusProp('✅ Proposta lida! Informe a data de entrega e a renda para calcular.','success');
-  }catch(e){mostrarStatusProp('❌ Erro ao ler proposta: '+e.message,'error');}
-}
+    // ── NOME DO CLIENTE ──────────────────────────────────
+    // OIC:    "COMPRADOR(A): NOME SOBRENOME" até Nacionalidade ou CPF
+    // BPM:    "1º Cliente: NOME SOBRENOME" até quebra de linha ou Nacionalidade
+    // EMCASH: "Nome/Nome Empresarial: Claudia Regina da Silva Marques"
+    const nomeM =
+      texto.match(/1[oº°]\s*Cliente[:\s]+([A-ZÁÉÍÓÚÃÕÂÊÎÔÛÇ][A-ZÁÉÍÓÚÃÕÂÊÎÔÛÇa-záéíóúãõâêîôûç\s]+?)(?=\s*Nacionalidade|\s*CPF|\s*Estado\s*Civil|\n)/i)
+      || texto.match(/COMPRADOR\(A\)[:\s]+([A-ZÁÉÍÓÚÃÕÂÊÎÔÛÇ][A-ZÁÉÍÓÚÃÕÂÊÎÔÛÇa-záéíóúãõâêîôûç\s]+?)(?=\s*Nacionalidade|\s*CPF)/i)
+      || texto.match(/Nome\/Nome\s*Empresarial[:\s]+([^\n\|]+?)(?=\s*CPF|\s*RG|\s*\||\n)/i);
+    if(nomeM) setAuto('nomeCliente', nomeM[1].trim());
 
-// ══ EXTRAI DADOS DA PROPOSTA ══
-function extrairDadosProposta(texto){
-  try{
-  // Empreendimento: pega tudo até encontrar a palavra "Unidade:" ou quebra de linha
-    const empM = texto.match(/Empreendimento[:\s]+(.*?)(?=\s*Unidade[:\s]|\n|$)/i);
-    if (empM) setAutoProp('prop-empreendimento', empM[1].trim());
+    // ── CPF ──────────────────────────────────────────────
+    // OIC/BPM: "CPF: 132.214.317-08"
+    // EMCASH:  "CPF/CNPJ: 033.935.067-90"
+    const cpfM =
+      texto.match(/CPF\/CNPJ[:\s]*([\d]{3}[\.\s]?[\d]{3}[\.\s]?[\d]{3}[\-\s]?[\d]{2})/)
+      || texto.match(/CPF[:\s]*([\d]{3}[\.\s]?[\d]{3}[\.\s]?[\d]{3}[\-\s]?[\d]{2})/);
+    if(cpfM) setAuto('cpf', cpfM[1].replace(/\s/g,''));
 
-    // Unidade: pega tudo até encontrar a palavra "Cliente:" ou quebra de linha
-    const unidM = texto.match(/Unidade[:\s]+(.*?)(?=\s*Cliente[:\s]|\n|$)/i);
-    if (unidM) setAutoProp('prop-unidade', unidM[1].trim());
+    // ── NÚMERO DO CONTRATO ────────────────────────────────
+    // OIC:    UUID "CONT: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    // BPM:    "CONT-1513325-R10RPL"
+    // EMCASH: "Nº do Contrato Emcash: 710000179726"
+    const contM =
+      texto.match(/N[oº°]\s*do\s*Contrato\s*Emcash[:\s]*(\d+)/i)
+      || texto.match(/(CONT-[A-Z0-9]{4,}-[A-Z0-9]{3,})/i)
+      || texto.match(/CONT[:\s]*([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
+    if(contM) setAuto('numContrato', contM[1]);
 
-    // Valor do Imóvel
-    const vimM=texto.match(/Valor\s*Im[oó]vel[:\s]*R\$\s*([\d.,]+)/i);
-    if(vimM)setAutoProp('prop-valorImovel','R$ '+vimM[1].trim());
-
-    // Valor da Proposta
-    const vpropM=texto.match(/Valor\s*da\s*Proposta\s*R\$\s*([\d.,]+)/i);
-    if(vpropM)setAutoProp('prop-valorProposta','R$ '+vpropM[1].trim());
-
-    // Resumo financeiro
-    const finM=texto.match(/Valor\s*Financiado\s*R\$\s*([\d.,]+)/i);
-    if(finM)document.getElementById('rp-financiado').textContent='R$ '+finM[1].trim();
-
-    const sinalM=texto.match(/Valor\s*do\s*Sinal\s*R\$\s*([\d.,]+)/i);
-    if(sinalM)document.getElementById('rp-sinal').textContent='R$ '+sinalM[1].trim();
-
-    // Carteira MRV com qtd parcelas ex: R$ 45.065,00 (72x)
-    const cartM=texto.match(/Carteira\s*MRV\s*R\$\s*([\d.,]+)\s*\((\d+)x\)/i);
-    if(cartM){
-      document.getElementById('rp-carteira').textContent='R$ '+cartM[1].trim();
-      document.getElementById('rp-qtdCarteira').textContent=cartM[2]+'x';
-    }else{
-      const cartM2=texto.match(/Carteira\s*MRV\s*R\$\s*([\d.,]+)/i);
-      if(cartM2)document.getElementById('rp-carteira').textContent='R$ '+cartM2[1].trim();
-    }
-
-    const cupomM=texto.match(/Cupom\s*R\$\s*([\d.,]+)/i);
-    if(cupomM)document.getElementById('rp-cupom').textContent='R$ '+cupomM[1].trim();
-
-    const fgtsM=texto.match(/FGTS\s*R\$\s*([\d.,]+)/i);
-    if(fgtsM)document.getElementById('rp-fgts').textContent='R$ '+fgtsM[1].trim();
-
-    const subM=texto.match(/Subs[ií]dio\s*R\$\s*([\d.,]+)/i);
-    if(subM)document.getElementById('rp-subsidio').textContent='R$ '+subM[1].trim();
-
-    const bomM=texto.match(/Bom\s*pagador\s*R\$\s*([\d.,]+)/i);
-    if(bomM)document.getElementById('rp-bompag').textContent='R$ '+bomM[1].trim();
-
-    document.getElementById('resumoPropostaGrid').style.display='grid';
-
-    // ── FLUXO MÊS A MÊS ──
-    _propFluxo=extrairFluxoProposta(texto);
-    renderizarFluxo();
-
-  }catch(e){console.error(e);mostrarStatusProp('⚠️ Leitura parcial da proposta.','error');}
-}
-
-// ══ EXTRAI FLUXO DA PROPOSTA ══
-function extrairFluxoProposta(texto){
-  const itens=[];
-  // Padrão: número, data DD/MM/AAAA, tipo (texto), valor R$ X.XXX,XX
-  // Ex: "1 10/08/2026 Sinal Ato R$ 990,00"
-  // Tipos possíveis: Sinal Ato, Sinal 1..N, Mensal, Bom pagador
-  const regex=/(\d{1,3})\s+(\d{2}\/\d{2}\/\d{4})\s+(Sinal\s+Ato|Sinal\s+\d+|Bom\s+pagador|Mensal)\s+R\$\s+([\d.,]+)/gi;
-  let m;
-  while((m=regex.exec(texto))!==null){
-    const num=parseInt(m[1]);
-    const vencStr=m[2];
-    const tipo=m[3].trim();
-    const valorNum=parseMoeda(m[4]);
-    const[vd,vm,va]=vencStr.split('/').map(Number);
-    const venc=new Date(va,vm-1,vd);
-    itens.push({num,vencStr,tipo,valorNum,venc});
-  }
-  // Remove duplicatas por num+vencStr
-  const map=new Map();
-  for(const it of itens){
-    const key=it.num+'_'+it.vencStr+'_'+it.tipo;
-    if(!map.has(key))map.set(key,it);
-  }
-  return [...map.values()].sort((a,b)=>a.num-b.num||a.venc-b.venc);
-}
-
-// ══ RENDERIZA FLUXO ══
-function renderizarFluxo(){
-  const tbody=document.getElementById('prop-fluxoTbody');
-  const wrap=document.getElementById('prop-fluxoWrap');
-  if(!_propFluxo.length){wrap.style.display='none';return;}
-  wrap.style.display='block';
-  document.getElementById('prop-fluxoCount').textContent=_propFluxo.length+' lançamentos';
-
-  // Calcula PSA/PSB se já tiver data de entrega
-  const dataEntStr=document.getElementById('prop-dataEntrega').value;
-  let inicioPSB=null;
-  if(dataEntStr&&/\d{2}\/\d{2}\/\d{4}/.test(dataEntStr)){
-    const[d,m,a]=dataEntStr.split('/').map(Number);
-    _propDataEntregaISO=new Date(a,m-1,d);
-    const mesNext=_propDataEntregaISO.getMonth()===11?0:_propDataEntregaISO.getMonth()+1;
-    const anoNext=_propDataEntregaISO.getMonth()===11?_propDataEntregaISO.getFullYear()+1:_propDataEntregaISO.getFullYear();
-    inicioPSB=new Date(anoNext,mesNext,1);
-  }
-
-  tbody.innerHTML=_propFluxo.map(it=>{
-    const tipoLower=it.tipo.toLowerCase();
-    let trClass='',badgeClass='',badgeLabel='',faseLabel='—';
-    if(tipoLower.includes('sinal')){trClass='tipo-sinal';badgeClass='sinal';badgeLabel=it.tipo;faseLabel='Sinal';}
-    else if(tipoLower.includes('bom')){trClass='tipo-bom';badgeClass='bom';badgeLabel='🏆 Bom Pagador';faseLabel='Bônus';}
-    else if(tipoLower==='mensal'){
-      if(inicioPSB&&it.venc>=inicioPSB){trClass='tipo-psb';badgeClass='mensal-psb';badgeLabel='Mensal';faseLabel='PSB';}
-      else{trClass='tipo-psa';badgeClass='mensal-psa';badgeLabel='Mensal';faseLabel='PSA';}
-    }
-    return`<tr class="${trClass}">
-      <td>${it.num}</td>
-      <td>${it.vencStr}</td>
-      <td><span class="tipo-badge ${badgeClass}">${badgeLabel}</span></td>
-      <td><strong>${formatMoeda(it.valorNum)}</strong></td>
-      <td>${faseLabel}</td>
-    </tr>`;
-  }).join('');
-}
-
-// ══ CALCULA PSA/PSB PROPOSTA (só Mensais) ══
-function calcularPsaPsbProposta(dataEntregaStr){
-  _propMensaisPSA=[];_propMensaisPSB=[];
-  _propPsaQtd=0;_propPsaSaldo=0;
-  _propPsbQtd=0;_propPsbSaldo=0;
-  _propPsbPrimeira=0;_propPsbMedia=0;
-
-  if(!_propFluxo.length)return;
-
-  const[d,m,a]=dataEntregaStr.split('/').map(Number);
-  _propDataEntregaISO=new Date(a,m-1,d);
-  const mesNext=_propDataEntregaISO.getMonth()===11?0:_propDataEntregaISO.getMonth()+1;
-  const anoNext=_propDataEntregaISO.getMonth()===11?_propDataEntregaISO.getFullYear()+1:_propDataEntregaISO.getFullYear();
-  const inicioPSB=new Date(anoNext,mesNext,1);
-
-  for(const it of _propFluxo){
-    if(it.tipo.toLowerCase()!=='mensal')continue; // só mensais entram no PSA/PSB
-    if(it.venc>=inicioPSB){
-      _propMensaisPSB.push(it);
-      _propPsbQtd++;
-      _propPsbSaldo+=it.valorNum;
-    }else{
-      _propMensaisPSA.push(it);
-      _propPsaQtd++;
-      _propPsaSaldo+=it.valorNum;
-    }
-  }
-
-  if(_propMensaisPSB.length>0){
-    _propPsbPrimeira=_propMensaisPSB[0].valorNum;
-    _propPsbMedia=_propPsbSaldo/_propPsbQtd;
-  }
-
-  // Atualiza cards PSA/PSB
-  document.getElementById('prop-psaQtd').textContent=_propPsaQtd>0?_propPsaQtd+' parcelas':'—';
-  document.getElementById('prop-psaSaldo').textContent=_propPsaSaldo>0?formatMoeda(_propPsaSaldo):'—';
-  document.getElementById('prop-psbQtd').textContent=_propPsbQtd>0?_propPsbQtd+' parcelas':'—';
-  document.getElementById('prop-psbSaldo').textContent=_propPsbSaldo>0?formatMoeda(_propPsbSaldo):'—';
-  document.getElementById('prop-psbPrimeira').textContent=_propPsbPrimeira>0?formatMoeda(_propPsbPrimeira):'—';
-  document.getElementById('prop-psbMedia').textContent=_propPsbMedia>0?formatMoeda(_propPsbMedia):'—';
-  document.getElementById('prop-psaPsbWrap').style.display='grid';
-
-  // Re-renderiza fluxo com cores PSA/PSB corretas
-  renderizarFluxo();
-}
-
-// ══ STATUS UNIFICADO PROPOSTA (teto 5%) ══
-function aplicarStatusProposta(num,pct){
-  const unif=document.getElementById('prop-compUnif'+num);
-  const icon=document.getElementById('prop-compIcon'+num);
-  const text=document.getElementById('prop-compText'+num);
-  const bar=document.getElementById('prop-progressBar'+num);
-  let classe,iconeTxt,textoTxt,barClasse;
-
-  // Teto MRV = 5%
-  if(pct<=3.5){classe='aprovado';iconeTxt='✔';textoTxt='DENTRO DO TETO';barClasse='verde';}
-  else if(pct<=5){classe='atencao';iconeTxt='⚠';textoTxt='ATENÇÃO';barClasse='amarelo';}
-  else{classe='reprovado';iconeTxt='✘';textoTxt='ACIMA DO TETO';barClasse='vermelho';}
-
-  if(num===2){
-    // Modo secundário mantém borda roxa mas muda status interno
-    const side=document.getElementById('prop-compStatus'+num);
-    side.style.background=classe==='aprovado'?'var(--verde-claro)':classe==='atencao'?'var(--amarelo-claro)':'var(--vermelho-claro)';
-    side.style.borderColor=classe==='aprovado'?'var(--verde)':classe==='atencao'?'var(--amarelo)':'var(--vermelho)';
-    side.style.color=classe==='aprovado'?'var(--verde)':classe==='atencao'?'var(--amarelo-medio)':'var(--vermelho)';
-  }else{
-    unif.className='comprom-unified '+classe;
-  }
-
-  icon.textContent=iconeTxt;
-  text.textContent=textoTxt;
-  if(bar){
-    bar.className='progress-bar '+barClasse;
-    // Escala: 0–10% → 0–100% barra (dobro da escala normal pois teto é 5%)
-    bar.style.width=Math.min(pct*10,100)+'%';
-  }
-  return textoTxt;
-}
-
-// ══ RENDERIZA EXCEDENTE PROPOSTA ══
-function renderizarExcedenteProposta(num,pct,parcelaBase,renda,label){
-  const box=document.getElementById('prop-excedenteBox'+num);
-  const titulo=document.getElementById('prop-excedenteTitulo'+num);
-  const conteudo=document.getElementById('prop-excedenteConteudo'+num);
-  box.style.display='block';
-
-  const teto=renda*0.05;
-  const reducaoPorParcela=Math.max(0,parcelaBase-teto);
-  const excedenteTotalPSB=reducaoPorParcela*_propPsbQtd;
-
-  if(pct<=5){
-    box.className='excedente-box ok';
-    titulo.innerHTML='✔ '+label+' dentro do teto MRV (5%)';
-    conteudo.innerHTML=`
-      <div class="excedente-row"><span class="er-label">${label}</span><span class="er-val" style="color:var(--verde)">${formatMoeda(parcelaBase)}</span></div>
-      <div class="excedente-row"><span class="er-label">Teto MRV (5% da renda)</span><span class="er-val" style="color:var(--verde)">${formatMoeda(teto)}</span></div>
-      <div class="excedente-row"><span class="er-label">Comprometimento</span><span class="er-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} %</span></div>
-      <div class="excedente-row"><span class="er-label">Margem disponível</span><span class="er-val" style="color:var(--verde)">${formatMoeda(teto-parcelaBase)}</span></div>`;
-  }else{
-    box.className='excedente-box nok';
-    titulo.innerHTML='⚠️ '+label+' acima do teto MRV — redução necessária';
-    conteudo.innerHTML=`
-      <div class="excedente-row"><span class="er-label">${label}</span><span class="er-val" style="color:var(--vermelho)">${formatMoeda(parcelaBase)}</span></div>
-      <div class="excedente-row"><span class="er-label">Teto MRV (5% da renda)</span><span class="er-val" style="color:var(--verde)">${formatMoeda(teto)}</span></div>
-      <div class="excedente-row"><span class="er-label">Comprometimento</span><span class="er-val" style="color:var(--vermelho)">${pct.toFixed(2).replace('.',',')} %</span></div>
-      <div class="excedente-row"><span class="er-label">Redução necessária por parcela</span><span class="er-val" style="color:var(--laranja)">${formatMoeda(reducaoPorParcela)}</span></div>
-      <div class="excedente-row"><span class="er-label">Qtd. parcelas PSB</span><span class="er-val" style="color:var(--roxo)">${_propPsbQtd} parcelas</span></div>
-      <div class="excedente-row"><span class="er-label">💡 Excedente total no PSB</span><span class="er-val" style="color:var(--laranja);font-size:18px;">${formatMoeda(excedenteTotalPSB)}</span></div>`;
-  }
-}
-
-// ══ CALCULAR PROPOSTA ══
-function calcularProposta(e){
-  e.preventDefault();
-
-  const dataEntStr=document.getElementById('prop-dataEntrega').value.trim();
-  const rendaStr=document.getElementById('prop-renda').value;
-  const renda=parseMoeda(rendaStr);
-
-  if(!_propFluxo.length){
-    alert('⚠️ Carregue o PDF da Simulação de Proposta antes de calcular.');
-    return;
-  }
-  if(!dataEntStr||!/^\d{2}\/\d{2}\/\d{4}$/.test(dataEntStr)){
-    alert('⚠️ Informe a Data Prevista de Entrega no formato DD/MM/AAAA.');
-    return;
-  }
-  if(!renda||renda<=0){
-    alert('⚠️ Informe a Renda do Cliente.');
-    return;
-  }
-
-  // Calcula PSA/PSB com a data informada
-  calcularPsaPsbProposta(dataEntStr);
-
-  if(_propPsbQtd===0){
-    alert('⚠️ Nenhuma parcela Mensal encontrada após a data de entrega informada.\nVerifique se a data está correta.');
-    return;
-  }
-
-  const teto=renda*0.05;
-  const pct1=(_propPsbPrimeira/renda)*100;
-  const pct2=(_propPsbMedia/renda)*100;
-
-  // Preenche resumo
-  document.getElementById('prop-res-primeira').textContent=formatMoeda(_propPsbPrimeira);
-  document.getElementById('prop-res-media').textContent=formatMoeda(_propPsbMedia);
-  document.getElementById('prop-res-renda').textContent=formatMoeda(renda);
-  document.getElementById('prop-res-teto').textContent=formatMoeda(teto);
-  document.getElementById('prop-res-psa-saldo').textContent=_propPsaSaldo>0?formatMoeda(_propPsaSaldo):'—';
-  document.getElementById('prop-res-psa-qtd').textContent=_propPsaQtd>0?_propPsaQtd+' parcelas':'—';
-  document.getElementById('prop-res-psb-saldo').textContent=formatMoeda(_propPsbSaldo);
-  document.getElementById('prop-res-psb-qtd').textContent=_propPsbQtd+' parcelas';
-
-  // Percentuais
-  document.getElementById('prop-res-pct1').textContent=pct1.toFixed(2).replace('.',',')+' %';
-  document.getElementById('prop-res-pct2').textContent=pct2.toFixed(2).replace('.',',')+' %';
-
-  // Status
-  aplicarStatusProposta(1,pct1);
-  aplicarStatusProposta(2,pct2);
-
-  // Excedentes
-  renderizarExcedenteProposta(1,pct1,_propPsbPrimeira,renda,'1ª Parcela PSB');
-  renderizarExcedenteProposta(2,pct2,_propPsbMedia,renda,'Média PSB');
-
-  // Mostra resultado
-  document.getElementById('resultadoProposta').className='resultado show';
-  document.getElementById('resultadoProposta').scrollIntoView({behavior:'smooth'});
-}
-
-// ══ LIMPAR PROPOSTA ══
-function limparProposta(){
-  document.getElementById('formProposta').reset();
-  document.getElementById('resultadoProposta').className='resultado';
-  document.getElementById('uploadCardProp').className='upload-card proposta';
-  document.getElementById('badgeProp').className='upload-status-badge';
-  document.getElementById('statusBarProp').className='status-bar';
-  document.getElementById('prop-psaPsbWrap').style.display='none';
-  document.getElementById('prop-fluxoWrap').style.display='none';
-  document.getElementById('prop-fluxoTbody').innerHTML='';
-  document.getElementById('prop-fluxoBody').classList.remove('open');
-  document.getElementById('resumoPropostaGrid').style.display='none';
-  document.getElementById('prop-excedenteBox1').style.display='none';
-  document.getElementById('prop-excedenteBox2').style.display='none';
-  document.getElementById('pdfPropostaInput').value='';
-  // Reset resumo
-  ['rp-financiado','rp-sinal','rp-carteira','rp-cupom','rp-fgts','rp-subsidio','rp-bompag','rp-qtdCarteira'].forEach(id=>{
-    document.getElementById(id).textContent='—';
-  });
-  // Reset estado
-  _propFluxo=[];_propMensaisPSA=[];_propMensaisPSB=[];
-  _propPsaQtd=0;_propPsaSaldo=0;_propPsbQtd=0;_propPsbSaldo=0;
-  _propPsbPrimeira=0;_propPsbMedia=0;_propDataEntregaISO=null;_propTextoDebug='';
-}
-
-// ══ COPIAR RESULTADO PROPOSTA ══
-function copiarResultadoProposta(){
-  const pct1=document.getElementById('prop-res-pct1').textContent;
-  const pct2=document.getElementById('prop-res-pct2').textContent;
-  const st1=document.getElementById('prop-compText1').textContent;
-  const st2=document.getElementById('prop-compText2').textContent;
-  const txt=`SIMULAÇÃO DE PROPOSTA MRV — ${new Date().toLocaleString('pt-BR')}
-Empreendimento: ${document.getElementById('prop-empreendimento').value}
-Unidade: ${document.getElementById('prop-unidade').value}
-Valor do Imóvel: ${document.getElementById('prop-valorImovel').value}
-Valor da Proposta: ${document.getElementById('prop-valorProposta').value}
-─────────────────────────────
-Renda do Cliente: ${document.getElementById('prop-res-renda').textContent}
-Teto MRV (5%): ${document.getElementById('prop-res-teto').textContent}
-─────────────────────────────
-PSA (pré-entrega): ${document.getElementById('prop-res-psa-saldo').textContent} (${document.getElementById('prop-res-psa-qtd').textContent})
-PSB (pós-entrega): ${document.getElementById('prop-res-psb-saldo').textContent} (${document.getElementById('prop-res-psb-qtd').textContent})
-─────────────────────────────
-1ª Parcela PSB: ${document.getElementById('prop-res-primeira').textContent}
-Comprometimento (1ª PSB): ${pct1} → ${st1}
-─────────────────────────────
-Média PSB: ${document.getElementById('prop-res-media').textContent}
-Comprometimento (Média PSB): ${pct2} → ${st2}
-─────────────────────────────
-⚠ Projeção estimada. Valores sujeitos à aprovação do financeiro MRV.`;
-  navigator.clipboard.writeText(txt).then(()=>alert('✅ Copiado!'));
-}
-
-// ══ STATUS PROPOSTA ══
-function mostrarStatusProp(msg,tipo){
-  const bar=document.getElementById('statusBarProp');
-  bar.className='status-bar show'+(tipo==='success'?' success':tipo==='error'?' error':tipo==='info'?' info':'');
-  document.getElementById('statusMsgProp').textContent=msg;
-  document.getElementById('spinnerProp').style.display=tipo==='loading'?'block':'none';
-}
-
-// ══ SET AUTO PROPOSTA ══
-function setAutoProp(id,val){
-  const el=document.getElementById(id);
-  if(el){el.value=val;el.classList.add('auto-filled-prop');}
-}
-
-// ══ MÁSCARA MOEDA PROPOSTA ══
-function mascaraMoedaProp(el){
-  let v=el.value.replace(/\D/g,'');if(!v){el.value='';return;}
-  v=(parseInt(v)/100).toFixed(2);
-  el.value='R$ '+v.replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
-}
-
-  // ══ MÁSCARA DATA ══
-function mascaraData(el){
-  // Remove tudo que não for número
-  let v = el.value.replace(/\D/g, '');
+    // ── EMPREENDIMENTO / IMÓVEL ───────────────────────────
+    // OIC/BPM: "Produto: JARDIM DAS AMOREIRAS - BLOCO 04 - 2 Q - APTO 303 CONT:..."
+    // EMCASH:  "Encantos Da Zona Norte, Travessa Everest, 2481, Apto: 704, Bloco: 02"
+     if(tipo === 'EMCASH'){
+    // ── EMCASH: Nome do empreendimento ──────────────────
+    // Aparece como: "Encantos Da Zona Norte, Travessa Everest..."
+    // Queremos só o nome antes do endereço (antes da vírgula ou "Travessa/Rua/Av")
+    // Também pode aparecer como nome do empreendimento no texto da seção V
   
-  // Limita a 8 dígitos numéricos (DDMMAAAA)
-  if(v.length > 8) v = v.substring(0, 8);
+    let nomeEmp = '';
+    let nomeBloco = '';
   
-  // Coloca as barras automaticamente
-  if(v.length >= 5) {
-    el.value = v.substring(0, 2) + '/' + v.substring(2, 4) + '/' + v.substring(4, 8);
-  } else if(v.length >= 3) {
-    el.value = v.substring(0, 2) + '/' + v.substring(2, 4);
+    // Tenta pegar o nome do empreendimento da seção V
+    // Formato: "Encantos Da Zona Norte, Travessa Everest, 2481, Apto: 704, Bloco: 02"
+    const descM = texto.match(
+      /Descri[çc][aã]o\s*do\s*im[oó]vel[^:]*:\s*\n?\s*([^\n]+)/i
+    );
+  
+    if(descM){
+      const desc = descM[1].trim();
+  
+      // Pega só o nome — tudo antes de "Travessa", "Rua", "Av", "Estrada" ou vírgula+número
+      const nomeMatch = desc.match(
+        /^([^,]+?)(?:\s*,\s*(?:Travessa|Rua|Av(?:enida)?|Estrada|Alameda|Al\.|R\.)|\s*,\s*\d)/i
+      );
+  
+      if(nomeMatch){
+        nomeEmp = nomeMatch[1].trim();
+      } else {
+        // Se não achou padrão, pega tudo antes da primeira vírgula
+        nomeEmp = desc.split(',')[0].trim();
+      }
+  
+      // Bloco e Apto
+      const aptoM = desc.match(/Apto[:\s]*(\d+[A-Z]*)/i);
+      const blocoM = desc.match(/Bloco[:\s]*(\d+[A-Z]*)/i);
+      if(aptoM && blocoM){
+        nomeBloco = 'Apto ' + aptoM[1] + ' — Bloco ' + blocoM[2];
+      } else if(aptoM){
+        nomeBloco = 'Apto ' + aptoM[1];
+      }
+    }
+  
+    // Fallback: tenta pegar o nome do empreendimento de outra forma
+    if(!nomeEmp){
+      // Emcash às vezes tem o nome do empreendimento no texto da CCB
+      const empFallM = texto.match(
+        /(?:empreendimento|residencial|condomínio)[:\s"]*([A-ZÁÉÍÓÚ][A-ZÁÉÍÓÚa-záéíóúãõ\s]+?)(?=,|\n|"|\.|Travessa|Rua)/i
+      );
+      if(empFallM) nomeEmp = empFallM[1].trim();
+    }
+  
+    if(nomeEmp) setAuto('empreendimento', nomeEmp);
+    if(nomeBloco) setAuto('modulo', nomeBloco);
+  
+    // Se ainda não tem bloco, tenta extrair do texto geral
+    if(!nomeBloco){
+      const aptoGeral = texto.match(/Apto[:\s]*(\d+[A-Z]*)[,\s]*Bloco[:\s]*(\d+[A-Z]*)/i);
+      if(aptoGeral) setAuto('modulo', 'Apto ' + aptoGeral[1] + ' — Bloco ' + aptoGeral[2]);
+        }
+      } else {
+      // OIC / BPM
+      const prodM = texto.match(/Produto[:\s]+([\s\S]+?)(?=CONT[-:\s]|$)/i);
+      if(prodM){
+        let prod = prodM[1].replace(/\n/g,' ').replace(/\s+/g,' ').trim();
+        // Remove tudo após o número do contrato se vier junto
+        prod = prod.replace(/CONT[-\s][A-Z0-9\-]+.*/i,'').trim();
+        let indiceHifen = prod.indexOf(' - ');
+        if(indiceHifen === -1) indiceHifen = prod.indexOf(' – ');
+        if(indiceHifen !== -1){
+          const emp    = prod.substring(0, indiceHifen).trim();
+          let modulo   = prod.substring(indiceHifen+3).trim();
+          // Limpa cidade/estado do final do módulo
+          modulo = modulo.replace(/\s*[-–]\s*(?:Rio de Janeiro|Maca[eé]|Campos dos Goytacazes|Belo Horizonte|São Paulo).*$/i,'').trim();
+          setAuto('empreendimento', emp);
+          setAuto('modulo', modulo);
+        } else {
+          setAuto('empreendimento', prod);
+          setAuto('modulo','—');
+        }
+      }
+    }
+
+    // ── VALOR DO IMÓVEL ───────────────────────────────────
+    // OIC:    "PREÇO DO IMÓVEL R$ 256.990,00"
+    // BPM:    "3.2 - PREÇO DO IMÓVEL: R$ 256.990,00"
+    // EMCASH: "Valor Total: R$ 275.000,00" (na seção do imóvel)
+    const valImovelM =
+      texto.match(/3\.2[^R\n]*R\$\s*([\d.,]+)/i)
+      || texto.match(/PRE[ÇC]O\s*DO\s*IM[OÓ]VEL[^R\n]*R\$\s*([\d.,]+)/i)
+      || texto.match(/V[oº°]\.\s*Im[oó]vel\s*nesta\s*data[^R\n]*R\$\s*([\d.,]+)/i)
+      || texto.match(/Valor\s*Total[:\s]*R\$\s*([\d.,]+)/i);
+    if(valImovelM) setAuto('valorImovel','R$ '+valImovelM[1].trim());
+
+    // ── VALOR FINANCIADO ──────────────────────────────────
+    // OIC/BPM: "4.1.4 ... R$ 203.988,39"
+    // EMCASH:  "Valor Líquido do Principal: R$79.671,58"
+    const finM =
+      texto.match(/Valor\s*L[ií]quido\s*do\s*Principal[:\s]*R\$\s*([\d.,]+)/i)
+      || texto.match(/4\.1\.4[^R\n]*R\$\s*([\d.,]+)/is)
+      || texto.match(/Financiamento\s*Habitacional[^R\n]*R\$\s*([\d.,]+)/i)
+      || texto.match(/valor\s*financiado[^R\n]*R\$\s*([\d.,]+)/i);
+    if(finM){ setAuto('valorFinanciado','R$ '+finM[1].trim()); calcularPctFinanciado(); }
+
+    // ── SALDO CARTEIRA MRV ────────────────────────────────
+    // OIC/BPM: "4.1.2 ... R$ XX.XXX,XX"
+    // EMCASH:  não se aplica
+    const saldoM = texto.match(/4\.1\.2[^R\n]*R\$\s*([\d.,]+)/is);
+    if(saldoM) setAuto('saldoCarteira','R$ '+saldoM[1].trim());
+
+    // ── QUANTIDADE DE PARCELAS ────────────────────────────
+    // EMCASH: "Quantidade de Parcelas: 60"
+    // OIC/BPM: inferido pelo maior número de parcela
+    const qtdEmcashM = texto.match(/Quantidade\s*de\s*Parcelas[:\s]*(\d+)/i);
+    if(qtdEmcashM) setAuto('qtdParcelas', qtdEmcashM[1]);
+
+    // ── DATA DE ENTREGA ───────────────────────────────────
+    // OIC/BPM: "5.1 - Previsão para a entrega das chaves: 30/11/2026"
+    //          "Previsão para entrega das chaves: 30/11/2026"
+    // EMCASH:  não consta
+    _obraPronta = /por se tratar de obra conclu[ií]da/i.test(texto);
+    const entM =
+      texto.match(/5\.1[^:]*:\s*(\d{2}\/\d{2}\/\d{4})/i)
+      || texto.match(/Previs[aã]o\s*para\s*(?:a\s*)?entrega\s*das\s*chaves[:\s]*(\d{2}\/\d{2}\/\d{4})/i);
+
+    // ── EXTRAI PARCELAS (3 formatos) ──────────────────────
+    const parcelas = extrairParcelas(texto, tipo);
+    _parcelasTodas = parcelas;
+
+    // Qtd parcelas por maior número (OIC/BPM)
+    if(!qtdEmcashM && parcelas.length){
+      const max = Math.max(...parcelas.map(p=>p.num));
+      setAuto('qtdParcelas', max.toString());
+    }
+
+    if(_obraPronta){
+      setAutoData('dataEntrega','Obra já entregue');
+      _dataEntregaISO = null;
+      calcularPsaPsb(parcelas, null, true);
+      buscarPrimeiraParcela(parcelas);
+    } else if(entM){
+      setAutoData('dataEntrega', entM[1]);
+      const[d,m,a] = entM[1].split('/').map(Number);
+      _dataEntregaISO = new Date(a,m-1,d);
+      calcularPsaPsb(parcelas, _dataEntregaISO, false);
+      buscarParcelaPosEntrega(parcelas, entM[1]);
+    } else if(tipo === 'EMCASH'){
+      // Emcash: obra pronta ou data manual — usa 1ª parcela diretamente
+      setAutoData('dataEntrega','Verificar manualmente');
+      // Tenta pegar "Valor da Primeira Parcela"
+      const primM = texto.match(/Valor\s*da\s*Primeira\s*Parcela[:\s]*R\$\s*([\d.,]+)/i);
+      if(primM){
+        setAuto('parcelaMRV','R$ '+primM[1].trim()+' (1ª parcela Emcash)');
+      } else if(parcelas.length){
+        buscarPrimeiraParcela(parcelas);
+      }
+      // Todas as parcelas Emcash são PSB (pós-entrega / substituem MRV)
+      _psbQtd = parcelas.length;
+      _psbSaldo = parcelas.reduce((s,p)=>s+p.valorNum,0);
+      _parcelasPSB = parcelas;
+      document.getElementById('psaQtd').textContent = '—';
+      document.getElementById('psaSaldo').textContent = '—';
+      document.getElementById('psbQtd').textContent = _psbQtd+' parcelas';
+      document.getElementById('psbSaldo').textContent = _psbSaldo>0?formatMoeda(_psbSaldo):'—';
+      document.getElementById('psaPsbWrap').style.display = 'grid';
+    }
+
+    // ── EXTRAI ENTRADA E INTERMEDIÁRIAS (OIC/BPM) ─────────
+    if(tipo !== 'EMCASH'){
+      extrairEntrada(texto);
+      extrairIntermediarias(texto);
+      renderizarPlano();
+    }
+
+    if(document.getElementById('debugBox').classList.contains('show')) debugMostrar(_debugAba);
+
+  }catch(e){
+    console.error('Erro na extração:',e);
+    mostrarStatus('⚠️ Leitura parcial do contrato. Use o Debug PDF para verificar.','error');
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//   EXTRAÇÃO DE PARCELAS — 3 FORMATOS
+// ══════════════════════════════════════════════════════════
+function extrairParcelas(texto, tipo){
+  const map = new Map();
+
+  if(tipo === 'EMCASH'){
+    // ── FORMATO EMCASH ────────────────────────────────────
+    // "1 15/09/2026 R$1.750,10 R$21,97 R$1.772,07"
+    // Coluna "Principal + Juros" é o valor da parcela (última coluna)
+    const regexEmcash = /(\d{1,3})\s+(\d{2}\/\d{2}\/\d{4})\s+R\$([\d.,]+)\s+R\$([\d.,]+)\s+R\$([\d.,]+)/g;
+    let m;
+    while((m=regexEmcash.exec(texto))!==null){
+      const num      = parseInt(m[1]);
+      const vencStr  = m[2];
+      const valorNum = parseMoeda(m[6]); // Principal + Juros (última coluna)
+      const[vd,vm,va]= vencStr.split('/').map(Number);
+      const venc     = new Date(va,vm-1,vd);
+      const key      = num+'_'+vencStr;
+      if(!map.has(key)) map.set(key,{num,valor:m[6],valorNum,vencStr,venc});
+    }
+  } else if(tipo === 'BPM'){
+    // ── FORMATO BPM ───────────────────────────────────────
+    // "01 842,80 08/10/2026" (SEM R$, valor com vírgula decimal)
+    // Mas também pode ter o formato com R$ em algumas seções
+    const regexBPM = /\b(\d{1,2})\s+([\d]{1,3}[.,][\d]{2})\s+(\d{2}\/\d{2}\/\d{4})/g;
+    const regexBPMcomRS = /\b(\d{1,3})\s+R\$\s+([\d.,]+)\s+(\d{2}\/\d{2}\/\d{4})/g;
+    let m;
+    // Primeiro tenta sem R$
+    while((m=regexBPM.exec(texto))!==null){
+      const num     = parseInt(m[1]);
+      const valStr  = m[2];
+      const vencStr = m[3];
+      const valorNum= parseMoeda(valStr);
+      if(valorNum < 10) continue; // ignora valores muito pequenos (ruído)
+      const[vd,vm,va]= vencStr.split('/').map(Number);
+      const venc    = new Date(va,vm-1,vd);
+      const key     = num+'_'+vencStr;
+      if(!map.has(key)) map.set(key,{num,valor:valStr,valorNum,vencStr,venc});
+    }
+    // Depois tenta com R$ (pode haver nas seções de intermediárias)
+    while((m=regexBPMcomRS.exec(texto))!==null){
+      const num     = parseInt(m[1]);
+      const valStr  = m[2];
+      const vencStr = m[3];
+      const valorNum= parseMoeda(valStr);
+      const[vd,vm,va]= vencStr.split('/').map(Number);
+      const venc    = new Date(va,vm-1,vd);
+      const key     = num+'_'+vencStr;
+      if(!map.has(key)) map.set(key,{num,valor:valStr,valorNum,vencStr,venc});
+    }
   } else {
-    el.value = v;
+    // ── FORMATO OIC ───────────────────────────────────────
+    // "23 R$ 531,07 08/10/2028"
+    const regexOIC = /\b(\d{1,3})\s+R\$\s+([\d.,]+)\s+(\d{2}\/\d{2}\/\d{4})/g;
+    let m;
+    while((m=regexOIC.exec(texto))!==null){
+      const num     = parseInt(m[1]);
+      const valStr  = m[2];
+      const vencStr = m[3];
+      const valorNum= parseMoeda(valStr);
+      const[vd,vm,va]= vencStr.split('/').map(Number);
+      const venc    = new Date(va,vm-1,vd);
+      const key     = vencStr; // OIC: uma parcela por data
+      if(!map.has(key)||num<map.get(key).num) map.set(key,{num,valor:valStr,valorNum,vencStr,venc});
+    }
   }
-  
-  // (Opcional legal) Recalcula a tabela do fluxo automaticamente 
-  // assim que o usuário termina de digitar o ano (10 caracteres)
-  if(el.value.length === 10) {
-    el.dispatchEvent(new Event('change'));
+
+  return [...map.values()].sort((a,b)=>a.venc-b.venc||a.num-b.num);
+}
+
+// ══════════════════════════════════════════════════════════
+//   PSA / PSB
+// ══════════════════════════════════════════════════════════
+function calcularPsaPsb(parcelas,dataEntrega,obraPronta){
+  _psaQtd=0;_psaSaldo=0;_psbQtd=0;_psbSaldo=0;_parcelasPSB=[];
+  if(obraPronta){
+    for(const p of parcelas){_psbQtd++;_psbSaldo+=p.valorNum;_parcelasPSB.push(p);}
+  }else{
+    const m=dataEntrega.getMonth(),a=dataEntrega.getFullYear();
+    const inicioPSB=new Date(m===11?a+1:a,(m+1)%12,1);
+    for(const p of parcelas){
+      if(p.venc<inicioPSB){_psaQtd++;_psaSaldo+=p.valorNum;}
+      else{_psbQtd++;_psbSaldo+=p.valorNum;_parcelasPSB.push(p);}
+    }
   }
-}
-// ══ LISTENER: recalcula PSA/PSB ao digitar data de entrega ══
-document.getElementById('prop-dataEntrega').addEventListener('change',function(){
-  if(_propFluxo.length>0&&this.value&&/^\d{2}\/\d{2}\/\d{4}$/.test(this.value)){
-    calcularPsaPsbProposta(this.value);
-    renderizarFluxo();
-  }
-});
-
-// ════════════════════════════════════════════════════════════
-//              FUNÇÕES DA ABA CONTRATO (originais)
-// ════════════════════════════════════════════════════════════
-
-function aplicarStatusUnificado(num,pct){
-  const unif=document.getElementById('compUnif'+num);
-  const icon=document.getElementById('compIcon'+num);
-  const text=document.getElementById('compText'+num);
-  const bar=document.getElementById(num===1?'progressBar':'progressBarMedia');
-  let classe,iconeTxt,textoTxt,barClasse;
-  if(pct<=35){classe='aprovado';iconeTxt='✔';textoTxt='APROVADO';barClasse='verde';}
-  else if(pct<=40){classe='atencao';iconeTxt='⚠';textoTxt='ATENÇÃO';barClasse='amarelo';}
-  else{classe='reprovado';iconeTxt='✘';textoTxt='REPROVADO';barClasse='vermelho';}
-  if(num===2){
-    unif.className='comprom-unified secundario';
-    const side=document.getElementById('compStatus'+num);
-    side.style.background=classe==='aprovado'?'var(--verde-claro)':classe==='atencao'?'var(--amarelo-claro)':'var(--vermelho-claro)';
-    side.style.borderColor=classe==='aprovado'?'var(--verde)':classe==='atencao'?'var(--amarelo)':'var(--vermelho)';
-    side.style.color=classe==='aprovado'?'var(--verde)':classe==='atencao'?'var(--amarelo-medio)':'var(--vermelho)';
-  }else{unif.className='comprom-unified '+classe;}
-  icon.textContent=iconeTxt;text.textContent=textoTxt;
-  if(bar){bar.className='progress-bar '+barClasse;bar.style.width=Math.min(pct*2,100)+'%';}
-  return textoTxt;
+  document.getElementById('psaQtd').textContent=_psaQtd>0?_psaQtd+' parcelas':'—';
+  document.getElementById('psaSaldo').textContent=_psaSaldo>0?formatMoeda(_psaSaldo):'—';
+  document.getElementById('psbQtd').textContent=_psbQtd>0?_psbQtd+' parcelas':'—';
+  document.getElementById('psbSaldo').textContent=_psbSaldo>0?formatMoeda(_psbSaldo):'—';
+  document.getElementById('psaPsbWrap').style.display='grid';
 }
 
-function abrirDebug(){
-  document.getElementById('debugToolbar').classList.add('show');
-  document.getElementById('debugBox').classList.add('show');
-  document.getElementById('debugToolbar').scrollIntoView({behavior:'smooth',block:'center'});
-  debugMostrar(_debugAba);
-}
-function fecharDebug(){
-  document.getElementById('debugToolbar').classList.remove('show');
-  document.getElementById('debugBox').classList.remove('show');
-}
-function debugMostrar(aba){
-  _debugAba=aba;
-  ['btnTexto','btnCaixa','btnParcelas','btnEntrada','btnInter'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
-  const mapa={texto:'btnTexto',caixa:'btnCaixa',parcelas:'btnParcelas',entrada:'btnEntrada',inter:'btnInter'};
-  if(mapa[aba])document.getElementById(mapa[aba]).classList.add('active');
-  const box=document.getElementById('debugBox');
-  if(aba==='texto'){box.textContent=_textoDebug?'=== CONTRATO MRV (primeiros 4000 chars) ===\n\n'+_textoDebug.substring(0,4000):'⚠ Nenhum contrato MRV carregado.';}
-  else if(aba==='caixa'){box.textContent=_textoCaixaDebug?'=== SIMULAÇÃO CAIXA (primeiros 4000 chars) ===\n\n'+_textoCaixaDebug.substring(0,4000):'⚠ Nenhuma simulação Caixa carregada.';}
-  else if(aba==='parcelas'){
-    const inicioPSB=_dataEntregaISO?new Date(_dataEntregaISO.getFullYear(),(_dataEntregaISO.getMonth()+1)%12,1):null;
-    const linhas=_parcelasTodas.map(p=>{const tipo=_obraPronta?'PSB':(inicioPSB&&p.venc>=inicioPSB?'PSB':'PSA');return`  Mensal ${String(p.num).padStart(3)} | ${formatMoeda(p.valorNum)} | ${p.vencStr} | ${tipo}`;});
-    box.textContent=`=== PARCELAS MENSAIS (${_parcelasTodas.length}) ===\n\n`+(linhas.length?linhas.join('\n'):'Nenhuma encontrada.');
-  }else if(aba==='entrada'){
-    box.textContent=`=== ENTRADA ===\n\nTotal: ${_entrada.total>0?formatMoeda(_entrada.total):'—'}\n% Preço: ${_entrada.pct||'—'}\nParcelas: ${_entrada.parcelas.length}\n\n`+_entrada.parcelas.map((p,i)=>`  ${i+1}. ${formatMoeda(p.valor)} — ${p.venc}`).join('\n');
-  }else if(aba==='inter'){
-    if(!_intermediarias.length){box.textContent='=== INTERMEDIÁRIAS ===\n\nNenhuma encontrada.';return;}
-    let txt=`=== INTERMEDIÁRIAS (${_intermediarias.length} grupo(s)) ===\n\n`;
-    _intermediarias.forEach(g=>{txt+=`Grupo ${g.grupo} — Total: ${g.total>0?formatMoeda(g.total):'—'}\n`;g.parcelas.forEach((p,i)=>{txt+=`  ${i+1}. ${formatMoeda(p.valor)} — ${p.venc}\n`;});txt+='\n';});
-    box.textContent=txt;
-  }
+function buscarParcelaPosEntrega(parcelas,dataStr){
+  const[d,m,a]=dataStr.split('/').map(Number);
+  let mesBusca=m+1,anoBusca=a;
+  if(mesBusca>12){mesBusca=1;anoBusca++;}
+  const inicioBusca=new Date(anoBusca,mesBusca-1,1);
+  const encontrada=parcelas.find(p=>p.venc>=inicioBusca);
+  if(encontrada) setAuto('parcelaMRV','R$ '+encontrada.valor+' (Mensal '+encontrada.num+' — venc. '+encontrada.vencStr+')');
 }
 
-function mostrarToast(msg,tipo='loading'){
-  const toast=document.getElementById('toastSheets');
-  document.getElementById('toastIcon').textContent=tipo==='loading'?'⏳':tipo==='ok'?'✅':'⚠️';
-  document.getElementById('toastMsg').textContent=msg;
-  toast.className='toast-sheets show'+(tipo==='erro'?' erro':'');
-  if(tipo!=='loading')setTimeout(()=>{toast.className='toast-sheets';},4000);
-}
-async function enviarParaSheets(dados){
-  mostrarToast('Salvando no Google Sheets...');
-  try{
-    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)});
-    mostrarToast('Dados salvos com sucesso!','ok');
-  }catch(err){mostrarToast('Falha ao salvar. Verifique a conexão.','erro');}
+function buscarPrimeiraParcela(parcelas){
+  if(!parcelas.length)return;
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const futura=parcelas.find(p=>p.venc>=hoje);
+  const p=futura||parcelas[0];
+  setAuto('parcelaMRV','R$ '+p.valor+' (Mensal '+p.num+' — venc. '+p.vencStr+')');
 }
 
+// ══════════════════════════════════════════════════════════
+//   % FINANCIADO
+// ══════════════════════════════════════════════════════════
+function calcularPctFinanciado(){
+  const fin=parseMoeda(document.getElementById('valorFinanciado').value);
+  const imo=parseMoeda(document.getElementById('valorImovel').value);
+  if(!fin||!imo)return;
+  const pct=(fin/imo)*100;
+  const wrap=document.getElementById('financiadoWrap');
+  const badge=document.getElementById('financiadoBadge');
+  document.getElementById('pctFinanciadoDisplay').textContent=pct.toFixed(2).replace('.',',')+' %';
+  wrap.style.display='flex';
+  if(pct<75){wrap.className='financiado-wrap fin-verde';badge.className='financiado-badge ok';badge.textContent='✔ Desconto disponível';}
+  else if(pct<80){wrap.className='financiado-wrap fin-amarelo';badge.className='financiado-badge aviso';badge.textContent='⚠ Margem reduzida para desconto';}
+  else{wrap.className='financiado-wrap fin-vermelho';badge.className='financiado-badge nok';badge.textContent='✘ Limite atingido — sem desconto';}
+}
+
+// ══════════════════════════════════════════════════════════
+//   LEITURA DE PDFs
+// ══════════════════════════════════════════════════════════
 async function lerPDFContrato(input){
   const file=input.files[0];if(!file)return;
-  mostrarStatus('⏳ Lendo Contrato MRV...','loading');
+  mostrarStatus('⏳ Lendo contrato...','loading');
   try{
     const texto=await extrairTextoPDF(file);
     if(!texto)return;
@@ -1275,7 +1372,7 @@ async function lerPDFContrato(input){
     extrairDadosContrato(texto);
     document.getElementById('uploadCardMRV').className='upload-card mrv lido-mrv';
     document.getElementById('badgeMRV').className='upload-status-badge ok-mrv';
-    mostrarStatus('✅ Contrato MRV lido! Carregue a Simulação Caixa.','success');
+    mostrarStatus('✅ Contrato lido! Tipo: '+_tipoContrato+'. Carregue a Simulação Caixa.','success');
   }catch(e){mostrarStatus('❌ Erro ao ler contrato: '+e.message,'error');}
 }
 
@@ -1307,65 +1404,87 @@ async function extrairTextoPDF(file){
   return texto;
 }
 
-function extrairDadosContrato(texto){
-  try{
-    const nomeM=texto.match(/COMPRADOR\(A\):\s*([A-ZÁÉÍÓÚÃÕÂÊÎÔÛÇ][A-ZÁÉÍÓÚÃÕÂÊÎÔÛÇa-záéíóúãõâêîôûç\s]+?)(?=\s*Nacionalidade|\s*CPF)/i);
-    if(nomeM)setAuto('nomeCliente',nomeM[1].trim());
-    const cpfM=texto.match(/CPF[:\s]*([\d]{3}[\.\s]?[\d]{3}[\.\s]?[\d]{3}[\-\s]?[\d]{2})/);
-    if(cpfM)setAuto('cpf',cpfM[1].replace(/\s/g,''));
-    const contM=texto.match(/CONT[:\s]*([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
-    if(contM)setAuto('numContrato',contM[1]);
-    const prodM=texto.match(/Produto:\s*([\s\S]+?)(?=CONT:|$)/i);
-    if(prodM){
-      let prod=prodM[1].replace(/\n/g,' ').replace(/\s+/g,' ').trim();
-      let indiceHifen=prod.indexOf('-');
-      if(indiceHifen===-1)indiceHifen=prod.indexOf('–');
-      if(indiceHifen!==-1){
-        let emp=prod.substring(0,indiceHifen).trim();
-        let modulo=prod.substring(indiceHifen+1).trim();
-        const matchUnidade=modulo.match(/(.*?(?:APTO|CASA|UNIDADE|VAGA)\s*\d+[A-Z]*)/i);
-        if(matchUnidade){modulo=matchUnidade[1].trim();}
-        else{modulo=modulo.replace(/\s*(?:Rio de Janeiro|Maca[eé]|Campos dos Goytacazes|-?\s*RJ).*$/i,'').trim();}
-        setAuto('empreendimento',emp);setAuto('modulo',modulo);
-      }else{setAuto('empreendimento',prod);setAuto('modulo','—');}
-    }
-    const valM=texto.match(/PRE[ÇC]O\s*DO\s*IM[OÓ]VEL[^R]*R\$\s*([\d.,]+)/i);
-    if(valM)setAuto('valorImovel','R$ '+valM[1].trim());
-    const finM=texto.match(/4\.1\.4[^R]*R\$\s*([\d.,]+)/is)||texto.match(/valor\s*financiado[^R]*R\$\s*([\d.,]+)/i)||texto.match(/Financiamento\s*Habitacional[^R]*R\$\s*([\d.,]+)/i);
-    if(finM){setAuto('valorFinanciado','R$ '+finM[1].trim());calcularPctFinanciado();}
-    const saldoM=texto.match(/4\.1\.2[^R]*R\$\s*([\d.,]+)/is);
-    if(saldoM)setAuto('saldoCarteira','R$ '+saldoM[1].trim());
-    const nums=[...texto.matchAll(/\b(\d{1,3})\s+R\$\s+[\d.,]+\s+\d{2}\/\d{2}\/\d{4}/g)];
-    if(nums.length){const max=Math.max(...nums.map(m=>parseInt(m[1])));setAuto('qtdParcelas',max.toString());}
-    _obraPronta=/por se tratar de obra conclu[ií]da/i.test(texto);
-    extrairEntrada(texto);extrairIntermediarias(texto);
-    const parcelas=extrairParcelas(texto);_parcelasTodas=parcelas;
-    if(_obraPronta){
-      setAuto('dataEntrega','Obra já entregue');_dataEntregaISO=null;
-      calcularPsaPsb(parcelas,null,true);buscarPrimeiraParcela(parcelas);
-    }else{
-      const entM=texto.match(/Previs[aã]o\s*para\s*entrega\s*das\s*chaves[:\s]*(\d{2}\/\d{2}\/\d{4})/i);
-      if(entM){
-        setAuto('dataEntrega',entM[1]);
-        const[d,m,a]=entM[1].split('/').map(Number);
-        _dataEntregaISO=new Date(a,m-1,d);
-        calcularPsaPsb(parcelas,_dataEntregaISO,false);
-        buscarParcelaPosEntrega(parcelas,entM[1]);
-      }
-    }
-    renderizarPlano();
-    if(document.getElementById('debugBox').classList.contains('show'))debugMostrar(_debugAba);
-  }catch(e){console.error(e);mostrarStatus('⚠️ Leitura parcial do contrato. Use o Debug PDF.','error');}
-}
-
+// ══════════════════════════════════════════════════════════
+//   SIMULAÇÃO CAIXA
+// ══════════════════════════════════════════════════════════
 function extrairDadosCaixa(texto){
   try{
-    const avalM=texto.match(/Valor\s*de\s*Avalia[çc][aã]o[:\s]*R\$\s*([\d.,]+)/i);
-    if(avalM)setAutoCaixa('valorAvaliacao','R$ '+avalM[1].trim());
-    const rendaM=texto.match(/Renda\s*Bruta[:\s]*R\$\s*([\d.,]+)/i)||texto.match(/Renda\s*Individual[:\s]*R\$\s*([\d.,]+)/i)||texto.match(/Renda[:\s]*R\$\s*([\d.,]+)/i);
-    if(rendaM){const rendaVal=parseMoeda(rendaM[1]);setAutoCaixa('renda','R$ '+rendaM[1].trim());calcularTetoFaixa(rendaVal);}
-    const prestM=texto.match(/1[aª]\s*Presta[çc][aã]o[:\s]*([\d.,]+)/i)||texto.match(/Presta[çc][aã]o[:\s]*R?\$?\s*([\d.,]+)/i);
-    if(prestM){const val=parseMoeda(prestM[1]);if(val>0)setAutoCaixa('parcelaCaixa',formatMoeda(val));}
+    // ── VALOR DE AVALIAÇÃO ────────────────────────────────
+    const avalM = texto.match(/Valor\s*de\s*Avalia[çc][aã]o[:\s]*R\$\s*([\d.,]+)/i)
+                || texto.match(/Valor\s*do\s*Im[oó]vel[:\s]*R\$\s*([\d.,]+)/i);
+    if(avalM) setAutoCaixa('valorAvaliacao','R$ '+avalM[1].trim());
+
+    // ── RENDA ─────────────────────────────────────────────
+    const rendaM =
+      texto.match(/Renda\s*Familiar[:\s]*R\$\s*([\d.,]+)/i)
+      || texto.match(/Renda\s*Bruta[:\s]*R\$\s*([\d.,]+)/i)
+      || texto.match(/Renda\s*Individual[:\s]*R\$\s*([\d.,]+)/i)
+      || texto.match(/Renda\s*Familiar[:\s]*([\d.,]+)/i)
+      || texto.match(/Renda[:\s]*R\$\s*([\d.,]+)/i);
+    if(rendaM){
+      const rendaVal = parseMoeda(rendaM[1]);
+      setAutoCaixa('renda','R$ '+rendaM[1].trim());
+      calcularTetoFaixa(rendaVal);
+    }
+
+    // ── PARCELA / PRESTAÇÃO ───────────────────────────────
+    // Cobre todos os formatos conhecidos da Caixa:
+    //
+    // Formato 1 — "1ª Prestação: 751,52"
+    // Formato 2 — "Prestação mensal: R$ 751,52"
+    // Formato 3 — "Primeira Prestação ... R$ 751,52" (valor na linha seguinte)
+    // Formato 4 — "Prestação Máxima - SIRIC: R$ 751,53"
+    // Formato 5 — "TOTAL ... R$ 751,52" (componentes da prestação)
+    // Formato 6 — "Valor da Prestação: 751,52"
+
+    let parcelaVal = 0;
+
+    // Tenta cada padrão em ordem de confiabilidade
+    const padroesParcela = [
+      // "1ª Prestação: 751,52" ou "1ª Prestação R$ 751,52"
+      /1[aª]\s*Presta[çc][aã]o[:\s]*R?\$?\s*([\d.,]+)/i,
+      // "Prestação mensal: R$ 751,52"
+      /Presta[çc][aã]o\s*mensal[:\s]*R?\$?\s*([\d.,]+)/i,
+      // "Valor da Prestação: 751,52"
+      /Valor\s*da\s*Presta[çc][aã]o[:\s]*R?\$?\s*([\d.,]+)/i,
+      // "Primeira Prestação R$ 751,52" — valor logo após o label
+      /Primeira\s*Presta[çc][aã]o\s*R\$\s*([\d.,]+)/i,
+      // "Primeira Prestação" seguido de valor em até 120 chars
+      /Primeira\s*Presta[çc][aã]o[\s\S]{0,120}?R\$\s*([\d.,]+)/i,
+      // "Prestação Máxima - SIRIC: R$ 751,53"
+      /Presta[çc][aã]o\s*M[aá]xima[^R]*R\$\s*([\d.,]+)/i,
+      // "Prestação Máxima - SIRIC:R$751,53" (sem espaço)
+      /Presta[çc][aã]o\s*M[aá]xima[^:]*:[:\s]*R?\$?\s*([\d.,]+)/i,
+      // Componentes da prestação — linha TOTAL
+      // "Componentes da prestação ... TOTAL ... R$ 751,52"
+      /Componentes\s*da\s*presta[çc][aã]o[\s\S]{0,400}?TOTAL[:\s]*R\$\s*([\d.,]+)/i,
+    ];
+
+    for(const regex of padroesParcela){
+      const m = texto.match(regex);
+      if(m){
+        const val = parseMoeda(m[1]);
+        if(val > 50){ // ignora valores absurdamente pequenos
+          parcelaVal = val;
+          break;
+        }
+      }
+    }
+
+    // Fallback: busca "R$ 751,52" próximo de qualquer menção a "prestação"
+    if(!parcelaVal){
+      const blocoM = texto.match(/Presta[çc][aã]o[\s\S]{0,300}/i);
+      if(blocoM){
+        const valM = blocoM[0].match(/R\$\s*([\d.,]+)/);
+        if(valM){
+          const val = parseMoeda(valM[1]);
+          if(val > 50) parcelaVal = val;
+        }
+      }
+    }
+
+    if(parcelaVal > 0) setAutoCaixa('parcelaCaixa', formatMoeda(parcelaVal));
+
   }catch(e){console.error('Erro ao ler simulação Caixa:',e);}
 }
 
@@ -1377,29 +1496,65 @@ function calcularTetoFaixa(renda){
   else{setAutoCaixa('tetoFaixa','R$ 400.000,00');faixaDetalhe.innerHTML='<strong>Faixa 3</strong> — Renda acima de R$ 5.000,00 → Teto: <strong>R$ 400.000,00</strong>';}
 }
 
+// ══════════════════════════════════════════════════════════
+//   ENTRADA E INTERMEDIÁRIAS (OIC/BPM)
+// ══════════════════════════════════════════════════════════
 function extrairEntrada(texto){
   _entrada={total:0,pct:'',parcelas:[]};
   const blocoM=texto.match(/4\.1\.1[\s\S]*?(?=4\.1\.2)/i);if(!blocoM)return;
   const bloco=blocoM[0];
   const totalM=bloco.match(/R\$\s*([\d.,]+)/);if(totalM)_entrada.total=parseMoeda(totalM[1]);
   const pctM=bloco.match(/(\d{1,3}[,.]?\d{0,4})\s*%/);if(pctM)_entrada.pct=pctM[1].replace('.',',')+' %';
-  const padroes=[/(\d+)\s*\([^)]+\)\s*parcela[s]?\s*no\s*valor\s*de\s*R\$\s*([\d.,]+)[^0-9\/]*(\d{2}\/\d{2}\/\d{4})/gi,/parcela[s]?\s*de\s*R\$\s*([\d.,]+)[^0-9\/]*(\d{2}\/\d{2}\/\d{4})/gi,/R\$\s*([\d.,]+)\s+(\d{2}\/\d{2}\/\d{4})/g];
-  for(const reg of padroes){let m;reg.lastIndex=0;while((m=reg.exec(bloco))!==null){const valor=parseMoeda(m[m.length-2]);const venc=m[m.length-1];if(valor>0&&/\d{2}\/\d{2}\/\d{4}/.test(venc))_entrada.parcelas.push({valor,venc});}if(_entrada.parcelas.length>0)break;}
+  const padroes=[
+    /(\d+)\s*\([^)]+\)\s*parcela[s]?\s*no\s*valor\s*de\s*R\$\s*([\d.,]+)[^0-9\/]*(\d{2}\/\d{2}\/\d{4})/gi,
+    /parcela[s]?\s*de\s*R\$\s*([\d.,]+)[^0-9\/]*(\d{2}\/\d{2}\/\d{4})/gi,
+    /R\$\s*([\d.,]+)\s+(\d{2}\/\d{2}\/\d{4})/g
+  ];
+  for(const reg of padroes){
+    let m;reg.lastIndex=0;
+    while((m=reg.exec(bloco))!==null){
+      const valor=parseMoeda(m[m.length-2]);const venc=m[m.length-1];
+      if(valor>0&&/\d{2}\/\d{2}\/\d{4}/.test(venc))_entrada.parcelas.push({valor,venc});
+    }
+    if(_entrada.parcelas.length>0)break;
+  }
 }
+
 function extrairIntermediarias(texto){
   _intermediarias=[];
   const blocoM=texto.match(/4\.1\.3[\s\S]*?(?=4\.1\.4)/i);if(!blocoM)return;
   const bloco=blocoM[0];
   const subgrupos=[...bloco.matchAll(/4\.1\.3\.(\d+)([\s\S]*?)(?=4\.1\.3\.\d|$)/gi)];
-  if(subgrupos.length>0){for(const sg of subgrupos){const totalM=sg[2].match(/R\$\s*([\d.,]+)/);_intermediarias.push({grupo:parseInt(sg[1]),total:totalM?parseMoeda(totalM[1]):0,parcelas:extrairParcelasBloco(sg[2])});}}
-  else{const totalM=bloco.match(/R\$\s*([\d.,]+)/);const total=totalM?parseMoeda(totalM[1]):0;const parcelas=extrairParcelasBloco(bloco);if(total>0||parcelas.length>0)_intermediarias.push({grupo:1,total,parcelas});}
+  if(subgrupos.length>0){
+    for(const sg of subgrupos){
+      const totalM=sg[2].match(/R\$\s*([\d.,]+)/);
+      _intermediarias.push({grupo:parseInt(sg[1]),total:totalM?parseMoeda(totalM[1]):0,parcelas:extrairParcelasBloco(sg[2])});
+    }
+  }else{
+    const totalM=bloco.match(/R\$\s*([\d.,]+)/);const total=totalM?parseMoeda(totalM[1]):0;
+    const parcelas=extrairParcelasBloco(bloco);
+    if(total>0||parcelas.length>0)_intermediarias.push({grupo:1,total,parcelas});
+  }
 }
+
 function extrairParcelasBloco(bloco){
   const parcelas=[];
-  const padroes=[/(\d+)\s*\([^)]+\)\s*parcela[s]?\s*no\s*valor\s*de\s*R\$\s*([\d.,]+)[^0-9\/]*(\d{2}\/\d{2}\/\d{4})/gi,/parcela[s]?\s*de\s*R\$\s*([\d.,]+)[^0-9\/]*(\d{2}\/\d{2}\/\d{4})/gi,/R\$\s*([\d.,]+)\s+(\d{2}\/\d{2}\/\d{4})/g];
-  for(const reg of padroes){let m;reg.lastIndex=0;while((m=reg.exec(bloco))!==null){const valor=parseMoeda(m[m.length-2]);const venc=m[m.length-1];if(valor>0&&/\d{2}\/\d{2}\/\d{4}/.test(venc))parcelas.push({valor,venc});}if(parcelas.length>0)break;}
+  const padroes=[
+    /(\d+)\s*\([^)]+\)\s*parcela[s]?\s*no\s*valor\s*de\s*R\$\s*([\d.,]+)[^0-9\/]*(\d{2}\/\d{2}\/\d{4})/gi,
+    /parcela[s]?\s*de\s*R\$\s*([\d.,]+)[^0-9\/]*(\d{2}\/\d{2}\/\d{4})/gi,
+    /R\$\s*([\d.,]+)\s+(\d{2}\/\d{2}\/\d{4})/g
+  ];
+  for(const reg of padroes){
+    let m;reg.lastIndex=0;
+    while((m=reg.exec(bloco))!==null){
+      const valor=parseMoeda(m[m.length-2]);const venc=m[m.length-1];
+      if(valor>0&&/\d{2}\/\d{2}\/\d{4}/.test(venc))parcelas.push({valor,venc});
+    }
+    if(parcelas.length>0)break;
+  }
   return parcelas;
 }
+
 function renderizarPlano(){
   const wrap=document.getElementById('planoWrap');const body=document.getElementById('planoBody');
   const temEntrada=_entrada.total>0||_entrada.parcelas.length>0;const temInter=_intermediarias.length>0;
@@ -1422,61 +1577,73 @@ function renderizarPlano(){
   if(valorImovel>0&&totalInter>0){const pctCalc=((totalInter/valorImovel)*100).toFixed(2).replace('.',',');pctInterStr=`<span class="plano-badge-pct roxo">${pctCalc} %</span>`;}
   html+=`<div class="plano-secao open" id="secaoInter"><div class="plano-secao-titulo" onclick="toggleSecao('secaoInter')"><span class="ps-esq">🔀 Intermediárias</span><span class="ps-dir"><span class="plano-badge-total">${totalInter>0?formatMoeda(totalInter):'—'}</span>${pctInterStr}<span class="plano-chevron">▼</span></span></div><div class="plano-conteudo">`;
   if(!temInter){html+=`<p class="sem-intermediarias">ℹ️ Não há intermediárias neste contrato.</p>`;}
-  else{_intermediarias.forEach(g=>{let pctGrupoStr='';if(valorImovel>0&&g.total>0){const pctG=((g.total/valorImovel)*100).toFixed(2).replace('.',',');pctGrupoStr=`<span style="font-size:11px;font-weight:700;color:#6B2D8B;background:#F3EDF7;padding:2px 7px;border-radius:4px;">${pctG} %</span>`;}html+=`<div class="grupo-wrap"><div class="grupo-titulo"><span>📦 Grupo ${g.grupo}</span><span class="gt-total">${pctGrupoStr}${g.total>0?formatMoeda(g.total):'—'}</span></div>`;if(g.parcelas.length>0){g.parcelas.forEach((p,i)=>{const u=i===g.parcelas.length-1;html+=`<div class="grupo-row"><span style="font-size:11px;color:#aaa;min-width:16px;">${u?'└':'├'}</span><span class="gr-val">${formatMoeda(p.valor)}</span><span class="gr-venc">📅 ${p.venc}</span></div>`;});}else{html+=`<div style="font-size:12px;color:#999;font-style:italic;padding:4px 0;">Parcelas não identificadas individualmente.</div>`;}html+=`</div>`;});}
+  else{
+    _intermediarias.forEach(g=>{
+      let pctGrupoStr='';
+      if(valorImovel>0&&g.total>0){const pctG=((g.total/valorImovel)*100).toFixed(2).replace('.',',');pctGrupoStr=`<span style="font-size:11px;font-weight:700;color:#6B2D8B;background:#F3EDF7;padding:2px 7px;border-radius:4px;">${pctG} %</span>`;}
+      html+=`<div class="grupo-wrap"><div class="grupo-titulo"><span>📦 Grupo ${g.grupo}</span><span class="gt-total">${pctGrupoStr}${g.total>0?formatMoeda(g.total):'—'}</span></div>`;
+      if(g.parcelas.length>0){g.parcelas.forEach((p,i)=>{const u=i===g.parcelas.length-1;html+=`<div class="grupo-row"><span style="font-size:11px;color:#aaa;min-width:16px;">${u?'└':'├'}</span><span class="gr-val">${formatMoeda(p.valor)}</span><span class="gr-venc">📅 ${p.venc}</span></div>`;});}
+      else{html+=`<div style="font-size:12px;color:#999;font-style:italic;padding:4px 0;">Parcelas não identificadas individualmente.</div>`;}
+      html+=`</div>`;
+    });
+  }
   html+=`</div></div>`;body.innerHTML=html;
 }
+
 function toggleSecao(id){const el=document.getElementById(id);if(el)el.classList.toggle('open');}
-function extrairParcelas(texto){
-  const regex=/\b(\d{1,3})\s+R\$\s+([\d.,]+)\s+(\d{2}\/\d{2}\/\d{4})/g;
-  const map=new Map();let match;
-  while((match=regex.exec(texto))!==null){const[,num,valor,vencStr]=match;const[vd,vm,va]=vencStr.split('/').map(Number);const p={num:parseInt(num),valor,valorNum:parseMoeda(valor),vencStr,venc:new Date(va,vm-1,vd)};if(!map.has(vencStr)||p.num<map.get(vencStr).num)map.set(vencStr,p);}
-  return[...map.values()].sort((a,b)=>a.venc-b.venc);
-}
-function calcularPsaPsb(parcelas,dataEntrega,obraPronta){
-  _psaQtd=0;_psaSaldo=0;_psbQtd=0;_psbSaldo=0;_parcelasPSB=[];
-  if(obraPronta){for(const p of parcelas){_psbQtd++;_psbSaldo+=p.valorNum;_parcelasPSB.push(p);}}
-  else{const m=dataEntrega.getMonth(),a=dataEntrega.getFullYear();const inicioPSB=new Date(m===11?a+1:a,(m+1)%12,1);for(const p of parcelas){if(p.venc<inicioPSB){_psaQtd++;_psaSaldo+=p.valorNum;}else{_psbQtd++;_psbSaldo+=p.valorNum;_parcelasPSB.push(p);}}}
-  document.getElementById('psaQtd').textContent=_psaQtd>0?_psaQtd+' parcelas':'—';
-  document.getElementById('psaSaldo').textContent=_psaSaldo>0?formatMoeda(_psaSaldo):'—';
-  document.getElementById('psbQtd').textContent=_psbQtd>0?_psbQtd+' parcelas':'—';
-  document.getElementById('psbSaldo').textContent=_psbSaldo>0?formatMoeda(_psbSaldo):'—';
-  document.getElementById('psaPsbWrap').style.display='grid';
-}
-function buscarParcelaPosEntrega(parcelas,dataStr){
-  const[d,m,a]=dataStr.split('/').map(Number);let mesBusca=m+1,anoBusca=a;
-  if(mesBusca>12){mesBusca=1;anoBusca++;}
-  const inicioBusca=new Date(anoBusca,mesBusca-1,1);
-  const encontrada=parcelas.find(p=>p.venc>=inicioBusca);
-  if(encontrada)setAuto('parcelaMRV','R$ '+encontrada.valor+' (Mensal '+encontrada.num+' — venc. '+encontrada.vencStr+')');
-}
-function buscarPrimeiraParcela(parcelas){
-  if(!parcelas.length)return;
-  const hoje=new Date();hoje.setHours(0,0,0,0);
-  const futura=parcelas.find(p=>p.venc>=hoje);const p=futura||parcelas[0];
-  setAuto('parcelaMRV','R$ '+p.valor+' (Mensal '+p.num+' — venc. '+p.vencStr+')');
-}
-function calcularPctFinanciado(){
-  const fin=parseMoeda(document.getElementById('valorFinanciado').value);
-  const imo=parseMoeda(document.getElementById('valorImovel').value);
-  if(!fin||!imo)return;
-  const pct=(fin/imo)*100;
-  const wrap=document.getElementById('financiadoWrap');
-  const badge=document.getElementById('financiadoBadge');
-  document.getElementById('pctFinanciadoDisplay').textContent=pct.toFixed(2).replace('.',',')+' %';
-  wrap.style.display='flex';
-  if(pct<75){wrap.className='financiado-wrap fin-verde';badge.className='financiado-badge ok';badge.textContent='✔ Desconto disponível';}
-  else if(pct<80){wrap.className='financiado-wrap fin-amarelo';badge.className='financiado-badge aviso';badge.textContent='⚠ Margem reduzida para desconto';}
-  else{wrap.className='financiado-wrap fin-vermelho';badge.className='financiado-badge nok';badge.textContent='✘ Limite atingido — sem desconto';}
+
+// ══════════════════════════════════════════════════════════
+//   CALCULAR COMPROMETIMENTO
+// ══════════════════════════════════════════════════════════
+function aplicarStatusUnificado(num,pct){
+  const unif=document.getElementById('compUnif'+num);
+  const icon=document.getElementById('compIcon'+num);
+  const text=document.getElementById('compText'+num);
+  const bar=document.getElementById(num===1?'progressBar':'progressBarMedia');
+  let classe,iconeTxt,textoTxt,barClasse;
+  if(pct<=35){classe='aprovado';iconeTxt='✔';textoTxt='APROVADO';barClasse='verde';}
+  else if(pct<=40){classe='atencao';iconeTxt='⚠';textoTxt='ATENÇÃO';barClasse='amarelo';}
+  else{classe='reprovado';iconeTxt='✘';textoTxt='REPROVADO';barClasse='vermelho';}
+  if(num===2){
+    unif.className='comprom-unified secundario';
+    const side=document.getElementById('compStatus'+num);
+    side.style.background=classe==='aprovado'?'var(--verde-claro)':classe==='atencao'?'var(--amarelo-claro)':'var(--vermelho-claro)';
+    side.style.borderColor=classe==='aprovado'?'var(--verde)':classe==='atencao'?'var(--amarelo)':'var(--vermelho)';
+    side.style.color=classe==='aprovado'?'var(--verde)':classe==='atencao'?'var(--amarelo-medio)':'var(--vermelho)';
+  }else{unif.className='comprom-unified '+classe;}
+  icon.textContent=iconeTxt;text.textContent=textoTxt;
+  if(bar){bar.className='progress-bar '+barClasse;bar.style.width=Math.min(pct*2,100)+'%';}
+  return textoTxt;
 }
 
 function calcular(e){
   e.preventDefault();
-  const caixa=parseMoeda(document.getElementById('parcelaCaixa').value);
-  const mrvStr=document.getElementById('parcelaMRV').value;
-  const renda=parseMoeda(document.getElementById('renda').value);
-  const mrvNum=mrvStr.match(/R\$\s*([\d.,]+)/);
-  const mrv=mrvNum?parseMoeda(mrvNum[1]):0;
-  if(!caixa||!mrv||!renda){alert('⚠️ Carregue o Contrato MRV e a Simulação Caixa antes de calcular.');return;}
+
+  // ── Lê parcela Caixa ──────────────────────────────────
+  const caixa = parseMoeda(document.getElementById('parcelaCaixa').value);
+
+  // ── Lê parcela MRV — extrai primeiro número R$ do campo ──
+  const mrvStr = document.getElementById('parcelaMRV').value || '';
+  // Remove caracteres especiais (travessão, parênteses, texto)
+  // e pega o primeiro valor monetário encontrado
+  const mrvMatch = mrvStr.match(/R\$\s*([\d.]+,\d{2})/);
+  const mrv = mrvMatch ? parseMoeda(mrvMatch[1]) : parseMoeda(mrvStr);
+
+  // ── Lê renda ─────────────────────────────────────────
+  const renda = parseMoeda(document.getElementById('renda').value);
+
+  // ── Validação com mensagem específica ────────────────
+  const erros = [];
+  if(!renda)  erros.push('• Renda do Cliente (carregue a Simulação Caixa)');
+  if(!mrv)    erros.push('• Parcela MRV/Emcash (carregue o Contrato)');
+  if(!caixa)  erros.push('• Parcela Caixa (carregue a Simulação Caixa)');
+
+  if(erros.length){
+    alert('⚠️ Os seguintes campos estão vazios ou com valor zero:\n\n'
+      + erros.join('\n')
+      + '\n\nSe os campos estiverem preenchidos, tente digitar os valores manualmente.');
+    return;
+  }
   const total=caixa+mrv;
   const pct=(total/renda)*100;
   document.getElementById('res-caixa').textContent=formatMoeda(caixa);
@@ -1509,6 +1676,8 @@ function calcular(e){
     document.getElementById('progressLabelsMedia').style.display='none';
     document.getElementById('separadorMedia').style.display='none';
   }
+
+  // ── ANÁLISE DE DESCONTO ──────────────────────────────────
   const fin=parseMoeda(document.getElementById('valorFinanciado').value);
   const imo=parseMoeda(document.getElementById('valorImovel').value);
   const pctFin=(fin&&imo)?(fin/imo)*100:null;
@@ -1521,8 +1690,12 @@ function calcular(e){
   let descontoDisponivel=null;
   if(pctFin!==null&&imo)descontoDisponivel=Math.max(0,((80-pctFin)/100)*imo);
   let descontoEstimadoPSB=0;
-  if(reducaoNecessaria>0&&_parcelasPSB.length>0&&mrv>0){const pctRed=reducaoNecessaria/mrv;for(const p of _parcelasPSB)descontoEstimadoPSB+=p.valorNum*pctRed;}
+  if(reducaoNecessaria>0&&_parcelasPSB.length>0&&mrv>0){
+    const pctRed=reducaoNecessaria/mrv;
+    for(const p of _parcelasPSB)descontoEstimadoPSB+=p.valorNum*pctRed;
+  }
   let descontoCobreNecessario='—';
+
   if(pctFin!==null&&pctFin>=80){
     ds.className='desconto-section bloqueado';dt.innerHTML='🔒 Desconto bloqueado — limite de financiamento atingido (80%)';descontoCobreNecessario='Bloqueado';
     dc.innerHTML=`<div class="desconto-row"><span class="dr-label">% Financiado atual</span><span class="dr-val" style="color:#D32F2F">${pctFin.toFixed(2).replace('.',',')} %</span></div><div class="desconto-row"><span class="dr-label">Limite máximo</span><span class="dr-val" style="color:#888">80,00 %</span></div><div class="desconto-row"><span class="dr-label">Desconto disponível</span><span class="dr-val" style="color:#D32F2F">R$ 0,00</span></div><div class="projecao-aviso">🔒 O cliente atingiu o limite máximo de financiamento (80%). Para viabilizar desconto, o cliente precisaria aumentar o valor de entrada.</div>`;
@@ -1531,24 +1704,26 @@ function calcular(e){
     dc.innerHTML=`<div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} %</span></div><div class="desconto-row"><span class="dr-label">% Financiado</span><span class="dr-val" style="color:var(--verde)">${pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—'}</span></div>${descontoDisponivel>0?`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(descontoDisponivel)}</span></div>`:''}<div class="projecao-aviso">✅ Cliente dentro do limite de 35% de comprometimento de renda.${descontoDisponivel>0?' Há margem de desconto disponível caso necessário.':''}</div>`;
   }else{
     ds.className='desconto-section nok';dt.innerHTML='⚠️ Desconto necessário para enquadramento';
-    let html=`<div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--vermelho)">${pct.toFixed(2).replace('.',',')} %</span></div><div class="desconto-row"><span class="dr-label">Meta de comprometimento</span><span class="dr-val" style="color:var(--verde)">35,00 %</span></div><div class="desconto-row"><span class="dr-label">Parcela MRV atual</span><span class="dr-val" style="color:var(--vermelho)">${formatMoeda(mrv)}</span></div><div class="desconto-row"><span class="dr-label">Parcela MRV ideal (para 35%)</span><span class="dr-val" style="color:var(--verde)">${mrvIdeal>0?formatMoeda(mrvIdeal):'Inviável — parcela Caixa já excede 35%'}</span></div>`;
+    let html=`<div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--vermelho)">${pct.toFixed(2).replace('.',',')} %</span></div><div class="desconto-row"><span class="dr-label">Meta de comprometimento</span><span class="dr-val" style="color:var(--verde)">35,00 %</span></div><div class="desconto-row"><span class="dr-label">Parcela MRV/Emcash atual</span><span class="dr-val" style="color:var(--vermelho)">${formatMoeda(mrv)}</span></div><div class="desconto-row"><span class="dr-label">Parcela ideal (para 35%)</span><span class="dr-val" style="color:var(--verde)">${mrvIdeal>0?formatMoeda(mrvIdeal):'Inviável — parcela Caixa já excede 35%'}</span></div>`;
     if(mrvIdeal>0&&_parcelasPSB.length>0){
-      const psbIdeal=mrvIdeal>0?Math.ceil(_psbSaldo/mrvIdeal):0;
-      const totalIdeal=_psaQtd+psbIdeal;
-      const psbAtual=_psbQtd;
-      const totalAtual=parseInt(document.getElementById('qtdParcelas').value)||0;
-      html+=`<div class="desconto-row"><span class="dr-label">Redução necessária por parcela</span><span class="dr-val" style="color:var(--laranja)">${formatMoeda(reducaoNecessaria)}</span></div><div class="desconto-row"><span class="dr-label">Parcelas PSB ideal (para 35%)</span><span class="dr-val" style="color:var(--roxo)">${psbIdeal} parcelas <span style="font-size:12px;font-weight:500;color:#999;">(vs ${psbAtual} atuais)</span></span></div><div class="desconto-row"><span class="dr-label">Total de parcelas do contrato ideal</span><span class="dr-val" style="color:var(--roxo)">${totalIdeal} parcelas <span style="font-size:12px;font-weight:500;color:#999;">(vs ${totalAtual} atuais)</span></span></div><div class="desconto-row"><span class="dr-label">💡 Desconto estimado no PSB</span><span class="dr-val" style="color:var(--laranja);font-size:18px;">${formatMoeda(descontoEstimadoPSB)}</span></div>`;
-      if(descontoDisponivel!==null){const coberto=descontoEstimadoPSB<=descontoDisponivel;descontoCobreNecessario=coberto?'Sim':'Não';html+=`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${formatMoeda(descontoDisponivel)}</span></div><div class="desconto-row"><span class="dr-label">Desconto cobre o necessário?</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${coberto?'✔ Sim':'✘ Não'}</span></div>`;}
+      html+=`<div class="desconto-row"><span class="dr-label">Redução necessária por parcela</span><span class="dr-val" style="color:var(--laranja)">${formatMoeda(reducaoNecessaria)}</span></div><div class="desconto-row"><span class="dr-label">Parcelas PSB</span><span class="dr-val" style="color:var(--roxo)">${_psbQtd} parcelas</span></div><div class="desconto-row"><span class="dr-label">💡 Desconto estimado no PSB</span><span class="dr-val" style="color:var(--laranja);font-size:18px;">${formatMoeda(descontoEstimadoPSB)}</span></div>`;
+      if(descontoDisponivel!==null){
+        const coberto=descontoEstimadoPSB<=descontoDisponivel;descontoCobreNecessario=coberto?'Sim':'Não';
+        html+=`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${formatMoeda(descontoDisponivel)}</span></div><div class="desconto-row"><span class="dr-label">Desconto cobre o necessário?</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${coberto?'✔ Sim':'✘ Não'}</span></div>`;
+      }
     }
-    html+=`<div class="projecao-aviso">📌 <strong>Projeção estimada.</strong> A redução por parcela é calculada proporcionalmente com base na parcela atual. Contratos com curva de queda terão redução proporcional em cada parcela individualmente. Os valores reais podem variar.</div>`;
+    html+=`<div class="projecao-aviso">📌 <strong>Projeção estimada.</strong> A redução por parcela é calculada proporcionalmente com base na parcela atual. Contratos com curva de queda terão redução proporcional em cada parcela individualmente. Os valores reais podem variar — solicite simulação exata ao financeiro MRV.</div>`;
     dc.innerHTML=html;
   }
+
   document.getElementById('resultado').className='resultado show';
   document.getElementById('resultado').scrollIntoView({behavior:'smooth'});
+
   const pctFinStr=pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—';
   const pctMediaStr=pctMedia!==null?pctMedia.toFixed(2).replace('.',',')+' %':'—';
   enviarParaSheets({
     dataHora:new Date().toLocaleString('pt-BR'),
+    tipoContrato:_tipoContrato||'—',
     nomeCliente:document.getElementById('nomeCliente').value||'—',
     cpf:document.getElementById('cpf').value||'—',
     gerenteResponsavel:document.getElementById('gerente').value||'—',
@@ -1583,6 +1758,9 @@ function calcular(e){
   });
 }
 
+// ══════════════════════════════════════════════════════════
+//   HISTÓRICO E EXPORTAÇÃO
+// ══════════════════════════════════════════════════════════
 function salvarHistorico(){
   const h=JSON.parse(localStorage.getItem('mrv_hist')||'[]');
   const pct=parseFloat(document.getElementById('res-pct').textContent.replace(',','.').replace('%','').trim());
@@ -1593,6 +1771,7 @@ function salvarHistorico(){
   const pctFin=(fin&&imo)?((fin/imo)*100).toFixed(2).replace('.',',')+'%':'—';
   h.unshift({
     data:new Date().toLocaleString('pt-BR'),
+    tipo:_tipoContrato||'—',
     cliente:document.getElementById('nomeCliente').value,
     emp:document.getElementById('empreendimento').value,
     gerente:document.getElementById('gerente').value,
@@ -1609,39 +1788,372 @@ function salvarHistorico(){
   renderHistorico();
   alert('✅ Salvo no histórico local!');
 }
+
 function renderHistorico(){
   const h=JSON.parse(localStorage.getItem('mrv_hist')||'[]');
   if(!h.length)return;
   document.getElementById('historicoCard').style.display='block';
   document.getElementById('corpoHistorico').innerHTML=h.map(r=>{
     const c=r.status==='APROVADO'?'a':r.status==='ATENÇÃO'?'t':'r';
-    return`<tr><td>${r.data}</td><td>${r.cliente}</td><td>${r.emp}</td><td>${r.gerente}</td><td>${r.caixa}</td><td>${r.mrv}</td><td>${r.renda}</td><td><strong>${r.pct}</strong></td><td>${r.pctMedia||'—'}</td><td>${r.pctFin||'—'}</td><td>${r.psa||'—'}</td><td>${r.psb||'—'}</td><td><span class="badge-sm ${c}">${r.status}</span></td></tr>`;
+    const tc=(r.tipo||'').toLowerCase();
+    return`<tr>
+      <td>${r.data}</td>
+      <td><span class="badge-sm ${tc}">${r.tipo||'—'}</span></td>
+      <td>${r.cliente}</td><td>${r.emp}</td><td>${r.gerente}</td>
+      <td>${r.caixa}</td><td>${r.mrv}</td><td>${r.renda}</td>
+      <td><strong>${r.pct}</strong></td><td>${r.pctMedia||'—'}</td>
+      <td>${r.pctFin||'—'}</td><td>${r.psa||'—'}</td><td>${r.psb||'—'}</td>
+      <td><span class="badge-sm ${c}">${r.status}</span></td>
+    </tr>`;
   }).join('');
 }
+
 function exportarCSV(){
   const h=JSON.parse(localStorage.getItem('mrv_hist')||'[]');
   if(!h.length){alert('Nenhum registro.');return;}
-  const cab='Data,Cliente,Empreendimento,Gerente,P.Caixa,P.MRV,Renda,Comprometimento,Media PSB%,% Financiado,PSA,PSB,Status\n';
-  const rows=h.map(r=>`"${r.data}","${r.cliente}","${r.emp}","${r.gerente}","${r.caixa}","${r.mrv}","${r.renda}","${r.pct}","${r.pctMedia||''}","${r.pctFin||''}","${r.psa||''}","${r.psb||''}","${r.status}"`).join('\n');
+  const cab='Data,Tipo,Cliente,Empreendimento,Gerente,P.Caixa,P.MRV,Renda,Comprometimento,Media PSB%,% Financiado,PSA,PSB,Status\n';
+  const rows=h.map(r=>`"${r.data}","${r.tipo||''}","${r.cliente}","${r.emp}","${r.gerente}","${r.caixa}","${r.mrv}","${r.renda}","${r.pct}","${r.pctMedia||''}","${r.pctFin||''}","${r.psa||''}","${r.psb||''}","${r.status}"`).join('\n');
   const blob=new Blob(['\uFEFF'+cab+rows],{type:'text/csv;charset=utf-8;'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mrv_historico_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='mrv_historico_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
 }
-function prepararImpressao(){
-  const nome=(document.getElementById('nomeCliente').value||document.getElementById('prop-empreendimento').value||'Análise').trim();
-  document.title=nome+' - Comprometimento de Renda';
-  window.print();
+
+// ══════════════════════════════════════════════════════════
+//   GOOGLE SHEETS
+// ══════════════════════════════════════════════════════════
+function mostrarToast(msg,tipo='loading'){
+  const toast=document.getElementById('toastSheets');
+  document.getElementById('toastIcon').textContent=tipo==='loading'?'⏳':tipo==='ok'?'✅':'⚠️';
+  document.getElementById('toastMsg').textContent=msg;
+  toast.className='toast-sheets show'+(tipo==='erro'?' erro':'');
+  if(tipo!=='loading')setTimeout(()=>{toast.className='toast-sheets';},4000);
 }
-window.addEventListener('afterprint',()=>{document.title='Calculadora MRV — Comprometimento de Renda';});
+async function enviarParaSheets(dados){
+  mostrarToast('Salvando no Google Sheets...');
+  try{
+    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(dados)});
+    mostrarToast('Dados salvos com sucesso!','ok');
+  }catch(err){mostrarToast('Falha ao salvar. Verifique a conexão.','erro');}
+}
+
+// ══════════════════════════════════════════════════════════
+//   DEBUG
+// ══════════════════════════════════════════════════════════
+function abrirDebug(){
+  document.getElementById('debugToolbar').classList.add('show');
+  document.getElementById('debugBox').classList.add('show');
+  document.getElementById('debugToolbar').scrollIntoView({behavior:'smooth',block:'center'});
+  debugMostrar(_debugAba);
+}
+function fecharDebug(){
+  document.getElementById('debugToolbar').classList.remove('show');
+  document.getElementById('debugBox').classList.remove('show');
+}
+function debugMostrar(aba){
+  _debugAba=aba;
+  ['btnTexto','btnCaixa','btnParcelas','btnEntrada','btnInter'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.classList.remove('active');
+  });
+  const mapa={texto:'btnTexto',caixa:'btnCaixa',parcelas:'btnParcelas',entrada:'btnEntrada',inter:'btnInter'};
+  if(mapa[aba])document.getElementById(mapa[aba]).classList.add('active');
+  const box=document.getElementById('debugBox');
+  if(aba==='texto'){
+    box.textContent=_textoDebug
+      ?`=== CONTRATO (tipo: ${_tipoContrato}) — primeiros 5000 chars ===\n\n`+_textoDebug.substring(0,5000)
+      :'⚠ Nenhum contrato carregado.';
+  }else if(aba==='caixa'){
+    box.textContent=_textoCaixaDebug
+      ?'=== SIMULAÇÃO CAIXA — primeiros 4000 chars ===\n\n'+_textoCaixaDebug.substring(0,4000)
+      :'⚠ Nenhuma simulação Caixa carregada.';
+  }else if(aba==='parcelas'){
+    const inicioPSB=_dataEntregaISO?new Date(_dataEntregaISO.getFullYear(),(_dataEntregaISO.getMonth()+1)%12,1):null;
+    const linhas=_parcelasTodas.map(p=>{
+      const tipo=_obraPronta?'PSB':(inicioPSB&&p.venc>=inicioPSB?'PSB':'PSA');
+      return`  Parcela ${String(p.num).padStart(3)} | ${formatMoeda(p.valorNum)} | ${p.vencStr} | ${tipo}`;
+    });
+    box.textContent=`=== PARCELAS (${_parcelasTodas.length}) — Tipo contrato: ${_tipoContrato} ===\n\n`+(linhas.length?linhas.join('\n'):'Nenhuma encontrada.\n\nDica: verifique o formato das parcelas no texto do contrato acima.');
+  }else if(aba==='entrada'){
+    box.textContent=`=== ENTRADA ===\n\nTotal: ${_entrada.total>0?formatMoeda(_entrada.total):'—'}\n% Preço: ${_entrada.pct||'—'}\nParcelas: ${_entrada.parcelas.length}\n\n`+_entrada.parcelas.map((p,i)=>`  ${i+1}. ${formatMoeda(p.valor)} — ${p.venc}`).join('\n');
+  }else if(aba==='inter'){
+    if(!_intermediarias.length){box.textContent='=== INTERMEDIÁRIAS ===\n\nNenhuma encontrada.';return;}
+    let txt=`=== INTERMEDIÁRIAS (${_intermediarias.length} grupo(s)) ===\n\n`;
+    _intermediarias.forEach(g=>{txt+=`Grupo ${g.grupo} — Total: ${g.total>0?formatMoeda(g.total):'—'}\n`;g.parcelas.forEach((p,i)=>{txt+=`  ${i+1}. ${formatMoeda(p.valor)} — ${p.venc}\n`;});txt+='\n';});
+    box.textContent=txt;
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//   ABA PROPOSTA (mantida igual)
+// ══════════════════════════════════════════════════════════
+async function lerPDFProposta(input){
+  const file=input.files[0];if(!file)return;
+  mostrarStatusProp('⏳ Lendo Simulação de Proposta...','loading');
+  try{
+    const texto=await extrairTextoPDF(file);
+    if(!texto)return;
+    extrairDadosProposta(texto);
+    document.getElementById('uploadCardProp').className='upload-card proposta lido-proposta';
+    document.getElementById('badgeProp').className='upload-status-badge ok-proposta';
+    mostrarStatusProp('✅ Proposta lida! Informe a data de entrega e a renda para calcular.','success');
+  }catch(e){mostrarStatusProp('❌ Erro ao ler proposta: '+e.message,'error');}
+}
+
+function extrairDadosProposta(texto){
+  try{
+    const empM=texto.match(/Empreendimento[:\s]+(.*?)(?=\s*Unidade[:\s]|\n|$)/i);
+    if(empM)setAutoProp('prop-empreendimento',empM[1].trim());
+    const unidM=texto.match(/Unidade[:\s]+(.*?)(?=\s*Cliente[:\s]|\n|$)/i);
+    if(unidM)setAutoProp('prop-unidade',unidM[1].trim());
+    const vimM=texto.match(/Valor\s*Im[oó]vel[:\s]*R\$\s*([\d.,]+)/i);
+    if(vimM)setAutoProp('prop-valorImovel','R$ '+vimM[1].trim());
+    const vpropM=texto.match(/Valor\s*da\s*Proposta\s*R\$\s*([\d.,]+)/i);
+    if(vpropM)setAutoProp('prop-valorProposta','R$ '+vpropM[1].trim());
+    const finM=texto.match(/Valor\s*Financiado\s*R\$\s*([\d.,]+)/i);
+    if(finM)document.getElementById('rp-financiado').textContent='R$ '+finM[1].trim();
+    const sinalM=texto.match(/Valor\s*do\s*Sinal\s*R\$\s*([\d.,]+)/i);
+    if(sinalM)document.getElementById('rp-sinal').textContent='R$ '+sinalM[1].trim();
+    const cartM=texto.match(/Carteira\s*MRV\s*R\$\s*([\d.,]+)\s*\((\d+)x\)/i);
+    if(cartM){
+      document.getElementById('rp-carteira').textContent='R$ '+cartM[1].trim();
+      document.getElementById('rp-qtdCarteira').textContent=cartM[2]+'x';
+    }else{
+      const cartM2=texto.match(/Carteira\s*MRV\s*R\$\s*([\d.,]+)/i);
+      if(cartM2)document.getElementById('rp-carteira').textContent='R$ '+cartM2[1].trim();
+    }
+    const cupomM=texto.match(/Cupom\s*R\$\s*([\d.,]+)/i);
+    if(cupomM)document.getElementById('rp-cupom').textContent='R$ '+cupomM[1].trim();
+    const fgtsM=texto.match(/FGTS\s*R\$\s*([\d.,]+)/i);
+    if(fgtsM)document.getElementById('rp-fgts').textContent='R$ '+fgtsM[1].trim();
+    const subM=texto.match(/Subs[ií]dio\s*R\$\s*([\d.,]+)/i);
+    if(subM)document.getElementById('rp-subsidio').textContent='R$ '+subM[1].trim();
+    const bomM=texto.match(/Bom\s*pagador\s*R\$\s*([\d.,]+)/i);
+    if(bomM)document.getElementById('rp-bompag').textContent='R$ '+bomM[1].trim();
+    document.getElementById('resumoPropostaGrid').style.display='grid';
+    _propFluxo=extrairFluxoProposta(texto);
+    renderizarFluxo();
+  }catch(e){console.error(e);mostrarStatusProp('⚠️ Leitura parcial da proposta.','error');}
+}
+
+function extrairFluxoProposta(texto){
+  const itens=[];
+  const regex=/(\d{1,3})\s+(\d{2}\/\d{2}\/\d{4})\s+(Sinal\s+Ato|Sinal\s+\d+|Bom\s+pagador|Mensal)\s+R\$\s+([\d.,]+)/gi;
+  let m;
+  while((m=regex.exec(texto))!==null){
+    const num=parseInt(m[1]);
+    const vencStr=m[2];
+    const tipo=m[3].trim();
+    const valorNum=parseMoeda(m[4]);
+    const[vd,vm,va]=vencStr.split('/').map(Number);
+    const venc=new Date(va,vm-1,vd);
+    itens.push({num,vencStr,tipo,valorNum,venc});
+  }
+  const map=new Map();
+  for(const it of itens){
+    const key=it.num+'_'+it.vencStr+'_'+it.tipo;
+    if(!map.has(key))map.set(key,it);
+  }
+  return[...map.values()].sort((a,b)=>a.num-b.num||a.venc-b.venc);
+}
+
+function renderizarFluxo(){
+  const tbody=document.getElementById('prop-fluxoTbody');
+  const wrap=document.getElementById('prop-fluxoWrap');
+  if(!_propFluxo.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  document.getElementById('prop-fluxoCount').textContent=_propFluxo.length+' lançamentos';
+  const dataEntStr=document.getElementById('prop-dataEntrega').value;
+  let inicioPSB=null;
+  if(dataEntStr&&/\d{2}\/\d{2}\/\d{4}/.test(dataEntStr)){
+    const[d,m,a]=dataEntStr.split('/').map(Number);
+    _propDataEntregaISO=new Date(a,m-1,d);
+    const mesNext=_propDataEntregaISO.getMonth()===11?0:_propDataEntregaISO.getMonth()+1;
+    const anoNext=_propDataEntregaISO.getMonth()===11?_propDataEntregaISO.getFullYear()+1:_propDataEntregaISO.getFullYear();
+    inicioPSB=new Date(anoNext,mesNext,1);
+  }
+  tbody.innerHTML=_propFluxo.map(it=>{
+    const tipoLower=it.tipo.toLowerCase();
+    let trClass='',badgeClass='',badgeLabel='',faseLabel='—';
+    if(tipoLower.includes('sinal')){trClass='tipo-sinal';badgeClass='sinal';badgeLabel=it.tipo;faseLabel='Sinal';}
+    else if(tipoLower.includes('bom')){trClass='tipo-bom';badgeClass='bom';badgeLabel='🏆 Bom Pagador';faseLabel='Bônus';}
+    else if(tipoLower==='mensal'){
+      if(inicioPSB&&it.venc>=inicioPSB){trClass='tipo-psb';badgeClass='mensal-psb';badgeLabel='Mensal';faseLabel='PSB';}
+      else{trClass='tipo-psa';badgeClass='mensal-psa';badgeLabel='Mensal';faseLabel='PSA';}
+    }
+    return`<tr class="${trClass}">
+      <td>${it.num}</td>
+      <td>${it.vencStr}</td>
+      <td><span class="tipo-badge ${badgeClass}">${badgeLabel}</span></td>
+      <td><strong>${formatMoeda(it.valorNum)}</strong></td>
+      <td>${faseLabel}</td>
+    </tr>`;
+  }).join('');
+}
+
+function calcularPsaPsbProposta(dataEntregaStr){
+  _propMensaisPSA=[];_propMensaisPSB=[];
+  _propPsaQtd=0;_propPsaSaldo=0;
+  _propPsbQtd=0;_propPsbSaldo=0;
+  _propPsbPrimeira=0;_propPsbMedia=0;
+  if(!_propFluxo.length)return;
+  const[d,m,a]=dataEntregaStr.split('/').map(Number);
+  _propDataEntregaISO=new Date(a,m-1,d);
+  const mesNext=_propDataEntregaISO.getMonth()===11?0:_propDataEntregaISO.getMonth()+1;
+  const anoNext=_propDataEntregaISO.getMonth()===11?_propDataEntregaISO.getFullYear()+1:_propDataEntregaISO.getFullYear();
+  const inicioPSB=new Date(anoNext,mesNext,1);
+  for(const it of _propFluxo){
+    if(it.tipo.toLowerCase()!=='mensal')continue;
+    if(it.venc>=inicioPSB){_propMensaisPSB.push(it);_propPsbQtd++;_propPsbSaldo+=it.valorNum;}
+    else{_propMensaisPSA.push(it);_propPsaQtd++;_propPsaSaldo+=it.valorNum;}
+  }
+  if(_propMensaisPSB.length>0){
+    _propPsbPrimeira=_propMensaisPSB[0].valorNum;
+    _propPsbMedia=_propPsbSaldo/_propPsbQtd;
+  }
+  document.getElementById('prop-psaQtd').textContent=_propPsaQtd>0?_propPsaQtd+' parcelas':'—';
+  document.getElementById('prop-psaSaldo').textContent=_propPsaSaldo>0?formatMoeda(_propPsaSaldo):'—';
+  document.getElementById('prop-psbQtd').textContent=_propPsbQtd>0?_propPsbQtd+' parcelas':'—';
+  document.getElementById('prop-psbSaldo').textContent=_propPsbSaldo>0?formatMoeda(_propPsbSaldo):'—';
+  document.getElementById('prop-psbPrimeira').textContent=_propPsbPrimeira>0?formatMoeda(_propPsbPrimeira):'—';
+  document.getElementById('prop-psbMedia').textContent=_propPsbMedia>0?formatMoeda(_propPsbMedia):'—';
+  document.getElementById('prop-psaPsbWrap').style.display='grid';
+  renderizarFluxo();
+}
+
+function aplicarStatusProposta(num,pct){
+  const unif=document.getElementById('prop-compUnif'+num);
+  const icon=document.getElementById('prop-compIcon'+num);
+  const text=document.getElementById('prop-compText'+num);
+  const bar=document.getElementById('prop-progressBar'+num);
+  let classe,iconeTxt,textoTxt,barClasse;
+  if(pct<=3.5){classe='aprovado';iconeTxt='✔';textoTxt='DENTRO DO TETO';barClasse='verde';}
+  else if(pct<=5){classe='atencao';iconeTxt='⚠';textoTxt='ATENÇÃO';barClasse='amarelo';}
+  else{classe='reprovado';iconeTxt='✘';textoTxt='ACIMA DO TETO';barClasse='vermelho';}
+  if(num===2){
+    const side=document.getElementById('prop-compStatus'+num);
+    side.style.background=classe==='aprovado'?'var(--verde-claro)':classe==='atencao'?'var(--amarelo-claro)':'var(--vermelho-claro)';
+    side.style.borderColor=classe==='aprovado'?'var(--verde)':classe==='atencao'?'var(--amarelo)':'var(--vermelho)';
+    side.style.color=classe==='aprovado'?'var(--verde)':classe==='atencao'?'var(--amarelo-medio)':'var(--vermelho)';
+  }else{unif.className='comprom-unified '+classe;}
+  icon.textContent=iconeTxt;text.textContent=textoTxt;
+  if(bar){bar.className='progress-bar '+barClasse;bar.style.width=Math.min(pct*10,100)+'%';}
+  return textoTxt;
+}
+
+function renderizarExcedenteProposta(num,pct,parcelaBase,renda,label){
+  const box=document.getElementById('prop-excedenteBox'+num);
+  const titulo=document.getElementById('prop-excedenteTitulo'+num);
+  const conteudo=document.getElementById('prop-excedenteConteudo'+num);
+  box.style.display='block';
+  const teto=renda*0.05;
+  const reducaoPorParcela=Math.max(0,parcelaBase-teto);
+  const excedenteTotalPSB=reducaoPorParcela*_propPsbQtd;
+  if(pct<=5){
+    box.className='excedente-box ok';
+    titulo.innerHTML='✔ '+label+' dentro do teto MRV (5%)';
+    conteudo.innerHTML=`
+      <div class="excedente-row"><span class="er-label">${label}</span><span class="er-val" style="color:var(--verde)">${formatMoeda(parcelaBase)}</span></div>
+      <div class="excedente-row"><span class="er-label">Teto MRV (5% da renda)</span><span class="er-val" style="color:var(--verde)">${formatMoeda(teto)}</span></div>
+      <div class="excedente-row"><span class="er-label">Comprometimento</span><span class="er-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} %</span></div>
+      <div class="excedente-row"><span class="er-label">Margem disponível</span><span class="er-val" style="color:var(--verde)">${formatMoeda(teto-parcelaBase)}</span></div>`;
+  }else{
+    box.className='excedente-box nok';
+    titulo.innerHTML='⚠️ '+label+' acima do teto MRV — redução necessária';
+    conteudo.innerHTML=`
+      <div class="excedente-row"><span class="er-label">${label}</span><span class="er-val" style="color:var(--vermelho)">${formatMoeda(parcelaBase)}</span></div>
+      <div class="excedente-row"><span class="er-label">Teto MRV (5% da renda)</span><span class="er-val" style="color:var(--verde)">${formatMoeda(teto)}</span></div>
+      <div class="excedente-row"><span class="er-label">Comprometimento</span><span class="er-val" style="color:var(--vermelho)">${pct.toFixed(2).replace('.',',')} %</span></div>
+      <div class="excedente-row"><span class="er-label">Redução necessária por parcela</span><span class="er-val" style="color:var(--laranja)">${formatMoeda(reducaoPorParcela)}</span></div>
+      <div class="excedente-row"><span class="er-label">Qtd. parcelas PSB</span><span class="er-val" style="color:var(--roxo)">${_propPsbQtd} parcelas</span></div>
+      <div class="excedente-row"><span class="er-label">💡 Excedente total no PSB</span><span class="er-val" style="color:var(--laranja);font-size:18px;">${formatMoeda(excedenteTotalPSB)}</span></div>`;
+  }
+}
+
+function calcularProposta(e){
+  e.preventDefault();
+  const dataEntStr=document.getElementById('prop-dataEntrega').value.trim();
+  const renda=parseMoeda(document.getElementById('prop-renda').value);
+  if(!_propFluxo.length){alert('⚠️ Carregue o PDF da Simulação de Proposta antes de calcular.');return;}
+  if(!dataEntStr||!/^\d{2}\/\d{2}\/\d{4}$/.test(dataEntStr)){alert('⚠️ Informe a Data Prevista de Entrega no formato DD/MM/AAAA.');return;}
+  if(!renda||renda<=0){alert('⚠️ Informe a Renda do Cliente.');return;}
+  calcularPsaPsbProposta(dataEntStr);
+  if(_propPsbQtd===0){alert('⚠️ Nenhuma parcela Mensal encontrada após a data de entrega informada.\nVerifique se a data está correta.');return;}
+  const teto=renda*0.05;
+  const pct1=(_propPsbPrimeira/renda)*100;
+  const pct2=(_propPsbMedia/renda)*100;
+  document.getElementById('prop-res-primeira').textContent=formatMoeda(_propPsbPrimeira);
+  document.getElementById('prop-res-media').textContent=formatMoeda(_propPsbMedia);
+  document.getElementById('prop-res-renda').textContent=formatMoeda(renda);
+  document.getElementById('prop-res-teto').textContent=formatMoeda(teto);
+  document.getElementById('prop-res-psa-saldo').textContent=_propPsaSaldo>0?formatMoeda(_propPsaSaldo):'—';
+  document.getElementById('prop-res-psa-qtd').textContent=_propPsaQtd>0?_propPsaQtd+' parcelas':'—';
+  document.getElementById('prop-res-psb-saldo').textContent=formatMoeda(_propPsbSaldo);
+  document.getElementById('prop-res-psb-qtd').textContent=_propPsbQtd+' parcelas';
+  document.getElementById('prop-res-pct1').textContent=pct1.toFixed(2).replace('.',',')+' %';
+  document.getElementById('prop-res-pct2').textContent=pct2.toFixed(2).replace('.',',')+' %';
+  aplicarStatusProposta(1,pct1);
+  aplicarStatusProposta(2,pct2);
+  renderizarExcedenteProposta(1,pct1,_propPsbPrimeira,renda,'1ª Parcela PSB');
+  renderizarExcedenteProposta(2,pct2,_propPsbMedia,renda,'Média PSB');
+  document.getElementById('resultadoProposta').className='resultado show';
+  document.getElementById('resultadoProposta').scrollIntoView({behavior:'smooth'});
+}
+
+function limparProposta(){
+  document.getElementById('formProposta').reset();
+  document.getElementById('resultadoProposta').className='resultado';
+  document.getElementById('uploadCardProp').className='upload-card proposta';
+  document.getElementById('badgeProp').className='upload-status-badge';
+  document.getElementById('statusBarProp').className='status-bar';
+  document.getElementById('prop-psaPsbWrap').style.display='none';
+  document.getElementById('prop-fluxoWrap').style.display='none';
+  document.getElementById('prop-fluxoTbody').innerHTML='';
+  document.getElementById('prop-fluxoBody').classList.remove('open');
+  document.getElementById('resumoPropostaGrid').style.display='none';
+  document.getElementById('prop-excedenteBox1').style.display='none';
+  document.getElementById('prop-excedenteBox2').style.display='none';
+  document.getElementById('pdfPropostaInput').value='';
+  ['rp-financiado','rp-sinal','rp-carteira','rp-cupom','rp-fgts','rp-subsidio','rp-bompag','rp-qtdCarteira'].forEach(id=>{
+    document.getElementById(id).textContent='—';
+  });
+  _propFluxo=[];_propMensaisPSA=[];_propMensaisPSB=[];
+  _propPsaQtd=0;_propPsaSaldo=0;_propPsbQtd=0;_propPsbSaldo=0;
+  _propPsbPrimeira=0;_propPsbMedia=0;_propDataEntregaISO=null;
+}
+
+function copiarResultadoProposta(){
+  const txt=`SIMULAÇÃO DE PROPOSTA MRV — ${new Date().toLocaleString('pt-BR')}
+Empreendimento: ${document.getElementById('prop-empreendimento').value}
+Unidade: ${document.getElementById('prop-unidade').value}
+Valor do Imóvel: ${document.getElementById('prop-valorImovel').value}
+Valor da Proposta: ${document.getElementById('prop-valorProposta').value}
+─────────────────────────────
+Renda do Cliente: ${document.getElementById('prop-res-renda').textContent}
+Teto MRV (5%): ${document.getElementById('prop-res-teto').textContent}
+─────────────────────────────
+PSA (pré-entrega): ${document.getElementById('prop-res-psa-saldo').textContent} (${document.getElementById('prop-res-psa-qtd').textContent})
+PSB (pós-entrega): ${document.getElementById('prop-res-psb-saldo').textContent} (${document.getElementById('prop-res-psb-qtd').textContent})
+─────────────────────────────
+1ª Parcela PSB: ${document.getElementById('prop-res-primeira').textContent}
+Comprometimento (1ª PSB): ${document.getElementById('prop-res-pct1').textContent} → ${document.getElementById('prop-compText1').textContent}
+─────────────────────────────
+Média PSB: ${document.getElementById('prop-res-media').textContent}
+Comprometimento (Média PSB): ${document.getElementById('prop-res-pct2').textContent} → ${document.getElementById('prop-compText2').textContent}
+─────────────────────────────
+⚠ Projeção estimada. Valores sujeitos à aprovação do financeiro MRV.`;
+  navigator.clipboard.writeText(txt).then(()=>alert('✅ Copiado!'));
+}
+
 function copiarResultado(){
   const pctMediaTxt=document.getElementById('res-pct-media').textContent;
-  const txt=`ANÁLISE MRV — ${new Date().toLocaleString('pt-BR')}
+  const txt=`ANÁLISE MRV/EMCASH — ${new Date().toLocaleString('pt-BR')}
+Tipo de Contrato: ${_tipoContrato||'—'}
 Cliente: ${document.getElementById('nomeCliente').value}
 CPF: ${document.getElementById('cpf').value}
 Empreendimento: ${document.getElementById('empreendimento').value}
 Gerente: ${document.getElementById('gerente').value}
 ─────────────────────────────
 Parcela Caixa: ${document.getElementById('res-caixa').textContent}
-Parcela MRV pós-entrega: ${document.getElementById('res-mrv').textContent}
+Parcela MRV/Emcash pós-entrega: ${document.getElementById('res-mrv').textContent}
 Total: ${document.getElementById('res-total').textContent}
 Renda: ${document.getElementById('res-renda').textContent}
 ─────────────────────────────
@@ -1656,26 +2168,136 @@ Status Média: ${document.getElementById('compText2').textContent}
   navigator.clipboard.writeText(txt).then(()=>alert('✅ Copiado!'));
 }
 
-// ══ UTILITÁRIOS COMPARTILHADOS ══
-function setAuto(id,val){const el=document.getElementById(id);if(el){el.value=val;el.classList.remove('auto-filled-caixa');el.classList.add('auto-filled');}}
-function setAutoCaixa(id,val){const el=document.getElementById(id);if(el){el.value=val;el.classList.remove('auto-filled');el.classList.add('auto-filled-caixa');}}
+// ══════════════════════════════════════════════════════════
+//   UTILITÁRIOS COMPARTILHADOS
+// ══════════════════════════════════════════════════════════
+function trocarAba(aba){
+  document.getElementById('abaProposta').style.display=aba==='proposta'?'block':'none';
+  document.getElementById('abaContrato').style.display=aba==='contrato'?'block':'none';
+  document.getElementById('tabBtnProposta').className='tab-btn'+(aba==='proposta'?' active-proposta':'');
+  document.getElementById('tabBtnContrato').className='tab-btn'+(aba==='contrato'?' active-contrato':'');
+}
+
+function toggleFluxo(){
+  document.getElementById('prop-fluxoBody').classList.toggle('open');
+}
+
+function mascaraData(el){
+  let v=el.value.replace(/\D/g,'');
+  if(v.length>8)v=v.substring(0,8);
+  if(v.length>=5){el.value=v.substring(0,2)+'/'+v.substring(2,4)+'/'+v.substring(4,8);}
+  else if(v.length>=3){el.value=v.substring(0,2)+'/'+v.substring(2,4);}
+  else{el.value=v;}
+  if(el.value.length===10)el.dispatchEvent(new Event('change'));
+}
+
+function mascaraMoedaGen(el){
+  let v=el.value.replace(/\D/g,'');if(!v){el.value='';return;}
+  v=(parseInt(v)/100).toFixed(2);
+  el.value='R$ '+v.replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
+
+function setAutoData(id, val) {
+  const el = document.getElementById(id);
+  if(el){ el.value = val; el.classList.add('auto-filled'); }
+}
+  function setAuto(id, val){
+  const el = document.getElementById(id);
+  if(el){
+    el.value = val;
+    el.classList.remove('auto-filled-caixa');
+    el.classList.add('auto-filled');
+  }
+}
+function setAutoCaixa(id,val){
+  const el=document.getElementById(id);
+  if(el){el.value=val;el.classList.remove('auto-filled');el.classList.add('auto-filled-caixa');}
+}
+function setAutoProp(id,val){
+  const el=document.getElementById(id);
+  if(el){el.value=val;el.classList.add('auto-filled-prop');}
+}
+
 function mostrarStatus(msg,tipo){
   const bar=document.getElementById('statusBar');
   bar.className='status-bar show'+(tipo==='success'?' success':tipo==='error'?' error':tipo==='info'?' info':'');
   document.getElementById('statusMsg').textContent=msg;
   document.getElementById('spinner').style.display=tipo==='loading'?'block':'none';
 }
-function mascaraMoeda(el){let v=el.value.replace(/\D/g,'');if(!v){el.value='';return;}v=(parseInt(v)/100).toFixed(2);el.value='R$ '+v.replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
-function parseMoeda(str){
-  if(!str)return 0;
-  const m=str.match(/([\d.]+,[\d]{2})/);
-  if(!m)return 0;
-  return parseFloat(m[1].replace(/\./g,'').replace(',','.'))||0;
+function mostrarStatusProp(msg,tipo){
+  const bar=document.getElementById('statusBarProp');
+  bar.className='status-bar show'+(tipo==='success'?' success':tipo==='error'?' error':tipo==='info'?' info':'');
+  document.getElementById('statusMsgProp').textContent=msg;
+  document.getElementById('spinnerProp').style.display=tipo==='loading'?'block':'none';
 }
-function formatMoeda(v){return'R$ '+v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+
+function parseMoeda(str){
+  if(!str) return 0;
+  
+  // Remove espaços e símbolo R$
+  let s = String(str).trim().replace(/R\$\s*/g,'').trim();
+  
+  if(!s) return 0;
+
+  // Caso 1: "2.505,10" — ponto milhar, vírgula decimal (BR padrão)
+  if(/^\d{1,3}(\.\d{3})*(,\d{1,2})?$/.test(s)){
+    return parseFloat(s.replace(/\./g,'').replace(',','.')) || 0;
+  }
+
+  // Caso 2: "751,52" — sem ponto de milhar, vírgula decimal
+  if(/^\d+(,\d{1,2})?$/.test(s)){
+    return parseFloat(s.replace(',','.')) || 0;
+  }
+
+  // Caso 3: "2,505.10" — vírgula milhar, ponto decimal (US)
+  if(/^\d{1,3}(,\d{3})*(\.\d{1,2})?$/.test(s)){
+    return parseFloat(s.replace(/,/g,'')) || 0;
+  }
+
+  // Caso 4: "751.52" — ponto decimal simples
+  if(/^\d+\.\d{1,2}$/.test(s)){
+    return parseFloat(s) || 0;
+  }
+
+  // Fallback: remove tudo exceto dígitos e último separador
+  // Tenta vírgula como decimal
+  if(s.includes(',')){
+    const partes = s.split(',');
+    const inteiro = partes[0].replace(/\D/g,'');
+    const decimal = partes[partes.length-1].replace(/\D/g,'');
+    return parseFloat(inteiro + '.' + decimal) || 0;
+  }
+
+  // Tenta ponto como decimal
+  if(s.includes('.')){
+    const partes = s.split('.');
+    const inteiro = partes[0].replace(/\D/g,'');
+    const decimal = partes[partes.length-1].replace(/\D/g,'');
+    return parseFloat(inteiro + '.' + decimal) || 0;
+  }
+
+  // Último recurso: só dígitos
+  const soDigitos = s.replace(/\D/g,'');
+  return soDigitos ? parseInt(soDigitos) / 100 : 0;
+}
+
+function formatMoeda(v){
+  if(isNaN(v)||v===null||v===undefined)return 'R$ 0,00';
+  return'R$ '+v.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
+
+function prepararImpressao(){
+  const nome=(document.getElementById('nomeCliente').value||document.getElementById('prop-empreendimento').value||'Análise').trim();
+  document.title=nome+' - Comprometimento de Renda';
+  window.print();
+}
+window.addEventListener('afterprint',()=>{document.title='Calculadora MRV/Emcash — Comprometimento de Renda';});
+
 function limpar(){
   document.getElementById('formCalc').reset();
-  document.querySelectorAll('#abaContrato input').forEach(el=>{el.classList.remove('auto-filled');el.classList.remove('auto-filled-caixa');});
+  document.querySelectorAll('#abaContrato input').forEach(el=>{
+    el.classList.remove('auto-filled');el.classList.remove('auto-filled-caixa');
+  });
   document.getElementById('resultado').className='resultado';
   document.getElementById('statusBar').className='status-bar';
   document.getElementById('pdfInput').value='';
@@ -1703,12 +2325,23 @@ function limpar(){
   document.getElementById('compText2').textContent='—';
   document.getElementById('compUnif1').className='comprom-unified';
   document.getElementById('compUnif2').className='comprom-unified secundario';
+  document.getElementById('tipoContratoBadge').className='tipo-contrato-badge';
+  document.getElementById('tipoInfoBox').className='tipo-info-box full';
   fecharDebug();
-  _textoDebug='';_textoCaixaDebug='';
+  _textoDebug='';_textoCaixaDebug='';_tipoContrato='';
   _psaQtd=0;_psaSaldo=0;_psbQtd=0;_psbSaldo=0;
   _parcelasPSB=[];_parcelasTodas=[];_dataEntregaISO=null;_obraPronta=false;
   _entrada={total:0,pct:'',parcelas:[]};_intermediarias=[];
 }
+
+// ── LISTENER: recalcula PSA/PSB ao digitar data de entrega (proposta) ──
+document.getElementById('prop-dataEntrega').addEventListener('change',function(){
+  if(_propFluxo.length>0&&this.value&&/^\d{2}\/\d{2}\/\d{4}$/.test(this.value)){
+    calcularPsaPsbProposta(this.value);
+    renderizarFluxo();
+  }
+});
+
 window.onload=renderHistorico;
 </script>
 </body>
