@@ -1409,19 +1409,82 @@ async function extrairTextoPDF(file){
 // ══════════════════════════════════════════════════════════
 function extrairDadosCaixa(texto){
   try{
-    const avalM=texto.match(/Valor\s*de\s*Avalia[çc][aã]o[:\s]*R\$\s*([\d.,]+)/i);
-    if(avalM)setAutoCaixa('valorAvaliacao','R$ '+avalM[1].trim());
-    const rendaM=
-      texto.match(/Renda\s*Bruta[:\s]*R\$\s*([\d.,]+)/i)
-      ||texto.match(/Renda\s*Individual[:\s]*R\$\s*([\d.,]+)/i)
-      ||texto.match(/Renda\s*Familiar[:\s]*R\$\s*([\d.,]+)/i)
-      ||texto.match(/Renda[:\s]*R\$\s*([\d.,]+)/i);
-    if(rendaM){const rendaVal=parseMoeda(rendaM[1]);setAutoCaixa('renda','R$ '+rendaM[1].trim());calcularTetoFaixa(rendaVal);}
-    const prestM=
-      texto.match(/1[aª]\s*Presta[çc][aã]o[:\s]*([\d.,]+)/i)
-      ||texto.match(/Presta[çc][aã]o\s*mensal[:\s]*R?\$?\s*([\d.,]+)/i)
-      ||texto.match(/Presta[çc][aã]o[:\s]*R?\$?\s*([\d.,]+)/i);
-    if(prestM){const val=parseMoeda(prestM[1]);if(val>0)setAutoCaixa('parcelaCaixa',formatMoeda(val));}
+    // ── VALOR DE AVALIAÇÃO ────────────────────────────────
+    const avalM = texto.match(/Valor\s*de\s*Avalia[çc][aã]o[:\s]*R\$\s*([\d.,]+)/i)
+                || texto.match(/Valor\s*do\s*Im[oó]vel[:\s]*R\$\s*([\d.,]+)/i);
+    if(avalM) setAutoCaixa('valorAvaliacao','R$ '+avalM[1].trim());
+
+    // ── RENDA ─────────────────────────────────────────────
+    const rendaM =
+      texto.match(/Renda\s*Familiar[:\s]*R\$\s*([\d.,]+)/i)
+      || texto.match(/Renda\s*Bruta[:\s]*R\$\s*([\d.,]+)/i)
+      || texto.match(/Renda\s*Individual[:\s]*R\$\s*([\d.,]+)/i)
+      || texto.match(/Renda\s*Familiar[:\s]*([\d.,]+)/i)
+      || texto.match(/Renda[:\s]*R\$\s*([\d.,]+)/i);
+    if(rendaM){
+      const rendaVal = parseMoeda(rendaM[1]);
+      setAutoCaixa('renda','R$ '+rendaM[1].trim());
+      calcularTetoFaixa(rendaVal);
+    }
+
+    // ── PARCELA / PRESTAÇÃO ───────────────────────────────
+    // Cobre todos os formatos conhecidos da Caixa:
+    //
+    // Formato 1 — "1ª Prestação: 751,52"
+    // Formato 2 — "Prestação mensal: R$ 751,52"
+    // Formato 3 — "Primeira Prestação ... R$ 751,52" (valor na linha seguinte)
+    // Formato 4 — "Prestação Máxima - SIRIC: R$ 751,53"
+    // Formato 5 — "TOTAL ... R$ 751,52" (componentes da prestação)
+    // Formato 6 — "Valor da Prestação: 751,52"
+
+    let parcelaVal = 0;
+
+    // Tenta cada padrão em ordem de confiabilidade
+    const padroesParcela = [
+      // "1ª Prestação: 751,52" ou "1ª Prestação R$ 751,52"
+      /1[aª]\s*Presta[çc][aã]o[:\s]*R?\$?\s*([\d.,]+)/i,
+      // "Prestação mensal: R$ 751,52"
+      /Presta[çc][aã]o\s*mensal[:\s]*R?\$?\s*([\d.,]+)/i,
+      // "Valor da Prestação: 751,52"
+      /Valor\s*da\s*Presta[çc][aã]o[:\s]*R?\$?\s*([\d.,]+)/i,
+      // "Primeira Prestação R$ 751,52" — valor logo após o label
+      /Primeira\s*Presta[çc][aã]o\s*R\$\s*([\d.,]+)/i,
+      // "Primeira Prestação" seguido de valor em até 120 chars
+      /Primeira\s*Presta[çc][aã]o[\s\S]{0,120}?R\$\s*([\d.,]+)/i,
+      // "Prestação Máxima - SIRIC: R$ 751,53"
+      /Presta[çc][aã]o\s*M[aá]xima[^R]*R\$\s*([\d.,]+)/i,
+      // "Prestação Máxima - SIRIC:R$751,53" (sem espaço)
+      /Presta[çc][aã]o\s*M[aá]xima[^:]*:[:\s]*R?\$?\s*([\d.,]+)/i,
+      // Componentes da prestação — linha TOTAL
+      // "Componentes da prestação ... TOTAL ... R$ 751,52"
+      /Componentes\s*da\s*presta[çc][aã]o[\s\S]{0,400}?TOTAL[:\s]*R\$\s*([\d.,]+)/i,
+    ];
+
+    for(const regex of padroesParcela){
+      const m = texto.match(regex);
+      if(m){
+        const val = parseMoeda(m[1]);
+        if(val > 50){ // ignora valores absurdamente pequenos
+          parcelaVal = val;
+          break;
+        }
+      }
+    }
+
+    // Fallback: busca "R$ 751,52" próximo de qualquer menção a "prestação"
+    if(!parcelaVal){
+      const blocoM = texto.match(/Presta[çc][aã]o[\s\S]{0,300}/i);
+      if(blocoM){
+        const valM = blocoM[0].match(/R\$\s*([\d.,]+)/);
+        if(valM){
+          const val = parseMoeda(valM[1]);
+          if(val > 50) parcelaVal = val;
+        }
+      }
+    }
+
+    if(parcelaVal > 0) setAutoCaixa('parcelaCaixa', formatMoeda(parcelaVal));
+
   }catch(e){console.error('Erro ao ler simulação Caixa:',e);}
 }
 
