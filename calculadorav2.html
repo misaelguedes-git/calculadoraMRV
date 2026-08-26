@@ -1000,8 +1000,8 @@ function exibirTipoContrato(tipo){
   const desc  = document.getElementById('tipoInfoDesc');
 
   const info = {
-    OIC:    { emoji:'🟣', label:'Contrato MRV',   cls:'oic',    descTitulo:'📄 Contrato MRV — Sistema OIC detectado', descTexto:'Formato legado com UUID. Campos: COMPRADOR(A), 4.1.1/4.1.2/4.1.3/4.1.4, parcelas com R$ no formato "N R$ X.XXX,XX DD/MM/AAAA".' },
-    BPM:    { emoji:'🟢', label:'Contrato MRV' ,      cls:'bpm',    descTitulo:'📄 Contrato MRV — Sistema BPM (VCRM 7.0) detectado', descTexto:'Formato VCRM 7.0. Campos: 1º Cliente, CONT-XXXXX-XXXXX, parcelas SEM R$ no formato "NN XXX,XX DD/MM/AAAA", item 5.1 para data de entrega.' },
+    OIC:    { emoji:'🟣', label:'Contrato OIC (Sistema Legado)',   cls:'oic',    descTitulo:'📄 Contrato MRV — Sistema OIC detectado', descTexto:'Formato legado com UUID. Campos: COMPRADOR(A), 4.1.1/4.1.2/4.1.3/4.1.4, parcelas com R$ no formato "N R$ X.XXX,XX DD/MM/AAAA".' },
+    BPM:    { emoji:'🟢', label:'Contrato MRV — Sistema BPM',      cls:'bpm',    descTitulo:'📄 Contrato MRV — Sistema BPM (VCRM 7.0) detectado', descTexto:'Formato VCRM 7.0. Campos: 1º Cliente, CONT-XXXXX-XXXXX, parcelas SEM R$ no formato "NN XXX,XX DD/MM/AAAA", item 5.1 para data de entrega.' },
     EMCASH: { emoji:'🔵', label:'Contrato Emcash',                  cls:'emcash', descTitulo:'📄 Contrato Emcash detectado', descTexto:'Formato Emcash (CCB). Campos: Nome/Nome Empresarial, Nº do Contrato Emcash, Valor Líquido do Principal, parcelas com Principal + Juros. Data de entrega não consta — informar manualmente se necessário.' },
     DESCONHECIDO: { emoji:'⚠️', label:'Tipo não identificado', cls:'', descTitulo:'⚠️ Tipo de contrato não identificado', descTexto:'Não foi possível identificar o tipo de contrato automaticamente. Use o Debug PDF para verificar o conteúdo extraído e entre em contato com o suporte.' }
   };
@@ -2233,5 +2233,3 @@ window.onload=renderHistorico;
 </script>
 </body>
 </html>
-
-
