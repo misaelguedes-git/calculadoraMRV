@@ -763,7 +763,7 @@ tr:hover td{background:#F8F9FA;}
 
           <div class="field">
             <label>Valor de Avaliação (R$) <span class="tag auto-caixa">CAIXA</span></label>
-            <input type="text" id="valorAvaliacao" placeholder="Lido da simulação Caixa...">
+            <input type="text" id="valorAvaliacao" placeholder="Lido da simulação Caixa ou digite manualmente"-oninput="mascaraMoedaGen(this)">
             <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo Valor de Avaliação</small>
           </div>
 
@@ -826,13 +826,13 @@ tr:hover td{background:#F8F9FA;}
 
           <div class="field">
             <label>Parcela Caixa (R$) <span class="tag auto-caixa">CAIXA</span></label>
-            <input type="text" id="parcelaCaixa" placeholder="Lido da simulação Caixa...">
+            <input type="text" id="parcelaCaixa" placeholder="Lido da simulação Caixa ou digite">
             <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo 1ª Prestação ou Prestação mensal</small>
           </div>
 
           <div class="field">
             <label>Renda do Cliente (R$) <span class="tag auto-caixa">CAIXA</span></label>
-            <input type="text" id="renda" placeholder="Lido da simulação Caixa...">
+            <input type="text" id="renda" placeholder="Lido da simulação Caixa ou digite">
             <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo Renda Bruta / Renda Individual</small>
           </div>
 
@@ -1618,12 +1618,32 @@ function aplicarStatusUnificado(num,pct){
 
 function calcular(e){
   e.preventDefault();
-  const caixa=parseMoeda(document.getElementById('parcelaCaixa').value);
-  const mrvStr=document.getElementById('parcelaMRV').value;
-  const renda=parseMoeda(document.getElementById('renda').value);
-  const mrvNum=mrvStr.match(/R\$\s*([\d.,]+)/);
-  const mrv=mrvNum?parseMoeda(mrvNum[1]):0;
-  if(!caixa||!mrv||!renda){alert('⚠️ Carregue o Contrato e a Simulação Caixa antes de calcular.');return;}
+
+  // ── Lê parcela Caixa ──────────────────────────────────
+  const caixa = parseMoeda(document.getElementById('parcelaCaixa').value);
+
+  // ── Lê parcela MRV — extrai primeiro número R$ do campo ──
+  const mrvStr = document.getElementById('parcelaMRV').value || '';
+  // Remove caracteres especiais (travessão, parênteses, texto)
+  // e pega o primeiro valor monetário encontrado
+  const mrvMatch = mrvStr.match(/R\$\s*([\d.]+,\d{2})/);
+  const mrv = mrvMatch ? parseMoeda(mrvMatch[1]) : parseMoeda(mrvStr);
+
+  // ── Lê renda ─────────────────────────────────────────
+  const renda = parseMoeda(document.getElementById('renda').value);
+
+  // ── Validação com mensagem específica ────────────────
+  const erros = [];
+  if(!renda)  erros.push('• Renda do Cliente (carregue a Simulação Caixa)');
+  if(!mrv)    erros.push('• Parcela MRV/Emcash (carregue o Contrato)');
+  if(!caixa)  erros.push('• Parcela Caixa (carregue a Simulação Caixa)');
+
+  if(erros.length){
+    alert('⚠️ Os seguintes campos estão vazios ou com valor zero:\n\n'
+      + erros.join('\n')
+      + '\n\nSe os campos estiverem preenchidos, tente digitar os valores manualmente.');
+    return;
+  }
   const total=caixa+mrv;
   const pct=(total/renda)*100;
   document.getElementById('res-caixa').textContent=formatMoeda(caixa);
