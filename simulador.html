@@ -482,7 +482,6 @@ tr:hover td{background:#F8F9FA;}
     <h1>Calculadora de Comprometimento de Renda — MRV / Emcash</h1>
     <p>Suporte a contratos OIC · BPM · Emcash — preenchimento automático</p>
   </div>
-  <div class="tipo-contrato-badge" id="tipoContratoBadge"></div>
 </header>
 
 <div class="toast-sheets" id="toastSheets">
@@ -683,19 +682,7 @@ tr:hover td{background:#F8F9FA;}
         <div class="card-title verde">👤 Dados do Cliente</div>
         <div class="grid">
 
-          <!-- Tipo de Contrato detectado -->
-          <div class="tipo-info-box full" id="tipoInfoBox">
-            <div class="tib-titulo" id="tipoInfoTitulo">—</div>
-            <div class="tib-desc" id="tipoInfoDesc">—</div>
-          </div>
-
           <div class="field">
-            <label>
-              Nome do Cliente
-              <span class="tag auto">OIC</span>
-              <span class="tag bpm">BPM</span>
-              <span class="tag emcash">EMCASH</span>
-            </label>
             <input type="text" id="nomeCliente" placeholder="Lido automaticamente do contrato..." readonly>
             <small style="color:#aaa;font-size:10px;">OIC: campo COMPRADOR(A) · BPM: campo 1º Cliente · Emcash: campo Nome/Nome Empresarial</small>
           </div>
@@ -1039,7 +1026,6 @@ function exibirTipoContrato(tipo){
 // ══════════════════════════════════════════════════════════
 function extrairDadosContrato(texto){
   const tipo = detectarTipoContrato(texto);
-  exibirTipoContrato(tipo);
 
   try{
     // ── NOME DO CLIENTE ──────────────────────────────────
