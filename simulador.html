@@ -846,13 +846,13 @@ tr:hover td{background:#F8F9FA;}
 
           <div class="field">
             <label>Parcela Caixa (R$) <span class="tag auto-caixa">CAIXA</span></label>
-            <input type="text" id="parcelaCaixa" placeholder="Lido da simulação Caixa ou digite">
+            <input type="text" id="parcelaCaixa" placeholder="R$ 0,00" oninput="mascaraMoedaGen(this)">
             <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo 1ª Prestação ou Prestação mensal</small>
           </div>
 
           <div class="field">
             <label>Renda do Cliente (R$) <span class="tag auto-caixa">CAIXA</span></label>
-            <input type="text" id="renda" placeholder="Lido da simulação Caixa ou digite">
+            <input type="text" id="renda" placeholder="R$ 0,00" oninput="mascaraMoedaGen(this)">
             <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo Renda Bruta / Renda Individual</small>
           </div>
 
@@ -2229,9 +2229,20 @@ function setAutoData(id, val) {
     el.classList.add('auto-filled');
   }
 }
-function setAutoCaixa(id,val){
-  const el=document.getElementById(id);
-  if(el){el.value=val;el.classList.remove('auto-filled');el.classList.add('auto-filled-caixa');}
+function setAutoCaixa(id, val){
+  const el = document.getElementById(id);
+  if(!el) return;
+
+  // Se for parcela ou renda, formata como moeda
+  if(id === 'parcelaCaixa' || id === 'renda' || id === 'valorAvaliacao' || id === 'tetoFaixa'){
+    const num = parseMoeda(val);
+    el.value = num > 0 ? formatMoeda(num) : val;
+  } else {
+    el.value = val;
+  }
+
+  el.classList.remove('auto-filled');
+  el.classList.add('auto-filled-caixa');
 }
 function setAutoProp(id,val){
   const el=document.getElementById(id);
