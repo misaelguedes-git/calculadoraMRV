@@ -482,7 +482,6 @@ tr:hover td{background:#F8F9FA;}
     <h1>Calculadora de Comprometimento de Renda — MRV / Emcash</h1>
     <p>Suporte a contratos OIC · BPM · Emcash — preenchimento automático</p>
   </div>
-  <div class="tipo-contrato-badge" id="tipoContratoBadge"></div>
 </header>
 
 <div class="toast-sheets" id="toastSheets">
@@ -643,13 +642,33 @@ tr:hover td{background:#F8F9FA;}
         <div class="upload-status-badge" id="badgeMRV">✅ Contrato lido!</div>
       </div>
       <div class="upload-card caixa" id="uploadCardCaixa" onclick="document.getElementById('pdfCaixaInput').click()">
-        <div class="upload-icon">🏦</div>
-        <h2>2. Simulação Caixa</h2>
-        <p>Avaliação, renda, parcela e teto de faixa</p>
-        <button class="btn-upload caixa" onclick="event.stopPropagation();document.getElementById('pdfCaixaInput').click()">📎 Selecionar PDF</button>
-        <input type="file" id="pdfCaixaInput" accept=".pdf" onchange="lerPDFCaixa(this)">
-        <div class="upload-status-badge" id="badgeCaixa">✅ Simulação lida!</div>
-      </div>
+  <div class="upload-icon">🏦</div>
+  <h2>2. Simulação Caixa</h2>
+  <p>Avaliação, renda, parcela e teto de faixa</p>
+  <button class="btn-upload caixa" onclick="event.stopPropagation();document.getElementById('pdfCaixaInput').click()">📎 Selecionar PDF</button>
+  <input type="file" id="pdfCaixaInput" accept=".pdf" onchange="lerPDFCaixa(this)">
+  <div class="upload-status-badge" id="badgeCaixa">✅ Simulação lida!</div>
+
+  <!-- DISCLAIMER -->
+  <div onclick="event.stopPropagation()" style="
+    margin-top:12px;
+    background:#FFFDE7;
+    border:1.5px solid #F9A825;
+    border-radius:8px;
+    padding:9px 13px;
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    text-align:left;
+    cursor:default;
+  ">
+    <span style="font-size:16px;flex-shrink:0;margin-top:1px;">⚠️</span>
+    <span style="font-size:11px;color:#5D4037;font-weight:600;line-height:1.5;">
+      <strong style="color:#E65100;">Atenção:</strong> Sempre utilizar as informações atualizadas da proposta do cliente.
+    </span>
+  </div>
+
+</div>
     </div>
     <div class="status-bar" id="statusBar">
       <div class="spinner" id="spinner"></div>
@@ -663,19 +682,7 @@ tr:hover td{background:#F8F9FA;}
         <div class="card-title verde">👤 Dados do Cliente</div>
         <div class="grid">
 
-          <!-- Tipo de Contrato detectado -->
-          <div class="tipo-info-box full" id="tipoInfoBox">
-            <div class="tib-titulo" id="tipoInfoTitulo">—</div>
-            <div class="tib-desc" id="tipoInfoDesc">—</div>
-          </div>
-
           <div class="field">
-            <label>
-              Nome do Cliente
-              <span class="tag auto">OIC</span>
-              <span class="tag bpm">BPM</span>
-              <span class="tag emcash">EMCASH</span>
-            </label>
             <input type="text" id="nomeCliente" placeholder="Lido automaticamente do contrato..." readonly>
             <small style="color:#aaa;font-size:10px;">OIC: campo COMPRADOR(A) · BPM: campo 1º Cliente · Emcash: campo Nome/Nome Empresarial</small>
           </div>
@@ -691,7 +698,7 @@ tr:hover td{background:#F8F9FA;}
           </div>
 
           <div class="field">
-            <label>Gerente / Corretor Responsável <span class="tag manual">MANUAL</span></label>
+            <label>Correspondente / Gerente / Corretor Responsável <span class="tag manual">MANUAL</span></label>
             <input type="text" id="gerente" placeholder="Nome do gerente ou corretor" class="manual-field" required>
           </div>
 
@@ -826,13 +833,13 @@ tr:hover td{background:#F8F9FA;}
 
           <div class="field">
             <label>Parcela Caixa (R$) <span class="tag auto-caixa">CAIXA</span></label>
-            <input type="text" id="parcelaCaixa" placeholder="Lido da simulação Caixa ou digite">
+            <input type="text" id="parcelaCaixa" placeholder="R$ 0,00" oninput="mascaraMoedaGen(this)">
             <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo 1ª Prestação ou Prestação mensal</small>
           </div>
 
           <div class="field">
             <label>Renda do Cliente (R$) <span class="tag auto-caixa">CAIXA</span></label>
-            <input type="text" id="renda" placeholder="Lido da simulação Caixa ou digite">
+            <input type="text" id="renda" placeholder="R$ 0,00" oninput="mascaraMoedaGen(this)">
             <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo Renda Bruta / Renda Individual</small>
           </div>
 
@@ -1019,7 +1026,6 @@ function exibirTipoContrato(tipo){
 // ══════════════════════════════════════════════════════════
 function extrairDadosContrato(texto){
   const tipo = detectarTipoContrato(texto);
-  exibirTipoContrato(tipo);
 
   try{
     // ── NOME DO CLIENTE ──────────────────────────────────
@@ -2209,9 +2215,20 @@ function setAutoData(id, val) {
     el.classList.add('auto-filled');
   }
 }
-function setAutoCaixa(id,val){
-  const el=document.getElementById(id);
-  if(el){el.value=val;el.classList.remove('auto-filled');el.classList.add('auto-filled-caixa');}
+function setAutoCaixa(id, val){
+  const el = document.getElementById(id);
+  if(!el) return;
+
+  // Se for parcela ou renda, formata como moeda
+  if(id === 'parcelaCaixa' || id === 'renda' || id === 'valorAvaliacao' || id === 'tetoFaixa'){
+    const num = parseMoeda(val);
+    el.value = num > 0 ? formatMoeda(num) : val;
+  } else {
+    el.value = val;
+  }
+
+  el.classList.remove('auto-filled');
+  el.classList.add('auto-filled-caixa');
 }
 function setAutoProp(id,val){
   const el=document.getElementById(id);
