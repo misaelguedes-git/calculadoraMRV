@@ -446,23 +446,194 @@ tr:hover td{background:#F8F9FA;}
   .tab-btn{font-size:11px;padding:10px 6px;}
 }
 @media(max-width:380px){.res-grid{grid-template-columns:1fr;}.resumo-proposta-grid{grid-template-columns:1fr;}}
-@media print{
-  .upload-card,.status-bar,.botoes,.historico-card,.debug-toolbar,.debug-box,.toast-sheets,.tab-switch,.tipo-contrato-badge{display:none!important;}
-  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
-  @page{size:A4 portrait;margin:8mm;}
-  html,body{background:#ECEEF2!important;font-size:12px;}
-  header{position:relative!important;display:flex!important;background:#006b3f!important;height:60px!important;padding:0 20px!important;border-radius:10px!important;margin-bottom:14px!important;align-items:center!important;gap:16px!important;}
-  .logo-container{display:flex!important;background:#fff!important;border-radius:7px!important;padding:5px 12px!important;height:44px!important;align-items:center!important;}
-  .logo-img{height:30px!important;width:auto!important;display:block!important;}
-  .header-div{display:block!important;width:2px!important;height:34px!important;background:rgba(255,255,255,0.3)!important;border-radius:2px!important;}
-  .header-text h1{color:#fff!important;font-size:13px!important;font-weight:700!important;}
-  .header-text p{color:rgba(255,255,255,0.75)!important;font-size:10px!important;}
-  .container{max-width:100%!important;margin:0!important;padding:0!important;}
-  .card{background:#fff!important;border-radius:12px!important;padding:14px!important;margin-bottom:10px!important;break-inside:avoid!important;}
-  .resultado{display:block!important;background:#fff!important;border-radius:12px!important;padding:10px!important;break-inside:avoid!important;}
-  .comprom-unified{break-inside:avoid!important;}
-  .comprom-pct-val{font-size:26px!important;}
+@media print {
+  /* ── OCULTA TUDO QUE NÃO É CONTEÚDO ── */
+  .upload-card, .status-bar, .botoes, .historico-card,
+  .debug-toolbar, .debug-box, .toast-sheets, .tab-switch,
+  .tipo-contrato-badge, .plano-secao-titulo small,
+  input + small, label .tag,
+  #debugToolbar, #debugBox,
+  .btn, button { display: none !important; }
+
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+  /* ── PÁGINA ── */
+  @page { size: A4 portrait; margin: 8mm 8mm 10mm 8mm; }
+  html, body { background: #ECEEF2 !important; font-size: 11px !important; }
+
+  /* ── HEADER ── */
+  header {
+    position: relative !important; display: flex !important;
+    background: #006b3f !important; height: 52px !important;
+    padding: 0 16px !important; border-radius: 8px !important;
+    margin-bottom: 10px !important; align-items: center !important; gap: 14px !important;
+  }
+  .logo-container { display: flex !important; background: #fff !important;
+    border-radius: 6px !important; padding: 4px 10px !important;
+    height: 40px !important; align-items: center !important; }
+  .logo-img { height: 26px !important; width: auto !important; display: block !important; }
+  .header-div { display: block !important; width: 2px !important; height: 30px !important;
+    background: rgba(255,255,255,0.3) !important; border-radius: 2px !important; }
+  .header-text h1 { color: #fff !important; font-size: 12px !important; font-weight: 700 !important; }
+  .header-text p { color: rgba(255,255,255,0.75) !important; font-size: 9px !important; }
+
+  /* ── CONTAINER ── */
+  .container { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+
+  /* ── CARDS — compactos ── */
+  .card {
+    background: #fff !important; border-radius: 10px !important;
+    padding: 10px 12px !important; margin-bottom: 7px !important;
+    box-shadow: none !important; border: 1px solid #ddd !important;
+    break-inside: avoid !important;
+  }
+  .card-title { font-size: 12px !important; margin-bottom: 10px !important; padding-bottom: 6px !important; }
+
+  /* ── GRID DE CAMPOS — 2 colunas compactas ── */
+  .grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .field { display: flex !important; flex-direction: column !important; gap: 2px !important; }
+  .field.full { grid-column: 1 / -1 !important; }
+  label { font-size: 10px !important; font-weight: 700 !important; color: #555 !important; }
+  input[type=text] {
+    padding: 5px 8px !important; font-size: 11px !important;
+    border: 1px solid #ccc !important; border-radius: 5px !important;
+  }
+  input + small, .field small { display: none !important; }
+
+  /* ── PSA/PSB ── */
+  .psa-psb-grid { display: grid !important; grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important; grid-column: 1/-1 !important; }
+  .psa-box, .psb-box { padding: 8px 10px !important; border-radius: 7px !important; }
+  .psa-psb-title { font-size: 10px !important; margin-bottom: 5px !important; }
+  .psa-psb-row { padding: 3px 0 !important; }
+  .psa-psb-label { font-size: 10px !important; }
+  .psa-psb-val { font-size: 11px !important; }
+
+  /* ── % FINANCIADO ── */
+  .financiado-wrap {
+    display: flex !important; padding: 8px 12px !important;
+    border-radius: 7px !important; margin-top: 4px !important;
+    grid-column: 1/-1 !important;
+  }
+  .financiado-info { font-size: 10px !important; }
+  .financiado-info strong { font-size: 16px !important; }
+  .financiado-badge { padding: 5px 10px !important; font-size: 11px !important; }
+
+  /* ── FAIXA INFO ── */
+  .faixa-info-box {
+    display: block !important; padding: 7px 10px !important;
+    border-radius: 7px !important; grid-column: 1/-1 !important;
+  }
+  .faixa-titulo { font-size: 10px !important; }
+  .faixa-detalhe { font-size: 11px !important; }
+
+  /* ── TIPO INFO BOX ── */
+  .tipo-info-box.show {
+    display: block !important; padding: 7px 10px !important;
+    border-radius: 7px !important; grid-column: 1/-1 !important;
+  }
+  .tib-titulo { font-size: 10px !important; }
+  .tib-desc { font-size: 10px !important; }
+
+  /* ══ PLANO DE PAGAMENTO — RESUMIDO (só totais, sem parcelas) ══ */
+  .plano-wrap {
+    display: block !important; grid-column: 1/-1 !important;
+    border-radius: 8px !important; overflow: hidden !important;
+    border: 1px solid #ccc !important; margin-top: 4px !important;
+    break-inside: avoid !important;
+  }
+  .plano-header { padding: 7px 12px !important; font-size: 11px !important; }
+  /* Mostra só o cabeçalho de cada seção (totais), oculta o conteúdo detalhado */
+  .plano-secao-titulo {
+    padding: 7px 12px !important; font-size: 11px !important;
+    background: #f5f5f5 !important; display: flex !important;
+    border-bottom: 1px solid #eee !important;
+  }
+  .plano-conteudo { display: none !important; } /* oculta lista de parcelas */
+  .plano-chevron { display: none !important; }
+  .plano-badge-total { font-size: 12px !important; }
+  .plano-badge-pct { font-size: 10px !important; }
+
+  /* ══ QUEBRA DE PÁGINA: resultado na página 2 ══ */
+  .resultado {
+    display: block !important;
+    page-break-before: always !important;
+    break-before: page !important;
+    background: #fff !important; border-radius: 10px !important;
+    padding: 12px !important; box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+
+  /* ── RESULTADO — compacto mas completo ── */
+  .resultado-title { font-size: 14px !important; margin-bottom: 12px !important; padding-bottom: 8px !important; }
+  .res-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 8px !important; margin-bottom: 10px !important; }
+  .res-item { padding: 9px !important; border-radius: 7px !important; }
+  .res-item label { font-size: 10px !important; }
+  .res-item .val { font-size: 15px !important; }
+
+  /* ── PSA/PSB RESULTADO ── */
+  .psa-psb-resultado { display: grid !important; grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important; margin-bottom: 10px !important; }
+  .psa-res, .psb-res { padding: 10px !important; border-radius: 7px !important; }
+  .psa-res .pr-title, .psb-res .pr-title { font-size: 10px !important; margin-bottom: 5px !important; }
+  .psa-res .pr-val, .psb-res .pr-val { font-size: 14px !important; }
+  .psa-res .pr-sub, .psb-res .pr-sub { font-size: 10px !important; }
+
+  /* ── COMPROMETIMENTO UNIFICADO ── */
+  .comprom-unified { break-inside: avoid !important; margin-bottom: 8px !important; border-radius: 8px !important; }
+  .comprom-unified-header { padding: 6px 12px !important; font-size: 10px !important; }
+  .comprom-unified-body { min-height: 70px !important; }
+  .comprom-pct-side { padding: 10px 14px !important; }
+  .comprom-pct-label { font-size: 10px !important; }
+  .comprom-pct-val { font-size: 30px !important; }
+  .comprom-status-side { width: 160px !important; padding: 10px !important; }
+  .comprom-status-icon { font-size: 20px !important; }
+  .comprom-status-text { font-size: 12px !important; }
+
+  /* ── BARRA DE PROGRESSO ── */
+  .progress-wrap { height: 10px !important; margin-bottom: 4px !important; }
+  .progress-labels { font-size: 9px !important; margin-bottom: 8px !important; }
+  .separador-calculo { font-size: 10px !important; margin: 6px 0 !important; }
+
+  /* ── DESCONTO / EXCEDENTE ── */
+  .desconto-section, .excedente-box {
+    break-inside: avoid !important; padding: 12px !important;
+    border-radius: 8px !important; margin-bottom: 8px !important;
+  }
+  .desconto-titulo, .excedente-titulo { font-size: 12px !important; margin-bottom: 8px !important; }
+  .desconto-row, .excedente-row { padding: 6px 0 !important; font-size: 11px !important; }
+  .desconto-row .dr-label, .excedente-row .er-label { font-size: 10px !important; }
+  .desconto-row .dr-val, .excedente-row .er-val { font-size: 13px !important; }
+  .projecao-aviso, .aviso-estimativa { font-size: 10px !important; padding: 8px 10px !important; margin-top: 8px !important; }
+
+  /* ── VERSÃO SECUNDÁRIA (Média PSB) — mostra se existir ── */
+  #compUnif2[style*="display: block"],
+  #compUnif2[style*="display:block"] { display: block !important; }
+  #progressWrapMedia[style*="display: block"],
+  #progressWrapMedia[style*="display:block"] { display: block !important; }
+  #progressLabelsMedia[style*="display: flex"],
+  #progressLabelsMedia[style*="display:flex"] { display: flex !important; }
+  #separadorMedia[style*="display: flex"],
+  #separadorMedia[style*="display:flex"] { display: flex !important; }
+
+  /* ── RESUMO PROPOSTA (aba proposta) ── */
+  .resumo-proposta-grid { display: grid !important; grid-template-columns: repeat(4,1fr) !important;
+    gap: 7px !important; grid-column: 1/-1 !important; }
+  .resumo-item { padding: 8px !important; border-radius: 7px !important; }
+  .resumo-item label { font-size: 9px !important; }
+  .resumo-item .rv { font-size: 12px !important; }
+
+  /* ── FLUXO PROPOSTA — oculta na impressão (muito longo) ── */
+  .fluxo-wrap { display: none !important; }
+
+  /* ── RESULTADO PROPOSTA ── */
+  #resultadoProposta.show {
+    display: block !important;
+    page-break-before: always !important;
+    break-before: page !important;
+  }
 }
+
 </style>
 </head>
 <body>
@@ -1684,44 +1855,226 @@ function calcular(e){
   }
 
   // ── ANÁLISE DE DESCONTO ──────────────────────────────────
-  const fin=parseMoeda(document.getElementById('valorFinanciado').value);
-  const imo=parseMoeda(document.getElementById('valorImovel').value);
-  const pctFin=(fin&&imo)?(fin/imo)*100:null;
-  const ds=document.getElementById('descontoSection');
-  const dt=document.getElementById('descontoTitulo');
-  const dc=document.getElementById('descontoConteudo');
-  ds.style.display='block';
-  const mrvIdeal=(0.35*renda)-caixa;
-  const reducaoNecessaria=Math.max(0,mrv-mrvIdeal);
-  let descontoDisponivel=null;
-  if(pctFin!==null&&imo)descontoDisponivel=Math.max(0,((80-pctFin)/100)*imo);
-  let descontoEstimadoPSB=0;
-  if(reducaoNecessaria>0&&_parcelasPSB.length>0&&mrv>0){
-    const pctRed=reducaoNecessaria/mrv;
-    for(const p of _parcelasPSB)descontoEstimadoPSB+=p.valorNum*pctRed;
-  }
-  let descontoCobreNecessario='—';
+  // ── ANÁLISE DE DESCONTO ──────────────────────────────────
+  const fin    = parseMoeda(document.getElementById('valorFinanciado').value);
+  const imo    = parseMoeda(document.getElementById('valorImovel').value);
+  const pctFin = (fin && imo) ? (fin / imo) * 100 : null;
 
-  if(pctFin!==null&&pctFin>=80){
-    ds.className='desconto-section bloqueado';dt.innerHTML='🔒 Desconto bloqueado — limite de financiamento atingido (80%)';descontoCobreNecessario='Bloqueado';
-    dc.innerHTML=`<div class="desconto-row"><span class="dr-label">% Financiado atual</span><span class="dr-val" style="color:#D32F2F">${pctFin.toFixed(2).replace('.',',')} %</span></div><div class="desconto-row"><span class="dr-label">Limite máximo</span><span class="dr-val" style="color:#888">80,00 %</span></div><div class="desconto-row"><span class="dr-label">Desconto disponível</span><span class="dr-val" style="color:#D32F2F">R$ 0,00</span></div><div class="projecao-aviso">🔒 O cliente atingiu o limite máximo de financiamento (80%). Para viabilizar desconto, o cliente precisaria aumentar o valor de entrada.</div>`;
-  }else if(pct<=35){
-    ds.className='desconto-section ok';dt.innerHTML='✔ Cliente enquadrado — desconto não necessário';descontoCobreNecessario='Não necessário';
-    dc.innerHTML=`<div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} %</span></div><div class="desconto-row"><span class="dr-label">% Financiado</span><span class="dr-val" style="color:var(--verde)">${pctFin!==null?pctFin.toFixed(2).replace('.',',')+' %':'—'}</span></div>${descontoDisponivel>0?`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(descontoDisponivel)}</span></div>`:''}<div class="projecao-aviso">✅ Cliente dentro do limite de 35% de comprometimento de renda.${descontoDisponivel>0?' Há margem de desconto disponível caso necessário.':''}</div>`;
-  }else{
-    ds.className='desconto-section nok';dt.innerHTML='⚠️ Desconto necessário para enquadramento';
-    let html=`<div class="desconto-row"><span class="dr-label">Comprometimento atual</span><span class="dr-val" style="color:var(--vermelho)">${pct.toFixed(2).replace('.',',')} %</span></div><div class="desconto-row"><span class="dr-label">Meta de comprometimento</span><span class="dr-val" style="color:var(--verde)">35,00 %</span></div><div class="desconto-row"><span class="dr-label">Parcela MRV/Emcash atual</span><span class="dr-val" style="color:var(--vermelho)">${formatMoeda(mrv)}</span></div><div class="desconto-row"><span class="dr-label">Parcela ideal (para 35%)</span><span class="dr-val" style="color:var(--verde)">${mrvIdeal>0?formatMoeda(mrvIdeal):'Inviável — parcela Caixa já excede 35%'}</span></div>`;
-    if(mrvIdeal>0&&_parcelasPSB.length>0){
-      html+=`<div class="desconto-row"><span class="dr-label">Redução necessária por parcela</span><span class="dr-val" style="color:var(--laranja)">${formatMoeda(reducaoNecessaria)}</span></div><div class="desconto-row"><span class="dr-label">Parcelas PSB</span><span class="dr-val" style="color:var(--roxo)">${_psbQtd} parcelas</span></div><div class="desconto-row"><span class="dr-label">💡 Desconto estimado no PSB</span><span class="dr-val" style="color:var(--laranja);font-size:18px;">${formatMoeda(descontoEstimadoPSB)}</span></div>`;
-      if(descontoDisponivel!==null){
-        const coberto=descontoEstimadoPSB<=descontoDisponivel;descontoCobreNecessario=coberto?'Sim':'Não';
-        html+=`<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${formatMoeda(descontoDisponivel)}</span></div><div class="desconto-row"><span class="dr-label">Desconto cobre o necessário?</span><span class="dr-val" style="color:${coberto?'var(--verde)':'var(--vermelho)'}">${coberto?'✔ Sim':'✘ Não'}</span></div>`;
+  const ds = document.getElementById('descontoSection');
+  const dt = document.getElementById('descontoTitulo');
+  const dc = document.getElementById('descontoConteudo');
+  ds.style.display = 'block';
+
+  // ── Limites individuais ──────────────────────────────────
+  const TETO_TOTAL   = 0.35;   // 35% total
+  const TETO_CAIXA   = 0.30;   // 30% Caixa
+  const TETO_MRV     = 0.05;   // 5%  MRV/Carteira
+
+  const limiteAbsolutoMRV   = renda * TETO_MRV;    // parcela MRV ideal
+  const limiteAbsolutoCaixa = renda * TETO_CAIXA;  // parcela Caixa ideal
+  const limiteTotal         = renda * TETO_TOTAL;  // total ideal
+
+  // ── Comprometimento individual ───────────────────────────
+  const pctMRV   = (mrv   / renda) * 100;
+  const pctCaixa = (caixa / renda) * 100;
+
+  // ── Redução necessária na parcela MRV ───────────────────
+  const mrvIdeal          = Math.max(0, limiteAbsolutoMRV);
+  const reducaoNecessaria = Math.max(0, mrv - mrvIdeal);
+
+  // ── Desconto disponível (até 80% do imóvel) ─────────────
+  let descontoDisponivel = null;
+  if (pctFin !== null && imo) {
+    descontoDisponivel = Math.max(0, ((80 - pctFin) / 100) * imo);
+  }
+
+  // ── Desconto estimado no PSB ─────────────────────────────
+  let descontoEstimadoPSB = 0;
+  if (reducaoNecessaria > 0 && _parcelasPSB.length > 0 && mrv > 0) {
+    const pctRed = reducaoNecessaria / mrv;
+    for (const p of _parcelasPSB) descontoEstimadoPSB += p.valorNum * pctRed;
+  }
+
+  // ── Quantas parcelas o contrato deveria ter ──────────────
+  // Lógica: saldo PSB / parcela ideal MRV = qtd de parcelas necessárias
+  // (arredondado para cima, pois menos parcelas = parcelas maiores)
+  let qtdParcelasIdeal = null;
+  let qtdParcelasAtual = _psbQtd || 0;
+  if (mrvIdeal > 0 && _psbSaldo > 0) {
+    qtdParcelasIdeal = Math.ceil(_psbSaldo / mrvIdeal);
+  }
+
+  let descontoCobreNecessario = '—';
+
+  // ══ CASO 1: Bloqueado (≥ 80% financiado) ════════════════
+  if (pctFin !== null && pctFin >= 80) {
+    ds.className = 'desconto-section bloqueado';
+    dt.innerHTML = '🔒 Desconto bloqueado — limite de financiamento atingido (80%)';
+    descontoCobreNecessario = 'Bloqueado';
+    dc.innerHTML = `
+      <div class="desconto-row">
+        <span class="dr-label">% Financiado atual</span>
+        <span class="dr-val" style="color:#D32F2F">${pctFin.toFixed(2).replace('.',',')} %</span>
+      </div>
+      <div class="desconto-row">
+        <span class="dr-label">Limite máximo</span>
+        <span class="dr-val" style="color:#888">80,00 %</span>
+      </div>
+      <div class="desconto-row">
+        <span class="dr-label">Desconto disponível</span>
+        <span class="dr-val" style="color:#D32F2F">R$ 0,00</span>
+      </div>
+      <div class="projecao-aviso">🔒 O cliente atingiu o limite máximo de financiamento (80%). Para viabilizar desconto, o cliente precisaria aumentar o valor de entrada.</div>`;
+
+  // ══ CASO 2: Enquadrado ═══════════════════════════════════
+  } else if (pct <= 35 && pctMRV <= 5) {
+    ds.className = 'desconto-section ok';
+    dt.innerHTML = '✔ Cliente enquadrado — dentro dos limites individuais';
+    descontoCobreNecessario = 'Não necessário';
+
+    const margemMRV   = limiteAbsolutoMRV   - mrv;
+    const margemCaixa = limiteAbsolutoCaixa - caixa;
+    const margemTotal = limiteTotal - total;
+
+    dc.innerHTML = `
+      <div class="desconto-row">
+        <span class="dr-label">Comprometimento total</span>
+        <span class="dr-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} % <small style="font-size:11px;font-weight:400;color:#888">(limite: 35%)</small></span>
+      </div>
+      <div class="desconto-row">
+        <span class="dr-label">Comprometimento Caixa</span>
+        <span class="dr-val" style="color:var(--verde)">${pctCaixa.toFixed(2).replace('.',',')} % <small style="font-size:11px;font-weight:400;color:#888">(limite: 30%)</small></span>
+      </div>
+      <div class="desconto-row">
+        <span class="dr-label">Comprometimento MRV/Carteira</span>
+        <span class="dr-val" style="color:var(--verde)">${pctMRV.toFixed(2).replace('.',',')} % <small style="font-size:11px;font-weight:400;color:#888">(limite: 5%)</small></span>
+      </div>
+      <div class="desconto-row">
+        <span class="dr-label">Margem disponível MRV</span>
+        <span class="dr-val" style="color:var(--verde)">${formatMoeda(margemMRV)}</span>
+      </div>
+      <div class="desconto-row">
+        <span class="dr-label">Margem disponível Caixa</span>
+        <span class="dr-val" style="color:var(--verde)">${formatMoeda(margemCaixa)}</span>
+      </div>
+      ${descontoDisponivel > 0 ? `
+      <div class="desconto-row">
+        <span class="dr-label">Desconto máximo disponível (até 80%)</span>
+        <span class="dr-val" style="color:var(--verde)">${formatMoeda(descontoDisponivel)}</span>
+      </div>` : ''}
+      <div class="projecao-aviso">✅ Cliente dentro dos limites: MRV ≤ 5% e Caixa ≤ 30% da renda.${descontoDisponivel > 0 ? ' Há margem de desconto disponível caso necessário.' : ''}</div>`;
+
+  // ══ CASO 3: Fora do limite — desconto necessário ═════════
+  } else {
+    ds.className = 'desconto-section nok';
+
+    // Identifica qual limite está estourado
+    const mrvEstourado   = pctMRV   > 5;
+    const caixaEstourada = pctCaixa > 30;
+    const totalEstourado = pct      > 35;
+
+    let tituloProblema = [];
+    if (mrvEstourado)   tituloProblema.push('MRV/Carteira acima de 5%');
+    if (caixaEstourada) tituloProblema.push('Caixa acima de 30%');
+    dt.innerHTML = '⚠️ Desconto necessário — ' + tituloProblema.join(' · ');
+
+    // Linha de comprometimento individual com semáforo
+    function corPct(val, limite) {
+      return val > limite ? 'var(--vermelho)' : 'var(--verde)';
+    }
+    function iconePct(val, limite) {
+      return val > limite ? '✘' : '✔';
+    }
+
+    let html = `
+      <div class="desconto-row">
+        <span class="dr-label">Comprometimento total atual</span>
+        <span class="dr-val" style="color:${corPct(pct,35)}">${pct.toFixed(2).replace('.',',')} % <small style="font-size:10px;color:#888">(limite: 35%)</small></span>
+      </div>
+      <div class="desconto-row">
+        <span class="dr-label">${iconePct(pctCaixa,30)} Comprometimento Caixa</span>
+        <span class="dr-val" style="color:${corPct(pctCaixa,30)}">${pctCaixa.toFixed(2).replace('.',',')} % <small style="font-size:10px;color:#888">(limite: 30%)</small></span>
+      </div>
+      <div class="desconto-row">
+        <span class="dr-label">${iconePct(pctMRV,5)} Comprometimento MRV/Carteira</span>
+        <span class="dr-val" style="color:${corPct(pctMRV,5)}">${pctMRV.toFixed(2).replace('.',',')} % <small style="font-size:10px;color:#888">(limite: 5%)</small></span>
+      </div>`;
+
+    // Só mostra análise de desconto MRV se for o MRV que está estourado
+    if (mrvEstourado) {
+      html += `
+      <div style="height:1px;background:var(--cinza-borda);margin:8px 0;grid-column:1/-1;"></div>
+      <div class="desconto-row">
+        <span class="dr-label">Parcela MRV/Emcash atual</span>
+        <span class="dr-val" style="color:var(--vermelho)">${formatMoeda(mrv)}</span>
+      </div>
+      <div class="desconto-row">
+        <span class="dr-label">Parcela MRV ideal (≤ 5% da renda)</span>
+        <span class="dr-val" style="color:var(--verde)">${formatMoeda(mrvIdeal)}</span>
+      </div>
+      <div class="desconto-row">
+        <span class="dr-label">Redução necessária por parcela</span>
+        <span class="dr-val" style="color:var(--laranja)">${formatMoeda(reducaoNecessaria)}</span>
+      </div>`;
+
+      // Parcelas PSB e desconto estimado
+      if (_parcelasPSB.length > 0) {
+        html += `
+      <div class="desconto-row">
+        <span class="dr-label">Parcelas PSB atuais</span>
+        <span class="dr-val" style="color:var(--roxo)">${qtdParcelasAtual} parcelas</span>
+      </div>`;
+
+        // Quantas parcelas deveria ter
+        if (qtdParcelasIdeal !== null) {
+          const diff = qtdParcelasIdeal - qtdParcelasAtual;
+          const diffTxt = diff > 0
+            ? `<span style="font-size:11px;color:var(--laranja);font-weight:600;"> (+${diff} parcelas a mais)</span>`
+            : diff < 0
+              ? `<span style="font-size:11px;color:var(--verde);font-weight:600;"> (${diff} parcelas a menos)</span>`
+              : `<span style="font-size:11px;color:var(--verde);font-weight:600;"> (mesmo número)</span>`;
+          html += `
+      <div class="desconto-row">
+        <span class="dr-label">💡 Parcelas que o contrato deveria ter</span>
+        <span class="dr-val" style="color:var(--azul);font-size:16px;">${qtdParcelasIdeal} parcelas ${diffTxt}</span>
+      </div>`;
+        }
+
+        html += `
+      <div class="desconto-row">
+        <span class="dr-label">💡 Desconto estimado no PSB</span>
+        <span class="dr-val" style="color:var(--laranja);font-size:17px;">${formatMoeda(descontoEstimadoPSB)}</span>
+      </div>`;
+
+        if (descontoDisponivel !== null) {
+          const coberto = descontoEstimadoPSB <= descontoDisponivel;
+          descontoCobreNecessario = coberto ? 'Sim' : 'Não';
+          html += `
+      <div class="desconto-row">
+        <span class="dr-label">Desconto máximo disponível (até 80%)</span>
+        <span class="dr-val" style="color:${coberto ? 'var(--verde)' : 'var(--vermelho)'}">${formatMoeda(descontoDisponivel)}</span>
+      </div>
+      <div class="desconto-row">
+        <span class="dr-label">Desconto cobre o necessário?</span>
+        <span class="dr-val" style="color:${coberto ? 'var(--verde)' : 'var(--vermelho)'}">${coberto ? '✔ Sim' : '✘ Não'}</span>
+      </div>`;
+        }
       }
     }
-    html+=`<div class="projecao-aviso">📌 <strong>Projeção estimada.</strong> A redução por parcela é calculada proporcionalmente com base na parcela atual. Contratos com curva de queda terão redução proporcional em cada parcela individualmente. Os valores reais podem variar — solicite simulação exata ao financeiro MRV.</div>`;
-    dc.innerHTML=html;
-  }
 
+    // Aviso se Caixa estourada (MRV não pode resolver isso)
+    if (caixaEstourada && !mrvEstourado) {
+      html += `
+      <div class="projecao-aviso" style="border-color:var(--vermelho);">
+        ⚠️ <strong>Parcela Caixa acima de 30% da renda.</strong> Este limite é controlado pela Caixa Econômica Federal — não é possível ajustar via desconto MRV. Verifique a renda informada ou solicite nova simulação com valor financiado menor.
+      </div>`;
+    } else {
+      html += `
+      <div class="projecao-aviso">📌 <strong>Projeção estimada.</strong> A redução por parcela é calculada proporcionalmente com base na parcela atual. Contratos com curva de queda terão redução proporcional em cada parcela individualmente. Os valores reais podem variar — solicite simulação exata ao financeiro MRV.</div>`;
+    }
+
+    dc.innerHTML = html;
+  }
   document.getElementById('resultado').className='resultado show';
   document.getElementById('resultado').scrollIntoView({behavior:'smooth'});
 
