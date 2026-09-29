@@ -983,7 +983,7 @@ const AppState = {
 };
 
 // =========================================================================
-//   2. EVENTOS DE ARRASTAR E LARGAR (DRAG AND DROP)
+//   2. EVENTOS DE ARRASTAR E SOLTAR (DRAG AND DROP)
 // =========================================================================
 function setupDragAndDrop(cardId, inputId, readFunction) {
   const card = document.getElementById(cardId);
@@ -1023,7 +1023,7 @@ async function extrairTextoPDF(file){
   try {
     pdf = await pdfjsLib.getDocument({data: buf}).promise;
   } catch(e) {
-    alert('❌ O arquivo PDF está corrompido ou protegido por senha. Por favor, carregue-o novamente sem restrições.');
+    alert('❌ O arquivo PDF está corrompido ou protegido por senha. Por favor, salve-o novamente sem restrições.');
     return null;
   }
   let texto = '';
@@ -1057,7 +1057,7 @@ async function lerPDFContrato(input){
     return;
   }
 
-  mostrarStatus('⏳ Lendo o contrato...', 'loading');
+  mostrarStatus('⏳ Lendo contrato...', 'loading');
   try {
     const texto = await extrairTextoPDF(file);
     if(!texto) {
@@ -1068,7 +1068,7 @@ async function lerPDFContrato(input){
     extrairDadosContrato(texto);
     document.getElementById('uploadCardMRV').className = 'upload-card mrv lido-mrv';
     document.getElementById('badgeMRV').className = 'upload-status-badge ok-mrv';
-    mostrarStatus('✅ Contrato lido! Tipo: ' + AppState.tipoContrato + '. Carregue a Simulação Caixa.', 'success');
+    mostrarStatus('✅ Contrato lido! Carregue a Simulação Caixa.', 'success');
   } catch(e) {
     mostrarStatus('❌ Erro ao ler contrato: ' + e.message, 'error');
   }
@@ -1079,12 +1079,12 @@ async function lerPDFCaixa(input){
   if(!file) return;
   
   if(file.size > 20 * 1024 * 1024){
-    alert('⚠️ Ficheiro muito grande. O limite máximo permitido é 20 MB.');
+    alert('⚠️ Arquivo muito grande. O limite máximo permitido é 20 MB.');
     input.value = '';
     return;
   }
 
-  mostrarStatus('⏳ A ler Simulação Caixa...', 'loading');
+  mostrarStatus('⏳ Lendo Simulação Caixa...', 'loading');
   try {
     const texto = await extrairTextoPDF(file);
     if(!texto) {
@@ -1094,7 +1094,7 @@ async function lerPDFCaixa(input){
     extrairDadosCaixa(texto);
     document.getElementById('uploadCardCaixa').className = 'upload-card caixa lido-caixa';
     document.getElementById('badgeCaixa').className = 'upload-status-badge ok-caixa';
-    mostrarStatus('✅ Simulação Caixa lida! Preencha o gestor e calcule.', 'success');
+    mostrarStatus('✅ Simulação Caixa lida! Preencha o gerente e calcule.', 'success');
   } catch(e) {
     mostrarStatus('❌ Erro ao ler simulação: ' + e.message, 'error');
   }
@@ -1105,12 +1105,12 @@ async function lerPDFProposta(input){
   if(!file) return;
   
   if(file.size > 20 * 1024 * 1024){
-    alert('⚠️ Ficheiro muito grande. O limite máximo permitido é 20 MB.');
+    alert('⚠️ Arquivo muito grande. O limite máximo permitido é 20 MB.');
     input.value = '';
     return;
   }
 
-  mostrarStatusProp('⏳ A ler Simulação de Proposta...', 'loading');
+  mostrarStatusProp('⏳ Lendo Simulação de Proposta...', 'loading');
   try {
     const texto = await extrairTextoPDF(file);
     if(!texto) {
@@ -1316,7 +1316,7 @@ function extrairDadosContrato(texto){
     }
   }catch(e){
     console.error('Erro na extração:',e);
-    mostrarStatus('⚠️ Leitura parcial do contrato. Verifique os dados.', 'error');
+    mostrarStatus('⚠️️ Leitura parcial do contrato. Verifique os dados.', 'error');
   }
 }
 
@@ -1443,11 +1443,21 @@ function buscarParcelaPosEntrega(parcelas, dataStr){
   if(mesBusca > 12){ mesBusca = 1; anoBusca++; }
   const inicioBusca = new Date(anoBusca,mesBusca-1,1);
   const encontrada = parcelas.find(p=>p.venc>=inicioBusca);
-  if(encontrada) setAuto('parcelaMRV', 'R$ '+encontrada.valor+' (Mensal '+encontrada.num+' — venc. '+encontrada.vencStr+')');
+  
+  if(encontrada) {
+    setAuto('parcelaMRV', 'R$ '+encontrada.valor+' (Mensal '+encontrada.num+' — venc. '+encontrada.vencStr+')');
+  } else {
+    setAuto('parcelaMRV', 'R$ 0,00 (Sem mensais após entrega)');
+    alert('ℹ️ AVISO: Nenhuma parcela MRV mensal encontrada após a data de entrega informada.\n\nO campo foi preenchido com R$ 0,00. Verifique se o cliente quitou o saldo, se comprou à vista, ou se há erro na data de entrega.');
+  }
 }
 
 function buscarPrimeiraParcela(parcelas){
-  if(!parcelas.length) return;
+  if(!parcelas.length) {
+    setAuto('parcelaMRV', 'R$ 0,00 (Sem parcelas)');
+    alert('ℹ️️ AVISO: Nenhuma parcela encontrada no contrato.\n\nO campo foi preenchido com R$ 0,00. Verifique se o cliente quitou o saldo ou se a compra foi à vista.');
+    return;
+  }
   const hoje = new Date(); hoje.setHours(0,0,0,0);
   const futura = parcelas.find(p=>p.venc>=hoje);
   const p = futura || parcelas[0];
@@ -1637,11 +1647,11 @@ function calcular(e){
 
   const erros = [];
   if(!renda)  erros.push('• Renda do Cliente (carregue a Simulação Caixa)');
-  if(!mrv)    erros.push('• Parcela MRV/Emcash (carregue o Contrato)');
-  if(!caixa)  erros.push('• Parcela Caixa (carregue a Simulação Caixa)');
+  if(mrvStr.trim() === '') erros.push('• Parcela MRV/Emcash (carregue o Contrato ou digite 0)');
+  if(!caixa && document.getElementById('parcelaCaixa').value.trim() === '')  erros.push('• Parcela Caixa (carregue a Simulação Caixa)');
 
   if(erros.length){
-    alert('⚠️ Os seguintes campos estão vazios ou com valor zero:\n\n' + erros.join('\n') + '\n\nSe os campos estiverem preenchidos, tente digitar os valores manualmente.');
+    alert('⚠️ Os seguintes campos estão vazios:\n\n' + erros.join('\n') + '\n\nSe os campos estiverem preenchidos, tente digitar os valores manualmente.');
     return;
   }
   
@@ -1980,7 +1990,9 @@ function calcularProposta(e){
   
   calcularPsaPsbProposta(dataEntStr);
   
-  if(AppState.propPsbQtd === 0){ alert('⚠️ Nenhuma parcela Mensal encontrada após a data de entrega informada.\nVerifique se a data está correta.'); return; }
+  if(AppState.propPsbQtd === 0){ 
+    alert('ℹ️ AVISO: Nenhuma parcela Mensal encontrada após a data de entrega.\n\nO cálculo prosseguirá considerando a parcela MRV (PSB) como R$ 0,00. Confirme se a data está correta ou se a compra é à vista/quitada.'); 
+  }
   
   const teto = renda * 0.05;
   const pct1 = (AppState.propPsbPrimeira / renda) * 100;
