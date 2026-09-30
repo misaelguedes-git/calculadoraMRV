@@ -534,7 +534,7 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
 ========================================================================== -->
 <header>
   <div class="logo-container">
-    <img class="logo-img" id="logoImg" src="LogoMRV.png" alt="MRV&CO" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='inline';">
+    <img class="logo-img" id="logoImg" src="assets/LogoMRV.png" alt="MRV&CO" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='inline';">
     <span class="logo-fallback" id="logoFallback">
       <span class="mrv">MRV</span><span class="eco">&amp;CO</span>
     </span>
@@ -695,7 +695,12 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
       </div>
 
       <div class="progress-wrap"><div class="progress-bar" id="prop-progressBar1"></div></div>
-      <div class="progress-labels"><span>0%</span><span>3% ✔</span><span>5% ⚠</span><span>7%+</span></div>
+      <div style="position:relative; height:18px; margin-bottom:14px; font-size:11px; color:#aaa; font-weight:600;">
+       <span style="position:absolute; left:0;">0%</span>
+       <span style="position:absolute; left:50%; transform:translateX(-50%);">3,5% ✔</span>
+       <span style="position:absolute; left:71.43%; transform:translateX(-50%);">5% ⚠</span>
+       <span style="position:absolute; right:0;">7%+</span>
+      </div>
       
       <div class="excedente-box" id="prop-excedenteBox1" style="display:none;"><div class="excedente-titulo" id="prop-excedenteTitulo1">—</div><div id="prop-excedenteConteudo1"></div></div>
       
@@ -710,7 +715,12 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
       </div>
 
       <div class="progress-wrap"><div class="progress-bar" id="prop-progressBar2"></div></div>
-      <div class="progress-labels"><span>0%</span><span>3% ✔</span><span>5% ⚠</span><span>7%+</span></div>
+      <div style="position:relative; height:18px; margin-bottom:14px; font-size:11px; color:#aaa; font-weight:600;">
+       <span style="position:absolute; left:0;">0%</span>
+       <span style="position:absolute; left:50%; transform:translateX(-50%);">3,5% ✔</span>
+       <span style="position:absolute; left:71.43%; transform:translateX(-50%);">5% ⚠</span>
+       <span style="position:absolute; right:0;">7%+</span>
+     </div>
       
       <div class="excedente-box" id="prop-excedenteBox2" style="display:none;"><div class="excedente-titulo" id="prop-excedenteTitulo2">—</div><div id="prop-excedenteConteudo2"></div></div>
       
@@ -1158,7 +1168,7 @@ function sanitizarTexto(texto) {
 function setAuto(id, val){
   const el = document.getElementById(id);
   if(el){
-    el.value = sanitizarTexto(val);
+    el.value = val || '';
     el.classList.remove('auto-filled-caixa');
     el.classList.add('auto-filled');
   }
@@ -1167,7 +1177,7 @@ function setAuto(id, val){
 function setAutoCaixa(id, val){
   const el = document.getElementById(id);
   if(!el) return;
-  const valSanitizado = sanitizarTexto(val);
+  const valSanitizado = val || '';
   if(id === 'parcelaCaixa' || id === 'renda' || id === 'valorAvaliacao' || id === 'tetoFaixa'){
     const num = parseMoeda(valSanitizado);
     el.value = num > 0 ? formatMoeda(num) : valSanitizado;
@@ -1181,7 +1191,7 @@ function setAutoCaixa(id, val){
 function setAutoProp(id, val){
   const el = document.getElementById(id);
   if(el){
-    el.value = sanitizarTexto(val);
+    el.value = val || '';
     el.classList.add('auto-filled-prop');
   }
 }
@@ -1189,7 +1199,7 @@ function setAutoProp(id, val){
 function setAutoData(id, val) {
   const el = document.getElementById(id);
   if(el){ 
-    el.value = sanitizarTexto(val); 
+    el.value = val || '';
     el.classList.add('auto-filled'); 
   }
 }
@@ -1978,7 +1988,7 @@ function aplicarStatusProposta(num, pct){
   } else { unif.className = 'comprom-unified '+classe; }
   
   icon.textContent = iconeTxt; text.textContent = textoTxt;
-  if(bar){ bar.className = 'progress-bar '+barClasse; bar.style.width = Math.min(pct*10,100)+'%'; }
+  if(bar){ bar.className = 'progress-bar '+barClasse; bar.style.width = Math.min((pct/7)*100,100)+'%'; }
   return textoTxt;
 }
 
