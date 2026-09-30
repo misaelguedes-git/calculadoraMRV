@@ -1,4 +1,4 @@
-const CACHE = 'mrv-calc-v3';
+const CACHE = 'mrv-calc-v4';
 const ASSETS = [
   '/calculadoraMRV/',
   '/calculadoraMRV/index.html',
