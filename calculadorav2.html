@@ -932,7 +932,17 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
       </div>
 
       <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
-      <div class="progress-labels"><span>0%</span><span>35% ✔</span><span>40% ⚠</span><span>50%+</span></div>
+      <div style="position:relative; height:18px; margin-bottom:14px; font-size:11px; color:#aaa; font-weight:600;">
+        <span style="position:absolute; left:0;">0%</span>
+        <span style="position:absolute; left:50%; transform:translateX(-50%);">35% ✔</span>
+        <span style="position:absolute; left:52.85%; transform:translateX(-50%); color:var(--amarelo-medio);">37% ⚠</span>
+        <span style="position:absolute; right:0;">70%+</span>
+      </div>
+      
+      <!-- Aviso Dinâmico de Avaliação Individual -->
+      <div id="msgAvaliacao1" style="display:none; background:#FFFDE7; border:1.5px solid var(--amarelo); padding:9px 13px; font-size:12px; color:#5D4037; border-radius:6px; margin-bottom:14px;">
+        ⚠️ <strong>ATENÇÃO:</strong> O caso deve ser avaliado individualmente para a decisão de manter o contrato ou refazer a venda.
+      </div>
       
       <div class="separador-calculo" id="separadorMedia" style="display:none;">📊 VERSÃO SECUNDÁRIA — Média das Parcelas PSB</div>
       
@@ -945,8 +955,18 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
       </div>
 
       <div class="progress-wrap" id="progressWrapMedia" style="display:none;"><div class="progress-bar" id="progressBarMedia"></div></div>
-      <div class="progress-labels" id="progressLabelsMedia" style="display:none;"><span>0%</span><span>35% ✔</span><span>40% ⚠</span><span>50%+</span></div>
+      <div id="progressLabelsMedia" style="display:none; position:relative; height:18px; margin-bottom:14px; font-size:11px; color:#aaa; font-weight:600;">
+        <span style="position:absolute; left:0;">0%</span>
+        <span style="position:absolute; left:50%; transform:translateX(-50%);">35% ✔</span>
+        <span style="position:absolute; left:52.85%; transform:translateX(-50%); color:var(--amarelo-medio);">37% ⚠</span>
+        <span style="position:absolute; right:0;">70%+</span>
+      </div>
       
+      <!-- Aviso Dinâmico de Avaliação Individual -->
+      <div id="msgAvaliacao2" style="display:none; background:#FFFDE7; border:1.5px solid var(--amarelo); padding:9px 13px; font-size:12px; color:#5D4037; border-radius:6px; margin-bottom:14px;">
+        ⚠️ <strong>ATENÇÃO:</strong> O caso deve ser avaliado individualmente para a decisão de manter o contrato ou refazer a venda.
+      </div>
+
       <div class="desconto-section" id="descontoSection" style="display:none;">
         <div class="desconto-titulo" id="descontoTitulo">—</div>
         <div id="descontoConteudo"></div>
@@ -1079,7 +1099,7 @@ async function lerPDFCaixa(input){
   if(!file) return;
   
   if(file.size > 20 * 1024 * 1024){
-    alert('⚠️ Arquivo muito grande. O limite máximo permitido é 20 MB.');
+    alert('⚠️️ Arquivo muito grande. O limite máximo permitido é 20 MB.');
     input.value = '';
     return;
   }
@@ -1316,7 +1336,7 @@ function extrairDadosContrato(texto){
     }
   }catch(e){
     console.error('Erro na extração:',e);
-    mostrarStatus('⚠️️ Leitura parcial do contrato. Verifique os dados.', 'error');
+    mostrarStatus('⚠️ Leitura parcial do contrato. Verifique os dados.', 'error');
   }
 }
 
@@ -1455,7 +1475,7 @@ function buscarParcelaPosEntrega(parcelas, dataStr){
 function buscarPrimeiraParcela(parcelas){
   if(!parcelas.length) {
     setAuto('parcelaMRV', 'R$ 0,00 (Sem parcelas)');
-    alert('ℹ️️ AVISO: Nenhuma parcela encontrada no contrato.\n\nO campo foi preenchido com R$ 0,00. Verifique se o cliente quitou o saldo ou se a compra foi à vista.');
+    alert('ℹ️ AVISO: Nenhuma parcela encontrada no contrato.\n\nO campo foi preenchido com R$ 0,00. Verifique se o cliente quitou o saldo ou se a compra foi à vista.');
     return;
   }
   const hoje = new Date(); hoje.setHours(0,0,0,0);
@@ -1616,11 +1636,21 @@ function aplicarStatusUnificado(num, pct){
   const icon = document.getElementById('compIcon'+num);
   const text = document.getElementById('compText'+num);
   const bar = document.getElementById(num === 1 ? 'progressBar' : 'progressBarMedia');
+  const msgBox = document.getElementById('msgAvaliacao'+num);
   let classe, iconeTxt, textoTxt, barClasse;
   
-  if(pct <= 35){ classe='aprovado'; iconeTxt='✔'; textoTxt='APROVADO'; barClasse='verde'; }
-  else if(pct <= 40){ classe='atencao'; iconeTxt='⚠'; textoTxt='ATENÇÃO'; barClasse='amarelo'; }
-  else { classe='reprovado'; iconeTxt='✘'; textoTxt='REPROVADO'; barClasse='vermelho'; }
+  if(pct <= 35){ 
+    classe='aprovado'; iconeTxt='✔'; textoTxt='APROVADO'; barClasse='verde'; 
+    if(msgBox) msgBox.style.display = 'none';
+  }
+  else if(pct <= 37){ 
+    classe='atencao'; iconeTxt='⚠'; textoTxt='ATENÇÃO'; barClasse='amarelo'; 
+    if(msgBox) msgBox.style.display = 'block';
+  }
+  else { 
+    classe='reprovado'; iconeTxt='✘'; textoTxt='REPROVADO'; barClasse='vermelho'; 
+    if(msgBox) msgBox.style.display = 'none';
+  }
   
   if(num === 2){
     unif.className = 'comprom-unified secundario';
@@ -1632,7 +1662,12 @@ function aplicarStatusUnificado(num, pct){
     unif.className = 'comprom-unified '+classe;
   }
   icon.textContent = iconeTxt; text.textContent = textoTxt;
-  if(bar){ bar.className = 'progress-bar '+barClasse; bar.style.width = Math.min(pct*2,100)+'%'; }
+  
+  if(bar){ 
+    bar.className = 'progress-bar '+barClasse; 
+    // Fórmula ajustada para que 35% seja o centro (50% do espaço físico da barra)
+    bar.style.width = Math.min((pct / 70) * 100, 100) + '%'; 
+  }
   return textoTxt;
 }
 
@@ -1683,7 +1718,7 @@ function calcular(e){
     statusMedia = aplicarStatusUnificado(2, pctMedia);
     document.getElementById('compUnif2').style.display = 'block';
     document.getElementById('progressWrapMedia').style.display = 'block';
-    document.getElementById('progressLabelsMedia').style.display = 'flex';
+    document.getElementById('progressLabelsMedia').style.display = 'block';
     document.getElementById('separadorMedia').style.display = 'flex';
   } else {
     document.getElementById('compUnif2').style.display = 'none';
@@ -2044,7 +2079,7 @@ function limparProposta(){
 }
 
 // =========================================================================
-//   9. INTEGRAÇÃO E EXPORTAÇÃO
+//   9. EXPORTAÇÃO
 // =========================================================================
 
 function copiarResultadoProposta(){
@@ -2072,6 +2107,13 @@ Comprometimento (Média PSB): ${document.getElementById('prop-res-pct2').textCon
 
 function copiarResultado(){
   const pctMediaTxt = document.getElementById('res-pct-media').textContent;
+  const pctVal = parseFloat(document.getElementById('res-pct').textContent.replace('%','').replace(',','.'));
+  
+  let avisoEspecial = '';
+  if(pctVal > 35 && pctVal <= 37) {
+    avisoEspecial = '\n⚠️ ATENÇÃO: O caso deve ser avaliado individualmente para a decisão de manter o contrato ou refazer a venda.\n─────────────────────────────';
+  }
+
   const txt = `ANÁLISE MRV/EMCASH — ${new Date().toLocaleString('pt-BR')}
 Tipo de Contrato: ${AppState.tipoContrato || '—'}
 Cliente: ${document.getElementById('nomeCliente').value}
@@ -2089,6 +2131,7 @@ PSB: ${document.getElementById('res-psb-saldo').textContent} (${document.getElem
 ─────────────────────────────
 Comprometimento (1ª Parcela PSB): ${document.getElementById('res-pct').textContent}
 Status: ${document.getElementById('compText1').textContent}
+${avisoEspecial}
 Comprometimento (Média PSB): ${pctMediaTxt}
 Status Média: ${document.getElementById('compText2').textContent}
 * Projeções são estimativas. Solicite simulação ao financeiro MRV.`;
@@ -2205,6 +2248,8 @@ function limpar(){
   document.getElementById('compText1').textContent = '—';
   document.getElementById('compIcon2').textContent = '—';
   document.getElementById('compText2').textContent = '—';
+  document.getElementById('msgAvaliacao1').style.display = 'none';
+  document.getElementById('msgAvaliacao2').style.display = 'none';
   document.getElementById('compUnif1').className = 'comprom-unified';
   document.getElementById('compUnif2').className = 'comprom-unified secundario';
   
