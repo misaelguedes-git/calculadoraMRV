@@ -1,35 +1,29 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<!-- =========================================================================
-     1. CONFIGURAÇÕES DA PÁGINA E SEGURANÇA
-========================================================================== -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#006b3f">
-<!-- Política de Segurança (CSP): Ajustada para permitir os cliques nos botões (unsafe-inline) -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none';">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Comprom. MRV">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/LogoMRV.png">
 <title>Calculadora MRV/Emcash — Comprometimento de Renda</title>
 
 <!-- Biblioteca de Leitura de PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <style>
-/* =========================================================================
+  /* =========================================================================
    ÍNDICE DE ESTILOS (CSS)
    1. VARIÁVEIS E CORES 
-   2. ESTRUTURA GERAL 
+   2. ESTRUTURA GERAL E LAYOUT COM SIDEBAR (OPÇÃO B)
    3. CABEÇALHO 
    4. NAVEGAÇÃO 
    5. ÁREA DE UPLOAD (Drag/Drop)
    6. FORMULÁRIOS E CAMPOS 
    7. ALERTAS E MENSAGENS 
-   8. RESULTADOS E PROGRESSO 
+   8. RESULTADOS, PROGRESSO E ALERTA DE INTERMEDIÁRIAS (OPÇÃO 1)
    9. TABELAS E FLUXOS 
    10. BOTÕES
    11. RESPONSIVIDADE
@@ -51,10 +45,133 @@
   --oic:#4A148C; --oic-claro:#F3E5F5;
 }
 
-/* ── 2. ESTRUTURA GERAL ── */
+/* ── 2. ESTRUTURA GERAL E SIDEBAR (OPÇÃO B) ── */
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#ECEEF2;color:var(--texto);font-size:15px;}
-.container{max-width:920px;margin:22px auto;padding:0 14px 80px;}
+
+.app-layout{
+  max-width:1240px;
+  margin:22px auto;
+  padding:0 14px 80px;
+  display:flex;
+  align-items:flex-start;
+  gap:20px;
+}
+
+.sidebar-params{
+  width:280px;
+  flex-shrink:0;
+  position:sticky;
+  top:88px;
+  background:#fff;
+  border-radius:14px;
+  padding:18px 16px;
+  box-shadow:0 4px 14px rgba(0,0,0,0.08);
+  border-top:4px solid var(--verde);
+  z-index:50;
+}
+.sidebar-title{
+  font-size:14px;
+  font-weight:800;
+  color:var(--verde);
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-bottom:6px;
+}
+.sidebar-sub{
+  font-size:11px;
+  color:#777;
+  line-height:1.4;
+  margin-bottom:14px;
+}
+.preset-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-bottom:14px;
+}
+.preset-btn{
+  padding:8px 6px;
+  border-radius:8px;
+  border:1.5px solid var(--cinza-borda);
+  background:var(--cinza);
+  font-size:12px;
+  font-weight:700;
+  color:#555;
+  cursor:pointer;
+  transition:.2s;
+  text-align:center;
+}
+.preset-btn:hover{border-color:var(--verde);color:var(--verde);background:var(--verde-claro);}
+.preset-btn.active{background:var(--verde);color:#fff;border-color:var(--verde);box-shadow:0 2px 6px rgba(0,107,63,0.3);}
+
+.param-input-group{
+  margin-bottom:14px;
+}
+.param-input-group label{
+  font-size:11px;
+  font-weight:700;
+  color:#555;
+  margin-bottom:5px;
+  display:flex;
+  justify-content:space-between;
+}
+.param-slider-wrap{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.param-slider{
+  flex:1;
+  accent-color:var(--verde);
+  cursor:pointer;
+}
+.param-num-input{
+  width:72px !important;
+  padding:7px 8px !important;
+  border:1.5px solid var(--verde) !important;
+  border-radius:8px !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+  text-align:center;
+  color:var(--verde) !important;
+  background:var(--verde-claro) !important;
+}
+.param-summary{
+  background:#F8F9FA;
+  border:1px solid var(--cinza-borda);
+  border-radius:10px;
+  padding:11px 12px;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.param-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:12px;
+}
+.param-row span{color:#666;font-weight:600;}
+.param-row strong{font-size:13px;font-weight:800;}
+.param-row.caixa strong{color:var(--azul);}
+.param-row.mrv strong{color:var(--laranja);}
+.param-row.atencao strong{color:var(--amarelo-medio);}
+.param-note{
+  margin-top:10px;
+  font-size:10px;
+  color:#888;
+  line-height:1.4;
+  border-left:2px solid var(--laranja);
+  padding-left:7px;
+}
+
+.container{
+  flex:1;
+  min-width:0;
+  max-width:920px;
+}
 
 /* ── 3. CABEÇALHO ── */
 header{
@@ -65,7 +182,7 @@ header{
   background:#fff;border-radius:8px;padding:6px 14px;
   display:flex;align-items:center;flex-shrink:0;height:50px;
 }
-.logo-img{height:28px;width:auto;display:block;}
+.logo-img{height:36px;width:auto;display:block;}
 .logo-fallback{
   display:none;font-family:'Arial Black',Arial;font-weight:900;
   font-size:20px;letter-spacing:-0.5px;
@@ -155,12 +272,12 @@ label{font-size:12px;font-weight:700;color:#555;display:flex;align-items:center;
 .tag.oic{background:var(--oic-claro);color:var(--oic);}
 .tag.bpm{background:var(--bpm-claro);color:var(--bpm);}
 .tag.emcash{background:var(--emcash-claro);color:var(--emcash);}
-input[type=text]{
+input[type=text], input[type=number]{
   padding:11px 13px;border:1.5px solid var(--cinza-borda);
   border-radius:8px;font-size:14px;transition:border .2s;
   width:100%;background:#fff;color:var(--texto);
 }
-input[type=text]:focus{outline:none;border-color:var(--verde);}
+input[type=text]:focus, input[type=number]:focus{outline:none;border-color:var(--verde);}
 input.auto-filled{background:var(--verde-claro);border-color:var(--verde);color:#1a5c2a;}
 input.auto-filled-caixa{background:var(--azul-claro);border-color:var(--azul);color:#003366;}
 input.auto-filled-prop{background:var(--laranja-claro);border-color:var(--laranja);color:#7a3000;}
@@ -192,7 +309,7 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
 .faixa-info-box .faixa-titulo{font-size:12px;font-weight:700;color:var(--azul);margin-bottom:6px;}
 .faixa-info-box .faixa-detalhe{font-size:13px;color:var(--azul);font-weight:600;}
 
-/* ── 8. RESULTADOS E PROGRESSO ── */
+/* ── 8. RESULTADOS, PROGRESSO E ALERTA DE INTERMEDIÁRIA (OPÇÃO 1) ── */
 .resultado{
   display:none;background:#fff;border-radius:14px;
   padding:24px 18px;margin-bottom:18px;box-shadow:0 4px 18px rgba(0,0,0,0.1);
@@ -203,7 +320,7 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
 .resultado-title.verde{color:var(--verde);}
 .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px;}
 .res-item{background:var(--cinza);border-radius:10px;padding:13px;text-align:center;}
-.res-item label{font-size:11px;color:#777;display:block;margin-bottom:4px;font-weight:600;}
+.res-item label{font-size:11px;color:#777;display:block;margin-bottom:4px;font-weight:600;justify-content:center;}
 .res-item .val{font-size:18px;font-weight:800;color:var(--azul);}
 .res-item.destaque{background:var(--laranja-claro);}.res-item.destaque .val{color:var(--laranja);}
 .res-item.destaque-verde{background:var(--verde-claro);}.res-item.destaque-verde .val{color:var(--verde);}
@@ -214,9 +331,10 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
 .comprom-pct-side{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 20px;}
 .comprom-pct-label{font-size:11px;font-weight:700;color:#777;margin-bottom:4px;}
 .comprom-pct-val{font-size:38px;font-weight:900;line-height:1;}
-.comprom-status-side{width:200px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center;border-left:2px solid;gap:6px;}
+.comprom-status-side{width:210px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center;border-left:2px solid;gap:6px;}
 .comprom-status-icon{font-size:26px;line-height:1;}
 .comprom-status-text{font-size:14px;font-weight:800;line-height:1.2;}
+.comprom-status-sub{font-size:10px;font-weight:700;opacity:0.9;}
 .comprom-unified.aprovado{border-color:var(--verde);}
 .comprom-unified.aprovado .comprom-unified-header{background:var(--verde-claro);color:var(--verde);}
 .comprom-unified.aprovado .comprom-pct-val{color:var(--verde);}
@@ -235,13 +353,123 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
 .comprom-unified.secundario .comprom-status-side{background:var(--roxo-claro);border-color:var(--roxo);color:var(--roxo);}
 
 .progress-wrap{background:#e0e0e0;border-radius:20px;height:14px;overflow:hidden;margin-bottom:6px;}
-.progress-bar{height:100%;border-radius:20px;transition:width 1s ease;width:0%;}
+.progress-bar{height:100%;border-radius:20px;transition:width 0.8s ease;width:0%;}
 .progress-bar.verde{background:linear-gradient(90deg,var(--verde),#5cb85c);}
 .progress-bar.amarelo{background:linear-gradient(90deg,var(--amarelo),#ffd54f);}
 .progress-bar.vermelho{background:linear-gradient(90deg,var(--vermelho),#e57373);}
 .progress-labels{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-bottom:14px;}
 .separador-calculo{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:11px;font-weight:700;color:#aaa;}
 .separador-calculo::before,.separador-calculo::after{content:'';flex:1;height:1px;background:var(--cinza-borda);}
+
+/* Banner de Alerta de Intermediárias (Opção 1) */
+.interm-alert-banner{
+  display:none;
+  border-radius:12px;
+  border:2px solid var(--vermelho);
+  background:var(--vermelho-claro);
+  margin-bottom:16px;
+  overflow:hidden;
+}
+.interm-alert-header{
+  background:var(--vermelho);
+  color:#fff;
+  padding:10px 16px;
+  font-size:13px;
+  font-weight:800;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.interm-alert-body{
+  padding:14px 16px;
+}
+.interm-alert-intro{
+  font-size:12px;
+  color:#5D4037;
+  margin-bottom:12px;
+  line-height:1.5;
+  font-weight:600;
+}
+.interm-pico-card{
+  background:#fff;
+  border:1.5px solid #f5c2c7;
+  border-radius:10px;
+  padding:12px 14px;
+  margin-bottom:10px;
+}
+.interm-pico-card:last-child{margin-bottom:0;}
+.interm-pico-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #f0f0f0;
+  padding-bottom:8px;
+  margin-bottom:8px;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.interm-pico-date{
+  font-size:13px;
+  font-weight:800;
+  color:var(--azul);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.interm-pico-badges{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.badge-critico{
+  background:var(--vermelho);
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
+  padding:3px 8px;
+  border-radius:5px;
+}
+.badge-soma-mes{
+  background:var(--amarelo-claro);
+  border:1px solid var(--amarelo);
+  color:var(--amarelo-medio);
+  font-size:11px;
+  font-weight:800;
+  padding:3px 8px;
+  border-radius:5px;
+}
+.interm-pico-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  font-size:12px;
+}
+.interm-pico-col{
+  background:#FAFAFA;
+  padding:7px 9px;
+  border-radius:6px;
+  border:1px solid #eee;
+}
+.interm-pico-col span{
+  display:block;
+  font-size:10px;
+  color:#777;
+  margin-bottom:2px;
+}
+.interm-pico-col strong{
+  font-size:13px;
+  color:var(--texto);
+}
+.interm-pico-col.total-mes{
+  background:var(--vermelho-claro);
+  border-color:#f5c2c7;
+}
+.interm-pico-col.total-mes strong{
+  color:var(--vermelho);
+  font-weight:900;
+}
 
 .desconto-section{border-radius:12px;padding:18px;margin-bottom:16px;border:2px solid;}
 .desconto-section.ok{background:var(--verde-claro);border-color:var(--verde);}
@@ -312,10 +540,24 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
 .grupo-wrap:last-child{margin-bottom:0;}
 .grupo-titulo{font-size:12px;font-weight:700;color:var(--roxo);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;}
 .grupo-titulo .gt-total{font-size:13px;color:var(--roxo);display:flex;align-items:center;gap:8px;}
-.grupo-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F0F2F5;font-size:13px;flex-wrap:wrap;gap:4px;}
+.grupo-row{display:flex;align-items:center;justify-content:space-between;padding:7px 8px;border-bottom:1px solid #F0F2F5;font-size:13px;flex-wrap:wrap;gap:6px;border-radius:6px;}
 .grupo-row:last-child{border-bottom:none;}
 .grupo-row .gr-val{font-weight:700;color:var(--azul);}
 .grupo-row .gr-venc{font-size:12px;color:#777;background:#F0F2F5;padding:2px 8px;border-radius:4px;}
+.grupo-row.critica{
+  background:var(--vermelho-claro);
+  border:1px solid #f5c2c7;
+  margin-bottom:4px;
+}
+.grupo-row.critica .gr-val{color:var(--vermelho);font-weight:800;}
+.tag-interm-critica{
+  background:var(--vermelho);
+  color:#fff;
+  font-size:10px;
+  font-weight:800;
+  padding:2px 7px;
+  border-radius:4px;
+}
 
 .financiado-wrap{
   grid-column:1/-1;border-radius:10px;padding:14px 16px;display:none;
@@ -354,7 +596,7 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
 
 .resumo-proposta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;grid-column:1/-1;margin-bottom:4px;}
 .resumo-item{background:var(--cinza);border-radius:10px;padding:12px;text-align:center;}
-.resumo-item label{font-size:10px;color:#777;display:block;margin-bottom:4px;font-weight:700;}
+.resumo-item label{font-size:10px;color:#777;display:block;margin-bottom:4px;font-weight:700;justify-content:center;}
 .resumo-item .rv{font-size:15px;font-weight:800;color:var(--azul);}
 .resumo-item.destaque{background:var(--laranja-claro);}.resumo-item.destaque .rv{color:var(--laranja);}
 .resumo-item.bom-pag{background:var(--roxo-claro);}.resumo-item.bom-pag .rv{color:var(--roxo);}
@@ -380,15 +622,22 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
 .btn-cinza{background:#6c757d;color:#fff;}.btn-cinza:hover{background:#545b62;}
 .btn-azul{background:var(--azul);color:#fff;}.btn-azul:hover{background:#002244;}
 
-/* ── 11. RESPONSIVIDADE (MOBILE) ── */
+/* ── 11. RESPONSIVIDADE (TABLET E MOBILE) ── */
+@media(max-width:960px){
+  .app-layout{flex-direction:column;align-items:stretch;}
+  .sidebar-params{width:100%;position:static;}
+  .preset-grid{grid-template-columns:repeat(4,1fr);}
+  .container{max-width:100%;}
+}
 @media(max-width:600px){
   header{padding:0 14px;gap:12px;height:58px;}
-  .logo-container{height:44px;padding:5px 10px;}.logo-img{height:22px;}
+  .logo-container{height:44px;padding:5px 10px;}.logo-img{height:28px;}
   .header-div,.tipo-contrato-badge{display:none!important;}
   .header-text h1{font-size:13px;}
-  .container{padding:0 10px 80px;}
+  .app-layout{padding:0 10px 80px;}
+  .preset-grid{grid-template-columns:1fr 1fr;}
   .uploads-grid{grid-template-columns:1fr;}
-  .grid,.psa-psb-grid,.res-grid,.psa-psb-resultado,.resumo-proposta-grid{grid-template-columns:1fr;}
+  .grid,.psa-psb-grid,.res-grid,.psa-psb-resultado,.resumo-proposta-grid,.interm-pico-grid{grid-template-columns:1fr;}
   .field.full,.psa-psb-grid,.financiado-wrap,.faixa-info-box,.plano-wrap,.fluxo-wrap{grid-column:1;}
   .resumo-proposta-grid{grid-template-columns:1fr 1fr;}
   .financiado-wrap{flex-direction:column;align-items:flex-start;}
@@ -405,7 +654,7 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
   .upload-card, .status-bar, .botoes, 
   .tab-switch, .plano-secao-titulo small,
   input + small, label .tag,
-  .btn, button { display: none !important; }
+  .btn, button, .sidebar-params { display: none !important; }
 
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
@@ -421,13 +670,13 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
   .logo-container { display: flex !important; background: #fff !important;
     border-radius: 6px !important; padding: 4px 10px !important;
     height: 40px !important; align-items: center !important; }
-  .logo-img { height: 20px !important; width: auto !important; display: block !important; }
+  .logo-img { height: 26px !important; width: auto !important; display: block !important; }
   .header-div { display: block !important; width: 2px !important; height: 30px !important;
     background: rgba(255,255,255,0.3) !important; border-radius: 2px !important; }
   .header-text h1 { color: #fff !important; font-size: 12px !important; font-weight: 700 !important; }
   .header-text p { color: rgba(255,255,255,0.75) !important; font-size: 9px !important; }
 
-  .container { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+  .app-layout, .container { max-width: 100% !important; margin: 0 !important; padding: 0 !important; display: block !important; }
 
   .card {
     background: #fff !important; border-radius: 10px !important;
@@ -501,6 +750,11 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
   .comprom-status-icon { font-size: 20px !important; }
   .comprom-status-text { font-size: 12px !important; }
 
+  .interm-alert-banner[style*="display: block"], .interm-alert-banner[style*="display:block"] {
+    display: block !important; break-inside: avoid !important; margin-bottom: 10px !important;
+  }
+  .interm-pico-grid { grid-template-columns: repeat(4,1fr) !important; }
+
   .progress-wrap { height: 10px !important; margin-bottom: 4px !important; }
   .progress-labels { font-size: 9px !important; margin-bottom: 8px !important; }
   .separador-calculo { font-size: 10px !important; margin: 6px 0 !important; }
@@ -526,17 +780,16 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
 
   #resultadoProposta.show { display: block !important; page-break-before: always !important; break-before: page !important; }
 }
-
 </style>
 </head>
 <body>
 
 <!-- =========================================================================
-     2. CABEÇALHO PRINCIPAL
+     CABEÇALHO PRINCIPAL
 ========================================================================== -->
 <header>
   <div class="logo-container">
-    <img class="logo-img" id="logoImg" src="assets/LogoMRV-header.png" alt="MRV&CO" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='inline';">
+    <img class="logo-img" id="logoImg" src="LogoMRV.png" alt="MRV&CO" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='inline';">
     <span class="logo-fallback" id="logoFallback">
       <span class="mrv">MRV</span><span class="eco">&amp;CO</span>
     </span>
@@ -544,469 +797,533 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
   <div class="header-div"></div>
   <div class="header-text">
     <h1>Calculadora de Comprometimento de Renda — MRV / Emcash</h1>
-    <p>Suporte a contratos OIC · BPM · Emcash — preenchimento automático</p>
+    <p>Suporte nacional a contratos OIC · BPM · Emcash — parametrização flexível</p>
   </div>
 </header>
 
 <!-- =========================================================================
-     3. CONTÊINER PRINCIPAL
+     LAYOUT PRINCIPAL (SIDEBAR ESQUERDA + CONTEÚDO)
 ========================================================================== -->
-<div class="container">
+<div class="app-layout">
 
-  <!-- =========================================================================
-       4. NAVEGAÇÃO DE ABAS
-  ========================================================================== -->
-  <div class="tab-switch">
-    <button class="tab-btn active-proposta" id="tabBtnProposta" onclick="trocarAba('proposta')">
-      📋 Simulação de Proposta
-      <span class="tab-badge">Pré-análise MRV</span>
-    </button>
-    <button class="tab-btn" id="tabBtnContrato" onclick="trocarAba('contrato')">
-      📄 Comprometimento de Renda
-      <span class="tab-badge">Contrato + Caixa</span>
-    </button>
-  </div>
+  <!-- PAINEL LATERAL FLUTUANTE (OPÇÃO B) -->
+  <aside class="sidebar-params">
+    <div class="sidebar-title">⚙️ Parâmetros da Regional</div>
+    <p class="sidebar-sub">Defina o comprometimento máximo permitido (Caixa + MRV). O teto da Caixa permanece fixo em 30%.</p>
 
-  <!-- =========================================================================
-       5. ABA 1: SIMULAÇÃO DE PROPOSTA
-  ========================================================================== -->
-  <div id="abaProposta">
-    
-    <div class="status-bar" id="statusBarProp">
-      <div class="spinner" id="spinnerProp"></div>
-      <span id="statusMsgProp">Lendo...</span>
+    <div class="preset-grid">
+      <button type="button" class="preset-btn active" onclick="definirTetoTotal(35)">35% (Padrão)</button>
+      <button type="button" class="preset-btn" onclick="definirTetoTotal(38)">38%</button>
+      <button type="button" class="preset-btn" onclick="definirTetoTotal(40)">40%</button>
+      <button type="button" class="preset-btn" onclick="definirTetoTotal(45)">45%</button>
     </div>
 
-    <!-- Área de Upload (Proposta) -->
-    <div class="uploads-grid" style="grid-template-columns:1fr;">
-      <div class="upload-card proposta" id="uploadCardProp" onclick="document.getElementById('pdfPropostaInput').click()">
-        <div class="upload-icon">📋</div>
-        <h2>Simulação de Proposta MRV</h2>
-        <p>Empreendimento, unidade, resumo financeiro e fluxo mês a mês</p>
-        <button class="btn-upload proposta" onclick="event.stopPropagation();document.getElementById('pdfPropostaInput').click()">📎 Selecionar PDF da Proposta</button>
-        <input type="file" id="pdfPropostaInput" accept=".pdf" onchange="lerPDFProposta(this)">
-        <div class="upload-status-badge" id="badgeProp">✅ Proposta lida!</div>
+    <div class="param-input-group">
+      <label for="inputTetoTotal">
+        <span>Teto Total Personalizado (%)</span>
+      </label>
+      <div class="param-slider-wrap">
+        <input type="range" id="sliderTetoTotal" class="param-slider" min="31" max="60" step="0.5" value="35" oninput="atualizarTetoPorInput(this.value)">
+        <input type="number" id="inputTetoTotal" class="param-num-input" min="31" max="80" step="0.5" value="35" oninput="atualizarTetoPorInput(this.value)">
       </div>
     </div>
 
-    <!-- Formulário Proposta -->
-    <form id="formProposta" onsubmit="calcularProposta(event)">
-      
-      <!-- Dados do Imóvel -->
-      <div class="card">
-        <div class="card-title laranja">🏠 Dados do Imóvel</div>
-        <div class="grid">
-          <div class="field full"><label>Empreendimento <span class="tag auto-prop">AUTO</span></label><input type="text" id="prop-empreendimento" placeholder="Lido da proposta..." readonly></div>
-          <div class="field full"><label>Unidade <span class="tag auto-prop">AUTO</span></label><input type="text" id="prop-unidade" placeholder="Lido da proposta..." readonly></div>
-          <div class="field"><label>Valor do Imóvel (R$) <span class="tag auto-prop">AUTO</span></label><input type="text" id="prop-valorImovel" placeholder="Lido da proposta..." readonly></div>
-          <div class="field"><label>Valor da Proposta (R$) <span class="tag auto-prop">AUTO</span></label><input type="text" id="prop-valorProposta" placeholder="Lido da proposta..." readonly></div>
-        </div>
+    <div class="param-summary">
+      <div class="param-row caixa">
+        <span>🏦 Teto Caixa (Fixo):</span>
+        <strong>30,0%</strong>
       </div>
-
-      <!-- Resumo Financeiro Proposta -->
-      <div class="card">
-        <div class="card-title laranja">💰 Resumo Financeiro da Proposta</div>
-        <div class="grid">
-          <div class="resumo-proposta-grid" id="resumoPropostaGrid" style="display:none;">
-            <div class="resumo-item destaque"><label>Valor Financiado</label><div class="rv" id="rp-financiado">—</div></div>
-            <div class="resumo-item"><label>Valor do Sinal</label><div class="rv" id="rp-sinal">—</div></div>
-            <div class="resumo-item"><label>Carteira MRV</label><div class="rv" id="rp-carteira">—</div></div>
-            <div class="resumo-item"><label>Cupom</label><div class="rv" id="rp-cupom">—</div></div>
-            <div class="resumo-item"><label>FGTS</label><div class="rv" id="rp-fgts">—</div></div>
-            <div class="resumo-item"><label>Subsídio</label><div class="rv" id="rp-subsidio">—</div></div>
-            <div class="resumo-item bom-pag"><label>🏆 Bom Pagador</label><div class="rv" id="rp-bompag">—</div></div>
-            <div class="resumo-item"><label>Parcelas Carteira</label><div class="rv" id="rp-qtdCarteira">—</div></div>
-          </div>
-        </div>
+      <div class="param-row mrv">
+        <span>🏢 Teto MRV / Carteira:</span>
+        <strong id="sidebarTetoMRV">5,0%</strong>
       </div>
-
-      <!-- Dados para Análise -->
-      <div class="card">
-        <div class="card-title laranja">📊 Dados para Análise de Comprometimento</div>
-        <div class="grid">
-          <div class="field">
-            <label>Data Prevista de Entrega <span class="tag manual">MANUAL</span></label>
-            <input type="text" id="prop-dataEntrega" placeholder="DD/MM/AAAA" class="manual-field" oninput="mascaraData(this)" maxlength="10" required>
-          </div>
-          <div class="field">
-            <label>Renda do Cliente (R$) <span class="tag manual">MANUAL</span></label>
-            <input type="text" id="prop-renda" placeholder="Ex: R$ 5.000,00" class="manual-field" oninput="mascaraMoedaGen(this)" required>
-          </div>
-          
-          <div class="psa-psb-grid" id="prop-psaPsbWrap" style="display:none;">
-            <div class="psa-box">
-              <div class="psa-psb-title">📅 PSA — Pré-entrega (Mensais)</div>
-              <div class="psa-psb-row"><span class="psa-psb-label">Qtd. parcelas</span><span class="psa-psb-val" id="prop-psaQtd">—</span></div>
-              <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="prop-psaSaldo">—</span></div>
-            </div>
-            <div class="psb-box">
-              <div class="psa-psb-title">🏠 PSB — Pós-entrega (Mensais)</div>
-              <div class="psa-psb-row"><span class="psa-psb-label">Qtd. parcelas</span><span class="psa-psb-val" id="prop-psbQtd">—</span></div>
-              <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="prop-psbSaldo">—</span></div>
-              <div class="psa-psb-row"><span class="psa-psb-label">1ª Parcela PSB</span><span class="psa-psb-val" id="prop-psbPrimeira">—</span></div>
-              <div class="psa-psb-row"><span class="psa-psb-label">Média PSB</span><span class="psa-psb-val" id="prop-psbMedia">—</span></div>
-            </div>
-          </div>
-
-          <div class="fluxo-wrap" id="prop-fluxoWrap">
-            <div class="fluxo-header" onclick="toggleFluxo()">
-              <span>📅 Fluxo Mês a Mês</span>
-              <span class="fh-right" id="prop-fluxoCount">— parcelas</span>
-            </div>
-            <div class="fluxo-body" id="prop-fluxoBody">
-              <table class="fluxo-table">
-                <thead><tr><th>#</th><th>Vencimento</th><th>Tipo</th><th>Valor</th><th>Fase</th></tr></thead>
-                <tbody id="prop-fluxoTbody"></tbody>
-              </table>
-            </div>
-          </div>
-
-        </div>
+      <div class="param-row atencao">
+        <span>⚠️ Faixa de Atenção:</span>
+        <strong id="sidebarFaixaAtencao">35,0% a 37,0%</strong>
       </div>
-
-      <!-- Botões de Ação da Proposta -->
-      <div class="botoes">
-        <button type="submit" class="btn btn-laranja">📊 Calcular Comprometimento MRV</button>
-        <button type="button" class="btn btn-cinza" onclick="limparProposta()">🗑️ Limpar</button>
-      </div>
-
-    </form>
-
-    <!-- Resultados Proposta -->
-    <div class="resultado" id="resultadoProposta">
-      <div class="resultado-title laranja">📋 ANÁLISE DE COMPROMETIMENTO — SIMULAÇÃO DE PROPOSTA</div>
-      
-      <div class="res-grid">
-        <div class="res-item"><label>1ª Parcela PSB (Mensal)</label><div class="val" id="prop-res-primeira">—</div></div>
-        <div class="res-item"><label>Média das Parcelas PSB</label><div class="val" id="prop-res-media">—</div></div>
-        <div class="res-item destaque-verde"><label>Renda do Cliente</label><div class="val" id="prop-res-renda">—</div></div>
-        <div class="res-item"><label>Teto MRV (5% da Renda)</label><div class="val" id="prop-res-teto">—</div></div>
-      </div>
-
-      <div class="psa-psb-resultado">
-        <div class="psa-res"><div class="pr-title">📅 PSA — Pré-entrega</div><div class="pr-val" id="prop-res-psa-saldo">—</div><div class="pr-sub" id="prop-res-psa-qtd">— parcelas</div></div>
-        <div class="psb-res"><div class="pr-title">🏠 PSB — Pós-entrega</div><div class="pr-val" id="prop-res-psb-saldo">—</div><div class="pr-sub" id="prop-res-psb-qtd">— parcelas</div></div>
-      </div>
-
-      <div class="comprom-unified" id="prop-compUnif1">
-        <div class="comprom-unified-header">📊 Comprometimento MRV <span style="background:var(--laranja);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">1ª Parcela PSB</span> <span style="font-size:10px;color:#aaa;font-weight:400;margin-left:4px;">Teto: 5%</span></div>
-        <div class="comprom-unified-body">
-          <div class="comprom-pct-side"><div class="comprom-pct-label">% da renda comprometida</div><div class="comprom-pct-val" id="prop-res-pct1">—</div></div>
-          <div class="comprom-status-side" id="prop-compStatus1"><div class="comprom-status-icon" id="prop-compIcon1">—</div><div class="comprom-status-text" id="prop-compText1">—</div></div>
-        </div>
-      </div>
-
-      <div class="progress-wrap"><div class="progress-bar" id="prop-progressBar1"></div></div>
-      <div style="position:relative; height:18px; margin-bottom:14px; font-size:11px; color:#aaa; font-weight:600;">
-       <span style="position:absolute; left:0;">0%</span>
-       <span style="position:absolute; left:50%; transform:translateX(-50%);">3,5% ✔</span>
-       <span style="position:absolute; left:71.43%; transform:translateX(-50%);">5% ⚠</span>
-       <span style="position:absolute; right:0;">7%+</span>
-      </div>
-      
-      <div class="excedente-box" id="prop-excedenteBox1" style="display:none;"><div class="excedente-titulo" id="prop-excedenteTitulo1">—</div><div id="prop-excedenteConteudo1"></div></div>
-      
-      <div class="separador-calculo" id="prop-separadorMedia">📊 VERSÃO SECUNDÁRIA — Média das Parcelas PSB</div>
-      
-      <div class="comprom-unified secundario" id="prop-compUnif2">
-        <div class="comprom-unified-header">📊 Comprometimento MRV <span style="background:var(--roxo);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">Média PSB</span> <span style="font-size:10px;color:#aaa;font-weight:400;margin-left:4px;">versão secundária · Teto: 5%</span></div>
-        <div class="comprom-unified-body">
-          <div class="comprom-pct-side"><div class="comprom-pct-label">% da renda (média PSB)</div><div class="comprom-pct-val" id="prop-res-pct2">—</div></div>
-          <div class="comprom-status-side" id="prop-compStatus2"><div class="comprom-status-icon" id="prop-compIcon2">—</div><div class="comprom-status-text" id="prop-compText2">—</div></div>
-        </div>
-      </div>
-
-      <div class="progress-wrap"><div class="progress-bar" id="prop-progressBar2"></div></div>
-      <div style="position:relative; height:18px; margin-bottom:14px; font-size:11px; color:#aaa; font-weight:600;">
-       <span style="position:absolute; left:0;">0%</span>
-       <span style="position:absolute; left:50%; transform:translateX(-50%);">3,5% ✔</span>
-       <span style="position:absolute; left:71.43%; transform:translateX(-50%);">5% ⚠</span>
-       <span style="position:absolute; right:0;">7%+</span>
-     </div>
-      
-      <div class="excedente-box" id="prop-excedenteBox2" style="display:none;"><div class="excedente-titulo" id="prop-excedenteTitulo2">—</div><div id="prop-excedenteConteudo2"></div></div>
-      
-      <div class="aviso-estimativa">⚠️ <strong>Projeção/simulação estimada.</strong> Esta análise é baseada na Simulação de Proposta MRV e representa apenas uma pré-análise de viabilidade. Os valores reais dependem da aprovação formal pelo financeiro MRV e pela Caixa Econômica Federal.</div>
-      
-      <div class="botoes">
-        <button class="btn btn-laranja" onclick="copiarResultadoProposta()">📋 Copiar Resultado</button>
-        <button class="btn btn-roxo" onclick="prepararImpressao()">🖨️ Imprimir</button>
-      </div>
-
-    </div>
-  </div><!-- /abaProposta -->
-
-  <!-- =========================================================================
-       6. ABA 2: COMPROMETIMENTO DE RENDA (CONTRATO)
-  ========================================================================== -->
-  <div id="abaContrato" style="display:none;">
-    
-    <!-- Áreas de Upload (Contrato e Caixa) -->
-    <div class="uploads-grid">
-      <div class="upload-card mrv" id="uploadCardMRV" onclick="document.getElementById('pdfInput').click()">
-        <div class="upload-icon">📄</div>
-        <h2>1. Contrato MRV / Emcash</h2>
-        <p>Suporte a contratos OIC · BPM · Emcash</p>
-        <p style="font-size:10px;color:#aaa;margin-top:4px;">Detecção automática do tipo de contrato</p>
-        <button class="btn-upload mrv" onclick="event.stopPropagation();document.getElementById('pdfInput').click()">📎 Selecionar PDF</button>
-        <input type="file" id="pdfInput" accept=".pdf" onchange="lerPDFContrato(this)">
-        <div class="upload-status-badge" id="badgeMRV">✅ Contrato lido!</div>
-      </div>
-      
-      <div class="upload-card caixa" id="uploadCardCaixa" onclick="document.getElementById('pdfCaixaInput').click()">
-        <div class="upload-icon">🏦</div>
-        <h2>2. Simulação Caixa</h2>
-        <p>Avaliação, renda, parcela e teto de faixa</p>
-        <button class="btn-upload caixa" onclick="event.stopPropagation();document.getElementById('pdfCaixaInput').click()">📎 Selecionar PDF</button>
-        <input type="file" id="pdfCaixaInput" accept=".pdf" onchange="lerPDFCaixa(this)">
-        <div class="upload-status-badge" id="badgeCaixa">✅ Simulação lida!</div>
-
-        <!-- Aviso Importante -->
-        <div onclick="event.stopPropagation()" style="margin-top:12px;background:#FFFDE7;border:1.5px solid #F9A825;border-radius:8px;padding:9px 13px;display:flex;align-items:flex-start;gap:8px;text-align:left;cursor:default;">
-          <span style="font-size:16px;flex-shrink:0;margin-top:1px;">⚠️</span>
-          <span style="font-size:11px;color:#5D4037;font-weight:600;line-height:1.5;">
-            <strong style="color:#E65100;">Atenção:</strong> Sempre utilizar as informações atualizadas da proposta do cliente.
-          </span>
-        </div>
+      <div class="param-row" style="border-top:1px dashed #ddd;padding-top:6px;margin-top:2px;">
+        <span>🚨 Alerta Interm. G1:</span>
+        <strong style="color:var(--vermelho);">≥ 50% da Renda</strong>
       </div>
     </div>
-    
-    <div class="status-bar" id="statusBar">
-      <div class="spinner" id="spinner"></div>
-      <span id="statusMsg">Lendo...</span>
+
+    <div class="param-note">
+      Alterar o percentual recalcula imediatamente as simulações abertas na tela.
+    </div>
+  </aside>
+
+  <!-- CONTÊINER CENTRAL -->
+  <div class="container">
+
+    <!-- NAVEGAÇÃO DE ABAS -->
+    <div class="tab-switch">
+      <button class="tab-btn active-proposta" id="tabBtnProposta" onclick="trocarAba('proposta')">
+        📋 Simulação de Proposta
+        <span class="tab-badge">Pré-análise MRV</span>
+      </button>
+      <button class="tab-btn" id="tabBtnContrato" onclick="trocarAba('contrato')">
+        📄 Comprometimento de Renda
+        <span class="tab-badge">Contrato + Caixa</span>
+      </button>
     </div>
 
-    <!-- Formulário Contrato -->
-    <form id="formCalc" onsubmit="calcular(event)">
+    <!-- =========================================================================
+         ABA 1: SIMULAÇÃO DE PROPOSTA
+    ========================================================================== -->
+    <div id="abaProposta">
+      
+      <div class="status-bar" id="statusBarProp">
+        <div class="spinner" id="spinnerProp"></div>
+        <span id="statusMsgProp">Lendo...</span>
+      </div>
 
-      <!-- Dados do Cliente -->
-      <div class="card">
-        <div class="card-title verde">👤 Dados do Cliente</div>
-        <div class="grid">
-          <div class="field">
-            <label>Nome do Cliente <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
-            <input type="text" id="nomeCliente" placeholder="Lido automaticamente do contrato..." readonly>
-            <small style="color:#aaa;font-size:10px;">OIC: campo COMPRADOR(A) · BPM: campo 1º Cliente · Emcash: campo Nome/Nome Empresarial</small>
-          </div>
-          <div class="field">
-            <label>CPF <span class="tag auto">OIC/BPM</span><span class="tag emcash">EMCASH</span></label>
-            <input type="text" id="cpf" placeholder="Lido automaticamente do contrato..." readonly>
-            <small style="color:#aaa;font-size:10px;">OIC/BPM: campo CPF · Emcash: campo CPF/CNPJ</small>
-          </div>
-          <div class="field">
-            <label>Correspondente / Gerente / Corretor Responsável <span class="tag manual">MANUAL</span></label>
-            <input type="text" id="gerente" placeholder="Nome do gerente ou corretor" class="manual-field" required>
-          </div>
-          <div class="field">
-            <label>Número do Contrato <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
-            <input type="text" id="numContrato" placeholder="Lido automaticamente do contrato..." readonly>
-            <small style="color:#aaa;font-size:10px;">OIC: UUID · BPM: CONT-XXXXXX-XXXXXX · Emcash: número do contrato</small>
-          </div>
+      <!-- Área de Upload (Proposta) -->
+      <div class="uploads-grid" style="grid-template-columns:1fr;">
+        <div class="upload-card proposta" id="uploadCardProp" onclick="document.getElementById('pdfPropostaInput').click()">
+          <div class="upload-icon">📋</div>
+          <h2>Simulação de Proposta MRV</h2>
+          <p>Empreendimento, unidade, resumo financeiro e fluxo mês a mês</p>
+          <button class="btn-upload proposta" onclick="event.stopPropagation();document.getElementById('pdfPropostaInput').click()">📎 Selecionar PDF da Proposta</button>
+          <input type="file" id="pdfPropostaInput" accept=".pdf" onchange="lerPDFProposta(this)">
+          <div class="upload-status-badge" id="badgeProp">✅ Proposta lida!</div>
         </div>
       </div>
 
-      <!-- Dados do Imóvel -->
-      <div class="card">
-        <div class="card-title laranja">🏠 Dados do Imóvel</div>
-        <div class="grid">
-          <div class="field">
-            <label>Empreendimento <span class="tag auto">OIC/BPM</span><span class="tag emcash">EMCASH</span></label>
-            <input type="text" id="empreendimento" placeholder="Lido automaticamente do contrato..." readonly>
-            <small style="color:#aaa;font-size:10px;">OIC/BPM: campo Produto · Emcash: descrição do imóvel (endereço)</small>
-          </div>
-          <div class="field">
-            <label>Bloco / Unidade <span class="tag auto">OIC/BPM</span><span class="tag emcash">EMCASH</span></label>
-            <input type="text" id="modulo" placeholder="Lido automaticamente do contrato..." readonly>
-            <small style="color:#aaa;font-size:10px;">OIC/BPM: extraído do campo Produto · Emcash: Apto/Bloco da descrição</small>
-          </div>
-          <div class="field">
-            <label>Valor do Imóvel (R$) <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
-            <input type="text" id="valorImovel" placeholder="Lido automaticamente do contrato..." readonly>
-            <small style="color:#aaa;font-size:10px;">OIC: PREÇO DO IMÓVEL · BPM: item 3.2 · Emcash: Valor Total do imóvel</small>
-          </div>
-          <div class="field">
-            <label>Data de Entrega Prevista <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
-            <input type="text" id="dataEntrega" placeholder="Lido automaticamente ou DD/MM/AAAA" oninput="mascaraData(this)" maxlength="10">
-            <small style="color:#aaa;font-size:10px;">OIC/BPM: preenchido automaticamente (item 5.1) · Emcash: digite manualmente no formato DD/MM/AAAA</small>
-          </div>
-          <div class="field">
-            <label>Valor de Avaliação (R$) <span class="tag auto-caixa">CAIXA</span></label>
-            <input type="text" id="valorAvaliacao" placeholder="Lido da simulação Caixa ou digite manualmente" oninput="mascaraMoedaGen(this)">
-            <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo Valor de Avaliação</small>
-          </div>
-          <div class="field">
-            <label>Teto Faixa do Cliente (R$) <span class="tag auto-caixa">CAIXA</span></label>
-            <input type="text" id="tetoFaixa" placeholder="Calculado pela renda...">
-            <small style="color:#aaa;font-size:10px;">Calculado automaticamente pela renda: Faixa 1/2 ≤ R$5.000 → R$275k · Faixa 3 → R$400k</small>
+      <!-- Formulário Proposta -->
+      <form id="formProposta" onsubmit="calcularProposta(event)">
+        
+        <!-- Dados do Imóvel -->
+        <div class="card">
+          <div class="card-title laranja">🏠 Dados do Imóvel</div>
+          <div class="grid">
+            <div class="field full"><label>Empreendimento <span class="tag auto-prop">AUTO</span></label><input type="text" id="prop-empreendimento" placeholder="Lido da proposta..." readonly></div>
+            <div class="field full"><label>Unidade <span class="tag auto-prop">AUTO</span></label><input type="text" id="prop-unidade" placeholder="Lido da proposta..." readonly></div>
+            <div class="field"><label>Valor do Imóvel (R$) <span class="tag auto-prop">AUTO</span></label><input type="text" id="prop-valorImovel" placeholder="Lido da proposta..." readonly></div>
+            <div class="field"><label>Valor da Proposta (R$) <span class="tag auto-prop">AUTO</span></label><input type="text" id="prop-valorProposta" placeholder="Lido da proposta..." readonly></div>
           </div>
         </div>
-      </div>
 
-      <!-- Dados Financeiros -->
-      <div class="card">
-        <div class="card-title roxo">💰 Dados Financeiros</div>
-        <div class="grid">
-          <div class="field">
-            <label>Valor Financiado (R$) <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
-            <input type="text" id="valorFinanciado" placeholder="Lido automaticamente do contrato..." readonly>
-            <small style="color:#aaa;font-size:10px;">OIC/BPM: item 4.1.4 · Emcash: Valor Líquido do Principal</small>
-          </div>
-          <div class="field">
-            <label>Saldo Carteira MRV (R$) <span class="tag oic">OIC</span><span class="tag bpm">BPM</span></label>
-            <input type="text" id="saldoCarteira" placeholder="Lido automaticamente do contrato..." readonly>
-            <small style="color:#aaa;font-size:10px;">OIC/BPM: item 4.1.2 · Emcash: não se aplica</small>
-          </div>
-          <div class="field">
-            <label>Parcela MRV / Emcash pós-entrega (R$) <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
-            <input type="text" id="parcelaMRV" placeholder="Lido automaticamente do contrato..." readonly>
-            <small style="color:#aaa;font-size:10px;">OIC/BPM: 1ª parcela após entrega · Emcash: Valor da Primeira Parcela (Principal + Juros)</small>
-          </div>
-          <div class="field">
-            <label>Quantidade de Parcelas <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
-            <input type="text" id="qtdParcelas" placeholder="Lido automaticamente do contrato..." readonly>
-            <small style="color:#aaa;font-size:10px;">OIC/BPM: maior número de parcela encontrado · Emcash: campo Quantidade de Parcelas</small>
-          </div>
-          <div class="field">
-            <label>Parcela Caixa (R$) <span class="tag auto-caixa">CAIXA</span></label>
-            <input type="text" id="parcelaCaixa" placeholder="R$ 0,00" oninput="mascaraMoedaGen(this)">
-            <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo 1ª Prestação ou Prestação mensal</small>
-          </div>
-          <div class="field">
-            <label>Renda do Cliente (R$) <span class="tag auto-caixa">CAIXA</span></label>
-            <input type="text" id="renda" placeholder="R$ 0,00" oninput="mascaraMoedaGen(this)">
-            <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: campo Renda Bruta / Renda Individual</small>
-          </div>
-
-          <div class="faixa-info-box" id="faixaInfoBox">
-            <div class="faixa-titulo">🏷️ Enquadramento de Faixa</div>
-            <div class="faixa-detalhe" id="faixaDetalhe">—</div>
-          </div>
-
-          <!-- Componentes Visuais (PSA/PSB, Percentual, Plano de Pagamento) -->
-          <div class="psa-psb-grid" id="psaPsbWrap" style="display:none;">
-            <div class="psa-box">
-              <div class="psa-psb-title">📅 PSA — Pró-Soluto A (Pré-entrega)</div>
-              <div class="psa-psb-row"><span class="psa-psb-label">Qtd. parcelas</span><span class="psa-psb-val" id="psaQtd">—</span></div>
-              <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="psaSaldo">—</span></div>
-            </div>
-            <div class="psb-box">
-              <div class="psa-psb-title">🏠 PSB — Pró-Soluto B (Pós-entrega)</div>
-              <div class="psa-psb-row"><span class="psa-psb-label">Qtd. parcelas</span><span class="psa-psb-val" id="psbQtd">—</span></div>
-              <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="psbSaldo">—</span></div>
+        <!-- Resumo Financeiro Proposta -->
+        <div class="card">
+          <div class="card-title laranja">💰 Resumo Financeiro da Proposta</div>
+          <div class="grid">
+            <div class="resumo-proposta-grid" id="resumoPropostaGrid" style="display:none;">
+              <div class="resumo-item destaque"><label>Valor Financiado</label><div class="rv" id="rp-financiado">—</div></div>
+              <div class="resumo-item"><label>Valor do Sinal</label><div class="rv" id="rp-sinal">—</div></div>
+              <div class="resumo-item"><label>Carteira MRV</label><div class="rv" id="rp-carteira">—</div></div>
+              <div class="resumo-item"><label>Cupom</label><div class="rv" id="rp-cupom">—</div></div>
+              <div class="resumo-item"><label>FGTS</label><div class="rv" id="rp-fgts">—</div></div>
+              <div class="resumo-item"><label>Subsídio</label><div class="rv" id="rp-subsidio">—</div></div>
+              <div class="resumo-item bom-pag"><label>🏆 Bom Pagador</label><div class="rv" id="rp-bompag">—</div></div>
+              <div class="resumo-item"><label>Parcelas Carteira</label><div class="rv" id="rp-qtdCarteira">—</div></div>
             </div>
           </div>
+        </div>
 
-          <div class="financiado-wrap" id="financiadoWrap">
-            <div class="financiado-info">
-              <span>% do imóvel financiado pelo cliente</span>
-              <strong id="pctFinanciadoDisplay">—</strong>
+        <!-- Dados para Análise -->
+        <div class="card">
+          <div class="card-title laranja">📊 Dados para Análise de Comprometimento</div>
+          <div class="grid">
+            <div class="field">
+              <label>Data Prevista de Entrega <span class="tag manual">MANUAL</span></label>
+              <input type="text" id="prop-dataEntrega" placeholder="DD/MM/AAAA" class="manual-field" oninput="mascaraData(this)" maxlength="10" required>
             </div>
-            <div class="financiado-badge" id="financiadoBadge">—</div>
+            <div class="field">
+              <label>Renda do Cliente (R$) <span class="tag manual">MANUAL</span></label>
+              <input type="text" id="prop-renda" placeholder="Ex: R$ 5.000,00" class="manual-field" oninput="mascaraMoedaGen(this)" required>
+            </div>
+            
+            <div class="psa-psb-grid" id="prop-psaPsbWrap" style="display:none;">
+              <div class="psa-box">
+                <div class="psa-psb-title">📅 PSA — Pré-entrega (Mensais)</div>
+                <div class="psa-psb-row"><span class="psa-psb-label">Qtd. parcelas</span><span class="psa-psb-val" id="prop-psaQtd">—</span></div>
+                <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="prop-psaSaldo">—</span></div>
+              </div>
+              <div class="psb-box">
+                <div class="psa-psb-title">🏠 PSB — Pós-entrega (Mensais)</div>
+                <div class="psa-psb-row"><span class="psa-psb-label">Qtd. parcelas</span><span class="psa-psb-val" id="prop-psbQtd">—</span></div>
+                <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="prop-psbSaldo">—</span></div>
+                <div class="psa-psb-row"><span class="psa-psb-label">1ª Parcela PSB</span><span class="psa-psb-val" id="prop-psbPrimeira">—</span></div>
+                <div class="psa-psb-row"><span class="psa-psb-label">Média PSB</span><span class="psa-psb-val" id="prop-psbMedia">—</span></div>
+              </div>
+            </div>
+
+            <div class="fluxo-wrap" id="prop-fluxoWrap">
+              <div class="fluxo-header" onclick="toggleFluxo()">
+                <span>📅 Fluxo Mês a Mês</span>
+                <span class="fh-right" id="prop-fluxoCount">— parcelas</span>
+              </div>
+              <div class="fluxo-body" id="prop-fluxoBody">
+                <table class="fluxo-table">
+                  <thead><tr><th>#</th><th>Vencimento</th><th>Tipo</th><th>Valor</th><th>Fase</th></tr></thead>
+                  <tbody id="prop-fluxoTbody"></tbody>
+                </table>
+              </div>
+            </div>
+
           </div>
+        </div>
 
-          <div class="plano-wrap" id="planoWrap">
-            <div class="plano-header">📄 Plano de Pagamento</div>
-            <div class="plano-body" id="planoBody"></div>
+        <!-- Botões de Ação da Proposta -->
+        <div class="botoes">
+          <button type="submit" class="btn btn-laranja">📊 Calcular Comprometimento MRV</button>
+          <button type="button" class="btn btn-cinza" onclick="limparProposta()">🗑️ Limpar</button>
+        </div>
+
+      </form>
+
+      <!-- Resultados Proposta -->
+      <div class="resultado" id="resultadoProposta">
+        <div class="resultado-title laranja">📋 ANÁLISE DE COMPROMETIMENTO — SIMULAÇÃO DE PROPOSTA</div>
+        
+        <div class="res-grid">
+          <div class="res-item"><label>1ª Parcela PSB (Mensal)</label><div class="val" id="prop-res-primeira">—</div></div>
+          <div class="res-item"><label>Média das Parcelas PSB</label><div class="val" id="prop-res-media">—</div></div>
+          <div class="res-item destaque-verde"><label>Renda do Cliente</label><div class="val" id="prop-res-renda">—</div></div>
+          <div class="res-item"><label id="prop-label-teto">Teto MRV (5% da Renda)</label><div class="val" id="prop-res-teto">—</div></div>
+        </div>
+
+        <div class="psa-psb-resultado">
+          <div class="psa-res"><div class="pr-title">📅 PSA — Pré-entrega</div><div class="pr-val" id="prop-res-psa-saldo">—</div><div class="pr-sub" id="prop-res-psa-qtd">— parcelas</div></div>
+          <div class="psb-res"><div class="pr-title">🏠 PSB — Pós-entrega</div><div class="pr-val" id="prop-res-psb-saldo">—</div><div class="pr-sub" id="prop-res-psb-qtd">— parcelas</div></div>
+        </div>
+
+        <div class="comprom-unified" id="prop-compUnif1">
+          <div class="comprom-unified-header">📊 Comprometimento MRV <span style="background:var(--laranja);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">1ª Parcela PSB</span> <span id="prop-header-teto1" style="font-size:10px;color:#aaa;font-weight:400;margin-left:4px;">Teto: 5%</span></div>
+          <div class="comprom-unified-body">
+            <div class="comprom-pct-side"><div class="comprom-pct-label">% da renda comprometida</div><div class="comprom-pct-val" id="prop-res-pct1">—</div></div>
+            <div class="comprom-status-side" id="prop-compStatus1"><div class="comprom-status-icon" id="prop-compIcon1">—</div><div class="comprom-status-text" id="prop-compText1">—</div></div>
           </div>
+        </div>
 
+        <div class="progress-wrap"><div class="progress-bar" id="prop-progressBar1"></div></div>
+        <div class="progress-labels" id="prop-progressLabels1"><span>0%</span><span>3,5% ✔</span><span>5% ⚠</span><span>10%+</span></div>
+        
+        <div class="excedente-box" id="prop-excedenteBox1" style="display:none;"><div class="excedente-titulo" id="prop-excedenteTitulo1">—</div><div id="prop-excedenteConteudo1"></div></div>
+        
+        <div class="separador-calculo" id="prop-separadorMedia">📊 VERSÃO SECUNDÁRIA — Média das Parcelas PSB</div>
+        
+        <div class="comprom-unified secundario" id="prop-compUnif2">
+          <div class="comprom-unified-header">📊 Comprometimento MRV <span style="background:var(--roxo);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">Média PSB</span> <span id="prop-header-teto2" style="font-size:10px;color:#aaa;font-weight:400;margin-left:4px;">versão secundária · Teto: 5%</span></div>
+          <div class="comprom-unified-body">
+            <div class="comprom-pct-side"><div class="comprom-pct-label">% da renda (média PSB)</div><div class="comprom-pct-val" id="prop-res-pct2">—</div></div>
+            <div class="comprom-status-side" id="prop-compStatus2"><div class="comprom-status-icon" id="prop-compIcon2">—</div><div class="comprom-status-text" id="prop-compText2">—</div></div>
+          </div>
+        </div>
+
+        <div class="progress-wrap"><div class="progress-bar" id="prop-progressBar2"></div></div>
+        <div class="progress-labels" id="prop-progressLabels2"><span>0%</span><span>3,5% ✔</span><span>5% ⚠</span><span>10%+</span></div>
+        
+        <div class="excedente-box" id="prop-excedenteBox2" style="display:none;"><div class="excedente-titulo" id="prop-excedenteTitulo2">—</div><div id="prop-excedenteConteudo2"></div></div>
+        
+        <div class="aviso-estimativa">⚠️ <strong>Projeção/simulação estimada.</strong> Esta análise é baseada na Simulação de Proposta MRV e representa apenas uma pré-análise de viabilidade. Os valores reais dependem da aprovação formal pelo financeiro MRV e pela Caixa Econômica Federal.</div>
+        
+        <div class="botoes">
+          <button class="btn btn-laranja" onclick="copiarResultadoProposta()">📋 Copiar Resultado</button>
+          <button class="btn btn-roxo" onclick="prepararImpressao()">🖨️ Imprimir</button>
+        </div>
+
+      </div>
+    </div><!-- /abaProposta -->
+
+    <!-- =========================================================================
+         ABA 2: COMPROMETIMENTO DE RENDA (CONTRATO)
+    ========================================================================== -->
+    <div id="abaContrato" style="display:none;">
+      
+      <!-- Áreas de Upload (Contrato e Caixa) -->
+      <div class="uploads-grid">
+        <div class="upload-card mrv" id="uploadCardMRV" onclick="document.getElementById('pdfInput').click()">
+          <div class="upload-icon">📄</div>
+          <h2>1. Contrato MRV / Emcash</h2>
+          <p>Suporte a contratos OIC · BPM · Emcash</p>
+          <p style="font-size:10px;color:#aaa;margin-top:4px;">Detecção automática do tipo de contrato</p>
+          <button class="btn-upload mrv" onclick="event.stopPropagation();document.getElementById('pdfInput').click()">📎 Selecionar PDF</button>
+          <input type="file" id="pdfInput" accept=".pdf" onchange="lerPDFContrato(this)">
+          <div class="upload-status-badge" id="badgeMRV">✅ Contrato lido!</div>
+        </div>
+        
+        <div class="upload-card caixa" id="uploadCardCaixa" onclick="document.getElementById('pdfCaixaInput').click()">
+          <div class="upload-icon">🏦</div>
+          <h2>2. Simulação Caixa</h2>
+          <p>Avaliação, renda, parcela e teto de faixa</p>
+          <button class="btn-upload caixa" onclick="event.stopPropagation();document.getElementById('pdfCaixaInput').click()">📎 Selecionar PDF</button>
+          <input type="file" id="pdfCaixaInput" accept=".pdf" onchange="lerPDFCaixa(this)">
+          <div class="upload-status-badge" id="badgeCaixa">✅ Simulação lida!</div>
+
+          <div onclick="event.stopPropagation()" style="margin-top:12px;background:#FFFDE7;border:1.5px solid #F9A825;border-radius:8px;padding:9px 13px;display:flex;align-items:flex-start;gap:8px;text-align:left;cursor:default;">
+            <span style="font-size:16px;flex-shrink:0;margin-top:1px;">⚠️</span>
+            <span style="font-size:11px;color:#5D4037;font-weight:600;line-height:1.5;">
+              <strong style="color:#E65100;">Atenção:</strong> Sempre utilizar as informações atualizadas da proposta do cliente.
+            </span>
+          </div>
         </div>
       </div>
-
-      <!-- Botões de Ação do Contrato -->
-      <div class="botoes">
-        <button type="submit" class="btn btn-verde">📊 Calcular Comprometimento</button>
-        <button type="button" class="btn btn-cinza" onclick="limpar()">🗑️ Limpar</button>
-      </div>
-
-    </form>
-
-    <!-- Resultados Contrato -->
-    <div class="resultado" id="resultado">
-      <div class="resultado-title verde">📋 ANÁLISE DE COMPROMETIMENTO DE RENDA</div>
       
-      <div class="res-grid">
-        <div class="res-item"><label>Parcela Caixa</label><div class="val" id="res-caixa">—</div></div>
-        <div class="res-item"><label>Parcela MRV / Emcash pós-entrega</label><div class="val" id="res-mrv">—</div></div>
-        <div class="res-item destaque-verde"><label>Total de Parcelas</label><div class="val" id="res-total">—</div></div>
-        <div class="res-item"><label>Renda do Cliente</label><div class="val" id="res-renda">—</div></div>
+      <div class="status-bar" id="statusBar">
+        <div class="spinner" id="spinner"></div>
+        <span id="statusMsg">Lendo...</span>
       </div>
 
-      <div class="psa-psb-resultado" id="resPsaPsb" style="display:none;">
-        <div class="psa-res"><div class="pr-title">📅 PSA — Pré-entrega</div><div class="pr-val" id="res-psa-saldo">—</div><div class="pr-sub" id="res-psa-qtd">— parcelas</div></div>
-        <div class="psb-res"><div class="pr-title">🏠 PSB — Pós-entrega</div><div class="pr-val" id="res-psb-saldo">—</div><div class="pr-sub" id="res-psb-qtd">— parcelas</div></div>
-      </div>
+      <!-- Formulário Contrato -->
+      <form id="formCalc" onsubmit="calcular(event)">
 
-      <div class="comprom-unified" id="compUnif1">
-        <div class="comprom-unified-header">📊 Comprometimento de Renda <span style="background:var(--azul);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">1ª Parcela PSB</span></div>
-        <div class="comprom-unified-body">
-          <div class="comprom-pct-side"><div class="comprom-pct-label">Comprometimento atual</div><div class="comprom-pct-val" id="res-pct">—</div></div>
-          <div class="comprom-status-side" id="compStatus1"><div class="comprom-status-icon" id="compIcon1">—</div><div class="comprom-status-text" id="compText1">—</div></div>
+        <!-- Dados do Cliente -->
+        <div class="card">
+          <div class="card-title verde">👤 Dados do Cliente</div>
+          <div class="grid">
+            <div class="field">
+              <label>Nome do Cliente <span class="tag auto">OIC/BPM</span><span class="tag emcash">EMCASH</span></label>
+              <input type="text" id="nomeCliente" placeholder="Lido automaticamente do contrato..." readonly>
+              <small style="color:#aaa;font-size:10px;">OIC: COMPRADOR(A) · BPM: 1º Cliente · Emcash: Nome Empresarial</small>
+            </div>
+            <div class="field">
+              <label>CPF <span class="tag auto">OIC/BPM</span><span class="tag emcash">EMCASH</span></label>
+              <input type="text" id="cpf" placeholder="Lido automaticamente do contrato..." readonly>
+              <small style="color:#aaa;font-size:10px;">OIC/BPM: campo CPF · Emcash: campo CPF/CNPJ</small>
+            </div>
+            <div class="field">
+              <label>Correspondente / Gerente / Corretor Responsável <span class="tag manual">MANUAL</span></label>
+              <input type="text" id="gerente" placeholder="Nome do gerente ou corretor" class="manual-field" required>
+            </div>
+            <div class="field">
+              <label>Número do Contrato <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
+              <input type="text" id="numContrato" placeholder="Lido automaticamente do contrato..." readonly>
+              <small style="color:#aaa;font-size:10px;">OIC: UUID · BPM: CONT-XXXXXX · Emcash: nº contrato</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dados do Imóvel -->
+        <div class="card">
+          <div class="card-title laranja">🏠 Dados do Imóvel</div>
+          <div class="grid">
+            <div class="field">
+              <label>Empreendimento <span class="tag auto">OIC/BPM</span><span class="tag emcash">EMCASH</span></label>
+              <input type="text" id="empreendimento" placeholder="Lido automaticamente do contrato..." readonly>
+              <small style="color:#aaa;font-size:10px;">OIC/BPM: campo Produto · Emcash: descrição do imóvel</small>
+            </div>
+            <div class="field">
+              <label>Bloco / Unidade <span class="tag auto">OIC/BPM</span><span class="tag emcash">EMCASH</span></label>
+              <input type="text" id="modulo" placeholder="Lido automaticamente do contrato..." readonly>
+              <small style="color:#aaa;font-size:10px;">OIC/BPM: extraído do Produto · Emcash: Apto/Bloco</small>
+            </div>
+            <div class="field">
+              <label>Valor do Imóvel (R$) <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
+              <input type="text" id="valorImovel" placeholder="Lido automaticamente do contrato..." readonly>
+              <small style="color:#aaa;font-size:10px;">OIC: PREÇO DO IMÓVEL · BPM: item 3.2 · Emcash: Valor Total</small>
+            </div>
+            <div class="field">
+              <label>Data de Entrega Prevista <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
+              <input type="text" id="dataEntrega" placeholder="Lido automaticamente ou DD/MM/AAAA" oninput="mascaraData(this)" maxlength="10">
+              <small style="color:#aaa;font-size:10px;">OIC/BPM: item 5.1 · Emcash: digite manualmente DD/MM/AAAA</small>
+            </div>
+            <div class="field">
+              <label>Valor de Avaliação (R$) <span class="tag auto-caixa">CAIXA</span></label>
+              <input type="text" id="valorAvaliacao" placeholder="Lido da simulação Caixa ou digite manualmente" oninput="mascaraMoedaGen(this)">
+              <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: Valor de Avaliação</small>
+            </div>
+            <div class="field">
+              <label>Teto Faixa do Cliente (R$) <span class="tag auto-caixa">CAIXA</span></label>
+              <input type="text" id="tetoFaixa" placeholder="Calculado pela renda...">
+              <small style="color:#aaa;font-size:10px;">Faixa 1/2 ≤ R$5.000 → R$275k · Faixa 3 → R$400k</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dados Financeiros -->
+        <div class="card">
+          <div class="card-title roxo">💰 Dados Financeiros</div>
+          <div class="grid">
+            <div class="field">
+              <label>Valor Financiado (R$) <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
+              <input type="text" id="valorFinanciado" placeholder="Lido automaticamente do contrato..." readonly>
+              <small style="color:#aaa;font-size:10px;">OIC/BPM: item 4.1.4 · Emcash: Valor Líquido do Principal</small>
+            </div>
+            <div class="field">
+              <label>Saldo Carteira MRV (R$) <span class="tag oic">OIC</span><span class="tag bpm">BPM</span></label>
+              <input type="text" id="saldoCarteira" placeholder="Lido automaticamente do contrato..." readonly>
+              <small style="color:#aaa;font-size:10px;">OIC/BPM: item 4.1.2 · Emcash: não se aplica</small>
+            </div>
+            <div class="field">
+              <label>Parcela MRV / Emcash pós-entrega (R$) <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
+              <input type="text" id="parcelaMRV" placeholder="Lido automaticamente do contrato..." readonly>
+              <small style="color:#aaa;font-size:10px;">OIC/BPM: 1ª parcela pós-entrega · Emcash: 1ª Parcela</small>
+            </div>
+            <div class="field">
+              <label>Quantidade de Parcelas <span class="tag oic">OIC</span><span class="tag bpm">BPM</span><span class="tag emcash">EMCASH</span></label>
+              <input type="text" id="qtdParcelas" placeholder="Lido automaticamente do contrato..." readonly>
+              <small style="color:#aaa;font-size:10px;">OIC/BPM: maior parcela · Emcash: Quantidade de Parcelas</small>
+            </div>
+            <div class="field">
+              <label>Parcela Caixa (R$) <span class="tag auto-caixa">CAIXA</span></label>
+              <input type="text" id="parcelaCaixa" placeholder="R$ 0,00" oninput="mascaraMoedaGen(this); atualizarDestaquesPlano();">
+              <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: 1ª Prestação</small>
+            </div>
+            <div class="field">
+              <label>Renda do Cliente (R$) <span class="tag auto-caixa">CAIXA</span></label>
+              <input type="text" id="renda" placeholder="R$ 0,00" oninput="mascaraMoedaGen(this); atualizarDestaquesPlano();">
+              <small style="color:#aaa;font-size:10px;">Extraído da simulação Caixa: Renda Bruta / Familiar</small>
+            </div>
+
+            <div class="faixa-info-box" id="faixaInfoBox">
+              <div class="faixa-titulo">🏷️ Enquadramento de Faixa</div>
+              <div class="faixa-detalhe" id="faixaDetalhe">—</div>
+            </div>
+
+            <!-- Componentes Visuais (PSA/PSB, Percentual, Plano de Pagamento) -->
+            <div class="psa-psb-grid" id="psaPsbWrap" style="display:none;">
+              <div class="psa-box">
+                <div class="psa-psb-title">📅 PSA — Pró-Soluto A (Pré-entrega)</div>
+                <div class="psa-psb-row"><span class="psa-psb-label">Qtd. parcelas</span><span class="psa-psb-val" id="psaQtd">—</span></div>
+                <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="psaSaldo">—</span></div>
+              </div>
+              <div class="psb-box">
+                <div class="psa-psb-title">🏠 PSB — Pró-Soluto B (Pós-entrega)</div>
+                <div class="psa-psb-row"><span class="psa-psb-label">Qtd. parcelas</span><span class="psa-psb-val" id="psbQtd">—</span></div>
+                <div class="psa-psb-row"><span class="psa-psb-label">Saldo total</span><span class="psa-psb-val" id="psbSaldo">—</span></div>
+              </div>
+            </div>
+
+            <div class="financiado-wrap" id="financiadoWrap">
+              <div class="financiado-info">
+                <span>% do imóvel financiado pelo cliente</span>
+                <strong id="pctFinanciadoDisplay">—</strong>
+              </div>
+              <div class="financiado-badge" id="financiadoBadge">—</div>
+            </div>
+
+            <div class="plano-wrap" id="planoWrap">
+              <div class="plano-header">📄 Plano de Pagamento</div>
+              <div class="plano-body" id="planoBody"></div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Botões de Ação do Contrato -->
+        <div class="botoes">
+          <button type="submit" class="btn btn-verde">📊 Calcular Comprometimento</button>
+          <button type="button" class="btn btn-cinza" onclick="limpar()">🗑️ Limpar</button>
+        </div>
+
+      </form>
+
+      <!-- Resultados Contrato -->
+      <div class="resultado" id="resultado">
+        <div class="resultado-title verde">📋 ANÁLISE DE COMPROMETIMENTO DE RENDA</div>
+        
+        <div class="res-grid">
+          <div class="res-item"><label>Parcela Caixa</label><div class="val" id="res-caixa">—</div></div>
+          <div class="res-item"><label>Parcela MRV / Emcash pós-entrega</label><div class="val" id="res-mrv">—</div></div>
+          <div class="res-item destaque-verde"><label>Total de Parcelas</label><div class="val" id="res-total">—</div></div>
+          <div class="res-item"><label>Renda do Cliente</label><div class="val" id="res-renda">—</div></div>
+        </div>
+
+        <div class="psa-psb-resultado" id="resPsaPsb" style="display:none;">
+          <div class="psa-res"><div class="pr-title">📅 PSA — Pré-entrega</div><div class="pr-val" id="res-psa-saldo">—</div><div class="pr-sub" id="res-psa-qtd">— parcelas</div></div>
+          <div class="psb-res"><div class="pr-title">🏠 PSB — Pós-entrega</div><div class="pr-val" id="res-psb-saldo">—</div><div class="pr-sub" id="res-psb-qtd">— parcelas</div></div>
+        </div>
+
+        <div class="comprom-unified" id="compUnif1">
+          <div class="comprom-unified-header">
+            📊 Comprometimento de Renda 
+            <span style="background:var(--azul);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">1ª Parcela PSB</span>
+            <span id="headerTetoContrato1" style="font-size:10px;color:#666;margin-left:auto;">Teto Regional: 35% (Caixa 30% + MRV 5%)</span>
+          </div>
+          <div class="comprom-unified-body">
+            <div class="comprom-pct-side"><div class="comprom-pct-label">Comprometimento mensal</div><div class="comprom-pct-val" id="res-pct">—</div></div>
+            <div class="comprom-status-side" id="compStatus1">
+              <div class="comprom-status-icon" id="compIcon1">—</div>
+              <div class="comprom-status-text" id="compText1">—</div>
+              <div class="comprom-status-sub" id="compSub1" style="display:none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+        <div id="progressLabelsContrato1" style="position:relative; height:18px; margin-bottom:14px; font-size:11px; color:#aaa; font-weight:600;">
+          <span style="position:absolute; left:0;">0%</span>
+          <span id="labelMeioBarra1" style="position:absolute; left:50%; transform:translateX(-50%);">35% ✔</span>
+          <span id="labelFimBarra1" style="position:absolute; right:0;">70%+</span>
+        </div>
+        
+        <!-- Aviso Dinâmico de Avaliação Individual -->
+        <div id="msgAvaliacao1" style="display:none; background:#FFFDE7; border:1.5px solid var(--amarelo); padding:9px 13px; font-size:12px; color:#5D4037; border-radius:6px; margin-bottom:14px;">
+          ⚠️ <strong>ATENÇÃO:</strong> O caso deve ser avaliado individualmente para a decisão de manter o contrato ou refazer a venda.
+        </div>
+
+        <!-- NOVO: BANNER DE ALERTA DE INTERMEDIÁRIA GRUPO 1 (OPÇÃO 1 + SOMA DO MÊS) -->
+        <div class="interm-alert-banner" id="intermAlertBanner">
+          <div class="interm-alert-header">
+            <span>🚨 ALERTA DE PICO MENSAL — INTERMEDIÁRIA GRUPO 1 (≥ 50% DA RENDA)</span>
+            <span id="intermAlertCount" style="background:rgba(0,0,0,0.2);padding:2px 8px;border-radius:4px;font-size:11px;">—</span>
+          </div>
+          <div class="interm-alert-body">
+            <div class="interm-alert-intro" id="intermAlertIntro">
+              No mês de vencimento da intermediária, o cliente acumula a <strong>Parcela da Intermediária + Parcela Caixa + Parcela MRV do mês</strong>. Veja abaixo o impacto total sobre a renda:
+            </div>
+            <div id="intermAlertList"></div>
+          </div>
+        </div>
+        
+        <div class="separador-calculo" id="separadorMedia" style="display:none;">📊 VERSÃO SECUNDÁRIA — Média das Parcelas PSB</div>
+        
+        <div class="comprom-unified secundario" id="compUnif2" style="display:none;">
+          <div class="comprom-unified-header">📊 Comprometimento de Renda <span style="background:var(--roxo);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">Média PSB</span> <span style="font-size:10px;color:#aaa;font-weight:400;">— versão secundária</span></div>
+          <div class="comprom-unified-body">
+            <div class="comprom-pct-side"><div class="comprom-pct-label">Comprometimento (média)</div><div class="comprom-pct-val" id="res-pct-media">—</div></div>
+            <div class="comprom-status-side" id="compStatus2">
+              <div class="comprom-status-icon" id="compIcon2">—</div>
+              <div class="comprom-status-text" id="compText2">—</div>
+              <div class="comprom-status-sub" id="compSub2" style="display:none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="progress-wrap" id="progressWrapMedia" style="display:none;"><div class="progress-bar" id="progressBarMedia"></div></div>
+        <div id="progressLabelsMedia" style="display:none; position:relative; height:18px; margin-bottom:14px; font-size:11px; color:#aaa; font-weight:600;">
+          <span style="position:absolute; left:0;">0%</span>
+          <span id="labelMeioBarra2" style="position:absolute; left:50%; transform:translateX(-50%);">35% ✔</span>
+          <span id="labelFimBarra2" style="position:absolute; right:0;">70%+</span>
+        </div>
+        
+        <!-- Aviso Dinâmico de Avaliação Individual 2 -->
+        <div id="msgAvaliacao2" style="display:none; background:#FFFDE7; border:1.5px solid var(--amarelo); padding:9px 13px; font-size:12px; color:#5D4037; border-radius:6px; margin-bottom:14px;">
+          ⚠️ <strong>ATENÇÃO:</strong> O caso deve ser avaliado individualmente para a decisão de manter o contrato ou refazer a venda.
+        </div>
+
+        <div class="desconto-section" id="descontoSection" style="display:none;">
+          <div class="desconto-titulo" id="descontoTitulo">—</div>
+          <div id="descontoConteudo"></div>
+        </div>
+
+        <div class="botoes">
+          <button class="btn btn-roxo" onclick="prepararImpressao()">🖨️ Imprimir</button>
+          <button class="btn btn-laranja" onclick="copiarResultado()">📋 Copiar</button>
         </div>
       </div>
+    </div><!-- /abaContrato -->
 
-      <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
-      <div style="position:relative; height:18px; margin-bottom:14px; font-size:11px; color:#aaa; font-weight:600;">
-        <span style="position:absolute; left:0;">0%</span>
-        <span style="position:absolute; left:50%; transform:translateX(-50%);">35% ✔</span>
-        <span style="position:absolute; right:0;">70%+</span>
-      </div>
-      
-      <!-- Aviso Dinâmico de Avaliação Individual -->
-      <div id="msgAvaliacao1" style="display:none; background:#FFFDE7; border:1.5px solid var(--amarelo); padding:9px 13px; font-size:12px; color:#5D4037; border-radius:6px; margin-bottom:14px;">
-        ⚠️ <strong>ATENÇÃO:</strong> O caso deve ser avaliado individualmente para a decisão de manter o contrato ou refazer a venda.
-      </div>
-      
-      <div class="separador-calculo" id="separadorMedia" style="display:none;">📊 VERSÃO SECUNDÁRIA — Média das Parcelas PSB</div>
-      
-      <div class="comprom-unified secundario" id="compUnif2" style="display:none;">
-        <div class="comprom-unified-header">📊 Comprometimento de Renda <span style="background:var(--roxo);color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;">Média PSB</span> <span style="font-size:10px;color:#aaa;font-weight:400;">— versão secundária</span></div>
-        <div class="comprom-unified-body">
-          <div class="comprom-pct-side"><div class="comprom-pct-label">Comprometimento (média)</div><div class="comprom-pct-val" id="res-pct-media">—</div></div>
-          <div class="comprom-status-side" id="compStatus2"><div class="comprom-status-icon" id="compIcon2">—</div><div class="comprom-status-text" id="compText2">—</div></div>
-        </div>
-      </div>
-
-      <div class="progress-wrap" id="progressWrapMedia" style="display:none;"><div class="progress-bar" id="progressBarMedia"></div></div>
-      <div id="progressLabelsMedia" style="display:none; position:relative; height:18px; margin-bottom:14px; font-size:11px; color:#aaa; font-weight:600;">
-        <span style="position:absolute; left:0;">0%</span>
-        <span style="position:absolute; left:50%; transform:translateX(-50%);">35% ✔</span>
-        <span style="position:absolute; right:0;">70%+</span>
-      </div>
-      
-      <!-- Aviso Dinâmico de Avaliação Individual -->
-      <div id="msgAvaliacao2" style="display:none; background:#FFFDE7; border:1.5px solid var(--amarelo); padding:9px 13px; font-size:12px; color:#5D4037; border-radius:6px; margin-bottom:14px;">
-        ⚠️ <strong>ATENÇÃO:</strong> O caso deve ser avaliado individualmente para a decisão de manter o contrato ou refazer a venda.
-      </div>
-
-      <div class="desconto-section" id="descontoSection" style="display:none;">
-        <div class="desconto-titulo" id="descontoTitulo">—</div>
-        <div id="descontoConteudo"></div>
-      </div>
-
-      <div class="botoes">
-        <button class="btn btn-roxo" onclick="prepararImpressao()">🖨️ Imprimir</button>
-        <button class="btn btn-laranja" onclick="copiarResultado()">📋 Copiar</button>
-      </div>
-    </div>
-  </div><!-- /abaContrato -->
-
-</div><!-- /container -->
+  </div><!-- /container -->
+</div><!-- /app-layout -->
 
 <script>
-// =========================================================================
+  // =========================================================================
 //   CONFIGURAÇÕES INICIAIS
 // =========================================================================
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW não registrado:', err));
-  });
-}
 
 // =========================================================================
 //   1. ESTADO GLOBAL DA APLICAÇÃO (APP STATE)
 // =========================================================================
 const AppState = {
+  // Parâmetros Regionais Dinâmicos
+  tetoTotalPct: 35,     // Padrão 35%
+  tetoCaixaPct: 30,     // Fixo 30%
+  tetoMrvPct: 5,        // Calculado: tetoTotalPct - 30%
+  intermCriticasG1: [], // Lista de intermediárias do Grupo 1 >= 50% da renda
+
   tipoContrato: '',
   psaQtd: 0, psaSaldo: 0, psbQtd: 0, psbSaldo: 0,
   parcelasPSB: [], parcelasTodas: [],
@@ -1017,6 +1334,49 @@ const AppState = {
   propPsaQtd: 0, propPsaSaldo: 0, propPsbQtd: 0, propPsbSaldo: 0,
   propPsbPrimeira: 0, propPsbMedia: 0, propDataEntregaISO: null
 };
+
+// =========================================================================
+//   1.1 CONTROLE DE PARÂMETROS REGIONAIS (SIDEBAR OPÇÃO B)
+// =========================================================================
+function definirTetoTotal(valor) {
+  atualizarTetoPorInput(valor);
+}
+
+function atualizarTetoPorInput(val) {
+  let num = parseFloat(val);
+  if (isNaN(num) || num < 30.5) num = 30.5;
+  if (num > 80) num = 80;
+
+  AppState.tetoTotalPct = num;
+  AppState.tetoMrvPct = Math.max(0.5, +(num - AppState.tetoCaixaPct).toFixed(2));
+
+  // Sincroniza controles da Sidebar
+  const slider = document.getElementById('sliderTetoTotal');
+  const input = document.getElementById('inputTetoTotal');
+  if (slider && num <= 60) slider.value = num;
+  if (input && document.activeElement !== input) input.value = num;
+
+  // Atualiza botões de preset
+  document.querySelectorAll('.preset-btn').forEach(btn => {
+    const btnVal = parseFloat(btn.textContent);
+    btn.classList.toggle('active', btnVal === num);
+  });
+
+  // Atualiza textos de resumo na Sidebar
+  const tetoMrvFmt = AppState.tetoMrvPct.toFixed(1).replace('.', ',') + '%';
+  const tetoTotFmt = AppState.tetoTotalPct.toFixed(1).replace('.', ',');
+  const tetoAteFmt = (AppState.tetoTotalPct + 2).toFixed(1).replace('.', ',');
+  document.getElementById('sidebarTetoMRV').textContent = tetoMrvFmt;
+  document.getElementById('sidebarFaixaAtencao').textContent = `${tetoTotFmt}% a ${tetoAteFmt}%`;
+
+  // Recalcula automaticamente as telas caso já estejam abertas
+  if (document.getElementById('resultado').classList.contains('show')) {
+    calcular(new Event('submit'));
+  }
+  if (document.getElementById('resultadoProposta').classList.contains('show')) {
+    calcularProposta(new Event('submit'));
+  }
+}
 
 // =========================================================================
 //   2. EVENTOS DE ARRASTAR E SOLTAR (DRAG AND DROP)
@@ -1043,7 +1403,6 @@ function setupDragAndDrop(cardId, inputId, readFunction) {
   });
 }
 
-// Inicializa os eventos após o carregamento da página
 window.addEventListener('DOMContentLoaded', () => {
   setupDragAndDrop('uploadCardMRV', 'pdfInput', lerPDFContrato);
   setupDragAndDrop('uploadCardCaixa', 'pdfCaixaInput', lerPDFCaixa);
@@ -1086,7 +1445,6 @@ async function lerPDFContrato(input){
   const file = input.files[0];
   if(!file) return;
   
-  // Limite de segurança de 20 MB
   if(file.size > 20 * 1024 * 1024){
     alert('⚠️ Arquivo muito grande. O limite máximo permitido é 20 MB.');
     input.value = '';
@@ -1115,7 +1473,7 @@ async function lerPDFCaixa(input){
   if(!file) return;
   
   if(file.size > 20 * 1024 * 1024){
-    alert('⚠️️ Arquivo muito grande. O limite máximo permitido é 20 MB.');
+    alert('⚠ Arquivo muito grande. O limite máximo permitido é 20 MB.');
     input.value = '';
     return;
   }
@@ -1165,7 +1523,6 @@ async function lerPDFProposta(input){
 // =========================================================================
 //   5. SANITIZAÇÃO E INJEÇÃO SEGURA DE DADOS
 // =========================================================================
-// Converte qualquer texto (incluindo HTML malicioso) em texto puro (textContent)
 function sanitizarTexto(texto) {
   if (!texto) return '';
   const div = document.createElement('div');
@@ -1176,7 +1533,7 @@ function sanitizarTexto(texto) {
 function setAuto(id, val){
   const el = document.getElementById(id);
   if(el){
-    el.value = val || '';
+    el.value = sanitizarTexto(val);
     el.classList.remove('auto-filled-caixa');
     el.classList.add('auto-filled');
   }
@@ -1185,7 +1542,7 @@ function setAuto(id, val){
 function setAutoCaixa(id, val){
   const el = document.getElementById(id);
   if(!el) return;
-  const valSanitizado = val || '';
+  const valSanitizado = sanitizarTexto(val);
   if(id === 'parcelaCaixa' || id === 'renda' || id === 'valorAvaliacao' || id === 'tetoFaixa'){
     const num = parseMoeda(valSanitizado);
     el.value = num > 0 ? formatMoeda(num) : valSanitizado;
@@ -1199,7 +1556,7 @@ function setAutoCaixa(id, val){
 function setAutoProp(id, val){
   const el = document.getElementById(id);
   if(el){
-    el.value = val || '';
+    el.value = sanitizarTexto(val);
     el.classList.add('auto-filled-prop');
   }
 }
@@ -1207,7 +1564,7 @@ function setAutoProp(id, val){
 function setAutoData(id, val) {
   const el = document.getElementById(id);
   if(el){ 
-    el.value = val || '';
+    el.value = sanitizarTexto(val); 
     el.classList.add('auto-filled'); 
   }
 }
@@ -1448,11 +1805,14 @@ function extrairDadosCaixa(texto){
 
     if(parcelaVal > 0) setAutoCaixa('parcelaCaixa', formatMoeda(parcelaVal));
 
+    // Atualiza o plano de pagamento caso o contrato já tenha sido carregado
+    renderizarPlano();
+
   }catch(e){console.error('Erro ao ler simulação Caixa:',e);}
 }
 
 // =========================================================================
-//   7. LÓGICA DE NEGÓCIO E CÁLCULOS FINANCEIROS
+//   7. LÓGICA DE NEGÓCIO, INTERMEDIÁRIAS E CÁLCULOS FINANCEIROS
 // =========================================================================
 function calcularPsaPsb(parcelas, dataEntrega, obraPronta){
   AppState.psaQtd = 0; AppState.psaSaldo = 0; AppState.psbQtd = 0; AppState.psbSaldo = 0; AppState.parcelasPSB = [];
@@ -1583,6 +1943,55 @@ function extrairParcelasBloco(bloco){
   return parcelas;
 }
 
+// Busca a parcela mensal da MRV no mesmo mês/ano de vencimento da intermediária
+function obterParcelaMrvNoMes(vencStr, mrvFallback) {
+  if (!vencStr || !/\d{2}\/\d{2}\/\d{4}/.test(vencStr)) return { valor: mrvFallback, origem: 'Parcela PSB base' };
+  const [, mes, ano] = vencStr.split('/').map(Number);
+  const encontrada = AppState.parcelasTodas.find(p => {
+    return (p.venc.getMonth() + 1) === mes && p.venc.getFullYear() === ano;
+  });
+  if (encontrada) {
+    return { valor: encontrada.valorNum, origem: `Mensal #${encontrada.num} (${encontrada.vencStr})` };
+  }
+  return { valor: mrvFallback, origem: 'Parcela MRV base' };
+}
+
+// Analisa todas as parcelas do Grupo 1 que atingem >= 50% da renda e calcula o pico do mês
+function analisarIntermediariasGrupo1(renda, caixa, mrvFallback) {
+  AppState.intermCriticasG1 = [];
+  if (!renda || renda <= 0) return [];
+
+  const grupo1 = AppState.intermediarias.find(g => g.grupo === 1);
+  if (!grupo1 || !grupo1.parcelas || !grupo1.parcelas.length) return [];
+
+  for (const p of grupo1.parcelas) {
+    const pctIntermRenda = (p.valor / renda) * 100;
+    if (pctIntermRenda >= 50) {
+      const mrvMesObj = obterParcelaMrvNoMes(p.venc, mrvFallback);
+      const totalMesPico = p.valor + caixa + mrvMesObj.valor;
+      const pctTotalMesPico = (totalMesPico / renda) * 100;
+
+      AppState.intermCriticasG1.push({
+        venc: p.venc,
+        valorInterm: p.valor,
+        pctIntermRenda,
+        valorCaixa: caixa,
+        valorMrvMes: mrvMesObj.valor,
+        origemMrvMes: mrvMesObj.origem,
+        totalMesPico,
+        pctTotalMesPico
+      });
+    }
+  }
+  return AppState.intermCriticasG1;
+}
+
+function atualizarDestaquesPlano() {
+  if (AppState.intermediarias.length > 0 || AppState.entrada.total > 0) {
+    renderizarPlano();
+  }
+}
+
 function renderizarPlano(){
   const wrap = document.getElementById('planoWrap'); const body = document.getElementById('planoBody');
   const temEntrada = AppState.entrada.total > 0 || AppState.entrada.parcelas.length > 0; 
@@ -1591,6 +2000,7 @@ function renderizarPlano(){
   
   wrap.style.display = 'block';
   const valorImovel = parseMoeda(document.getElementById('valorImovel').value);
+  const rendaAtual = parseMoeda(document.getElementById('renda').value);
   let html = '';
 
   if(temEntrada){
@@ -1633,7 +2043,12 @@ function renderizarPlano(){
       if(g.parcelas.length > 0){
         g.parcelas.forEach((p,i)=>{
           const u = i === g.parcelas.length - 1;
-          html += `<div class="grupo-row"><span style="font-size:11px;color:#aaa;min-width:16px;">${u?'└':'├'}</span><span class="gr-val">${formatMoeda(p.valor)}</span><span class="gr-venc">📅 ${sanitizarTexto(p.venc)}</span></div>`;
+          const pctRenda = rendaAtual > 0 ? (p.valor / rendaAtual) * 100 : 0;
+          const isCriticaG1 = (g.grupo === 1 && pctRenda >= 50);
+          const rowClass = isCriticaG1 ? 'grupo-row critica' : 'grupo-row';
+          const badgeCritica = isCriticaG1 ? `<span class="tag-interm-critica">🚨 ${pctRenda.toFixed(1).replace('.',',')}% da Renda</span>` : '';
+
+          html += `<div class="${rowClass}"><span style="font-size:11px;color:#aaa;min-width:16px;">${u?'└':'├'}</span><span class="gr-val">${formatMoeda(p.valor)}</span>${badgeCritica}<span class="gr-venc">📅 ${sanitizarTexto(p.venc)}</span></div>`;
         });
       } else {
         html += `<div style="font-size:12px;color:#999;font-style:italic;padding:4px 0;">Parcelas não identificadas individualmente.</div>`;
@@ -1647,24 +2062,45 @@ function renderizarPlano(){
 
 function toggleSecao(id){ const el = document.getElementById(id); if(el) el.classList.toggle('open'); }
 
-function aplicarStatusUnificado(num, pct){
+function aplicarStatusUnificado(num, pct, temIntermCriticaG1){
   const unif = document.getElementById('compUnif'+num);
   const icon = document.getElementById('compIcon'+num);
   const text = document.getElementById('compText'+num);
+  const sub = document.getElementById('compSub'+num);
   const bar = document.getElementById(num === 1 ? 'progressBar' : 'progressBarMedia');
   const msgBox = document.getElementById('msgAvaliacao'+num);
-  let classe, iconeTxt, textoTxt, barClasse;
+
+  const tetoMax = AppState.tetoTotalPct;
+  const tetoAtencao = tetoMax + 2;
+  const escalaFim = tetoMax * 2;
+
+  // Atualiza rótulos da régua de progresso
+  const lblMeio = document.getElementById('labelMeioBarra'+num);
+  const lblFim = document.getElementById('labelFimBarra'+num);
+  if (lblMeio) lblMeio.textContent = `${tetoMax.toString().replace('.',',')}% ✔`;
+  if (lblFim) lblFim.textContent = `${escalaFim.toString().replace('.',',')}%+`;
+
+  let classe, iconeTxt, textoTxt, barClasse, subTxt = '';
   
-  if(pct <= 35){ 
-    classe='aprovado'; iconeTxt='✔'; textoTxt='APROVADO'; barClasse='verde'; 
-    if(msgBox) msgBox.style.display = 'none';
+  if(pct <= tetoMax){
+    if(temIntermCriticaG1){
+      // Regra solicitada: se tiver intermediária G1 >= 50%, muda automaticamente para ATENÇÃO
+      classe='atencao'; iconeTxt='⚠️'; textoTxt='ATENÇÃO'; barClasse='amarelo';
+      subTxt='Alerta Intermediária G1';
+      if(msgBox) msgBox.style.display = 'block';
+    } else {
+      classe='aprovado'; iconeTxt='✔'; textoTxt='APROVADO'; barClasse='verde'; 
+      if(msgBox) msgBox.style.display = 'none';
+    }
   }
-  else if(pct <= 37){ 
+  else if(pct <= tetoAtencao){ 
     classe='atencao'; iconeTxt='⚠'; textoTxt='ATENÇÃO'; barClasse='amarelo'; 
+    if(temIntermCriticaG1) subTxt='Teto + Intermediária G1';
     if(msgBox) msgBox.style.display = 'block';
   }
   else { 
     classe='reprovado'; iconeTxt='✘'; textoTxt='REPROVADO'; barClasse='vermelho'; 
+    if(temIntermCriticaG1) subTxt='+ Alerta Interm. G1';
     if(msgBox) msgBox.style.display = 'none';
   }
   
@@ -1677,18 +2113,70 @@ function aplicarStatusUnificado(num, pct){
   } else {
     unif.className = 'comprom-unified '+classe;
   }
-  icon.textContent = iconeTxt; text.textContent = textoTxt;
+  icon.textContent = iconeTxt;
+  text.textContent = textoTxt;
+  if (sub) {
+    if (subTxt) { sub.textContent = subTxt; sub.style.display = 'block'; }
+    else { sub.style.display = 'none'; }
+  }
   
   if(bar){ 
     bar.className = 'progress-bar '+barClasse; 
-    // Fórmula ajustada para que 35% seja o centro (50% do espaço físico da barra)
-    bar.style.width = Math.min((pct / 70) * 100, 100) + '%'; 
+    bar.style.width = Math.min((pct / escalaFim) * 100, 100) + '%'; 
   }
   return textoTxt;
 }
 
+function renderizarBannerIntermediarias(criticas, renda) {
+  const banner = document.getElementById('intermAlertBanner');
+  const countEl = document.getElementById('intermAlertCount');
+  const listEl = document.getElementById('intermAlertList');
+
+  if (!criticas || criticas.length === 0) {
+    banner.style.display = 'none';
+    listEl.innerHTML = '';
+    return;
+  }
+
+  banner.style.display = 'block';
+  countEl.textContent = `${criticas.length} parcela(s) crítica(s)`;
+
+  listEl.innerHTML = criticas.map((c, idx) => `
+    <div class="interm-pico-card">
+      <div class="interm-pico-top">
+        <div class="interm-pico-date">
+          <span>📅 Vencimento: ${sanitizarTexto(c.venc)}</span>
+          <span style="font-size:11px;color:#777;font-weight:600;">(${sanitizarTexto(c.origemMrvMes)})</span>
+        </div>
+        <div class="interm-pico-badges">
+          <span class="badge-critico">Intermediária: ${c.pctIntermRenda.toFixed(1).replace('.',',')}% da Renda</span>
+          <span class="badge-soma-mes">Pico Total no Mês: ${c.pctTotalMesPico.toFixed(1).replace('.',',')}% da Renda</span>
+        </div>
+      </div>
+      <div class="interm-pico-grid">
+        <div class="interm-pico-col">
+          <span>1. Interm. Grupo 1</span>
+          <strong style="color:var(--vermelho);">${formatMoeda(c.valorInterm)}</strong>
+        </div>
+        <div class="interm-pico-col">
+          <span>2. Parcela Caixa</span>
+          <strong>${formatMoeda(c.valorCaixa)}</strong>
+        </div>
+        <div class="interm-pico-col">
+          <span>3. Parcela MRV Mês</span>
+          <strong>${formatMoeda(c.valorMrvMes)}</strong>
+        </div>
+        <div class="interm-pico-col total-mes">
+          <span>Soma do Mês vs Renda</span>
+          <strong>${formatMoeda(c.totalMesPico)} (${c.pctTotalMesPico.toFixed(1).replace('.',',')}%)</strong>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
 function calcular(e){
-  e.preventDefault();
+  if (e && e.preventDefault) e.preventDefault();
 
   const caixa = parseMoeda(document.getElementById('parcelaCaixa').value);
   const mrvStr = document.getElementById('parcelaMRV').value || '';
@@ -1705,9 +2193,23 @@ function calcular(e){
     alert('⚠️ Os seguintes campos estão vazios:\n\n' + erros.join('\n') + '\n\nSe os campos estiverem preenchidos, tente digitar os valores manualmente.');
     return;
   }
+
+  // Atualiza destaque visual no Plano de Pagamento com a renda atual
+  renderizarPlano();
+
+  // Analisa Intermediárias do Grupo 1 (>= 50% da renda) + Soma do Mês
+  const criticasG1 = analisarIntermediariasGrupo1(renda, caixa, mrv);
+  const temIntermCriticaG1 = criticasG1.length > 0;
+  renderizarBannerIntermediarias(criticasG1, renda);
   
   const total = caixa + mrv;
   const pct = (total / renda) * 100;
+
+  const tetoTotal = AppState.tetoTotalPct;
+  const tetoCaixa = AppState.tetoCaixaPct;
+  const tetoMRV = AppState.tetoMrvPct;
+
+  document.getElementById('headerTetoContrato1').textContent = `Teto Regional: ${tetoTotal.toString().replace('.',',')}% (Caixa 30% + MRV ${tetoMRV.toString().replace('.',',')}%)`;
   
   document.getElementById('res-caixa').textContent = formatMoeda(caixa);
   document.getElementById('res-mrv').textContent = formatMoeda(mrv);
@@ -1723,15 +2225,15 @@ function calcular(e){
     document.getElementById('resPsaPsb').style.display='grid';
   }
   
-  const statusTexto = aplicarStatusUnificado(1, pct);
-  let pctMedia = null; let statusMedia = '—';
+  aplicarStatusUnificado(1, pct, temIntermCriticaG1);
+  let pctMedia = null;
   const mrvMedia = (AppState.psbQtd > 0 && AppState.psbSaldo > 0) ? (AppState.psbSaldo / AppState.psbQtd) : 0;
   
   if(mrvMedia > 0){
     const totalMedia = caixa + mrvMedia;
     pctMedia = (totalMedia / renda) * 100;
     document.getElementById('res-pct-media').textContent = pctMedia.toFixed(2).replace('.',',')+' %';
-    statusMedia = aplicarStatusUnificado(2, pctMedia);
+    aplicarStatusUnificado(2, pctMedia, temIntermCriticaG1);
     document.getElementById('compUnif2').style.display = 'block';
     document.getElementById('progressWrapMedia').style.display = 'block';
     document.getElementById('progressLabelsMedia').style.display = 'block';
@@ -1752,9 +2254,8 @@ function calcular(e){
   const dc = document.getElementById('descontoConteudo');
   ds.style.display = 'block';
 
-  const TETO_TOTAL = 0.35, TETO_CAIXA = 0.30, TETO_MRV = 0.05;
-  const limiteAbsolutoMRV = renda * TETO_MRV;
-  const limiteAbsolutoCaixa = renda * TETO_CAIXA;
+  const limiteAbsolutoMRV = renda * (tetoMRV / 100);
+  const limiteAbsolutoCaixa = renda * (tetoCaixa / 100);
 
   const pctMRV = (mrv / renda) * 100;
   const pctCaixa = (caixa / renda) * 100;
@@ -1774,37 +2275,36 @@ function calcular(e){
   let qtdParcelasAtual = AppState.psbQtd || 0;
   if(mrvIdeal > 0 && AppState.psbSaldo > 0) qtdParcelasIdeal = Math.ceil(AppState.psbSaldo / mrvIdeal);
 
-  let descontoCobreNecessario = '—';
+  const tetoTotalStr = tetoTotal.toString().replace('.',',');
+  const tetoMrvStr = tetoMRV.toString().replace('.',',');
 
   if(pctFin !== null && pctFin >= 80){
     ds.className = 'desconto-section bloqueado';
     dt.innerHTML = '🔒 Desconto bloqueado — limite de financiamento atingido (80%)';
-    descontoCobreNecessario = 'Bloqueado';
     dc.innerHTML = `
       <div class="desconto-row"><span class="dr-label">% Financiado atual</span><span class="dr-val" style="color:#D32F2F">${pctFin.toFixed(2).replace('.',',')} %</span></div>
       <div class="desconto-row"><span class="dr-label">Limite máximo</span><span class="dr-val" style="color:#888">80,00 %</span></div>
       <div class="desconto-row"><span class="dr-label">Desconto disponível</span><span class="dr-val" style="color:#D32F2F">R$ 0,00</span></div>
       <div class="projecao-aviso">🔒 O cliente atingiu o limite máximo de financiamento (80%). Para viabilizar desconto, o cliente precisaria aumentar o valor de entrada.</div>`;
-  } else if(pct <= 35 && pctMRV <= 5){
+  } else if(pct <= tetoTotal && pctMRV <= tetoMRV){
     ds.className = 'desconto-section ok';
-    dt.innerHTML = '✔ Cliente enquadrado — dentro dos limites individuais';
-    descontoCobreNecessario = 'Não necessário';
+    dt.innerHTML = '✔ Cliente enquadrado nas parcelas mensais — dentro dos limites parametrizados';
     const margemMRV = limiteAbsolutoMRV - mrv;
     const margemCaixa = limiteAbsolutoCaixa - caixa;
     dc.innerHTML = `
-      <div class="desconto-row"><span class="dr-label">Comprometimento total</span><span class="dr-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} % <small style="font-size:11px;font-weight:400;color:#888">(limite: 35%)</small></span></div>
+      <div class="desconto-row"><span class="dr-label">Comprometimento total</span><span class="dr-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} % <small style="font-size:11px;font-weight:400;color:#888">(limite: ${tetoTotalStr}%)</small></span></div>
       <div class="desconto-row"><span class="dr-label">Comprometimento Caixa</span><span class="dr-val" style="color:var(--verde)">${pctCaixa.toFixed(2).replace('.',',')} % <small style="font-size:11px;font-weight:400;color:#888">(limite: 30%)</small></span></div>
-      <div class="desconto-row"><span class="dr-label">Comprometimento MRV/Carteira</span><span class="dr-val" style="color:var(--verde)">${pctMRV.toFixed(2).replace('.',',')} % <small style="font-size:11px;font-weight:400;color:#888">(limite: 5%)</small></span></div>
+      <div class="desconto-row"><span class="dr-label">Comprometimento MRV/Carteira</span><span class="dr-val" style="color:var(--verde)">${pctMRV.toFixed(2).replace('.',',')} % <small style="font-size:11px;font-weight:400;color:#888">(limite: ${tetoMrvStr}%)</small></span></div>
       <div class="desconto-row"><span class="dr-label">Margem disponível MRV</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(margemMRV)}</span></div>
       <div class="desconto-row"><span class="dr-label">Margem disponível Caixa</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(margemCaixa)}</span></div>
       ${descontoDisponivel > 0 ? `<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(descontoDisponivel)}</span></div>` : ''}
-      <div class="projecao-aviso">✅ Cliente dentro dos limites: MRV ≤ 5% e Caixa ≤ 30% da renda.${descontoDisponivel > 0 ? ' Há margem de desconto disponível caso necessário.' : ''}</div>`;
+      <div class="projecao-aviso">✅ Cliente dentro dos limites mensais: MRV ≤ ${tetoMrvStr}% e Caixa ≤ 30% da renda.${descontoDisponivel > 0 ? ' Há margem de desconto disponível caso necessário.' : ''}</div>`;
   } else {
     ds.className = 'desconto-section nok';
-    const mrvEstourado = pctMRV > 5;
+    const mrvEstourado = pctMRV > tetoMRV;
     const caixaEstourada = pctCaixa > 30;
     let tituloProblema = [];
-    if(mrvEstourado) tituloProblema.push('MRV/Carteira acima de 5%');
+    if(mrvEstourado) tituloProblema.push(`MRV/Carteira acima de ${tetoMrvStr}%`);
     if(caixaEstourada) tituloProblema.push('Caixa acima de 30%');
     dt.innerHTML = '⚠️ Desconto necessário — ' + tituloProblema.join(' · ');
 
@@ -1812,15 +2312,15 @@ function calcular(e){
     const iconePct = (val, lim) => val > lim ? '✘' : '✔';
 
     let html = `
-      <div class="desconto-row"><span class="dr-label">Comprometimento total atual</span><span class="dr-val" style="color:${corPct(pct,35)}">${pct.toFixed(2).replace('.',',')} % <small style="font-size:10px;color:#888">(limite: 35%)</small></span></div>
+      <div class="desconto-row"><span class="dr-label">Comprometimento total atual</span><span class="dr-val" style="color:${corPct(pct,tetoTotal)}">${pct.toFixed(2).replace('.',',')} % <small style="font-size:10px;color:#888">(limite: ${tetoTotalStr}%)</small></span></div>
       <div class="desconto-row"><span class="dr-label">${iconePct(pctCaixa,30)} Comprometimento Caixa</span><span class="dr-val" style="color:${corPct(pctCaixa,30)}">${pctCaixa.toFixed(2).replace('.',',')} % <small style="font-size:10px;color:#888">(limite: 30%)</small></span></div>
-      <div class="desconto-row"><span class="dr-label">${iconePct(pctMRV,5)} Comprometimento MRV/Carteira</span><span class="dr-val" style="color:${corPct(pctMRV,5)}">${pctMRV.toFixed(2).replace('.',',')} % <small style="font-size:10px;color:#888">(limite: 5%)</small></span></div>`;
+      <div class="desconto-row"><span class="dr-label">${iconePct(pctMRV,tetoMRV)} Comprometimento MRV/Carteira</span><span class="dr-val" style="color:${corPct(pctMRV,tetoMRV)}">${pctMRV.toFixed(2).replace('.',',')} % <small style="font-size:10px;color:#888">(limite: ${tetoMrvStr}%)</small></span></div>`;
 
     if(mrvEstourado){
       html += `
       <div style="height:1px;background:var(--cinza-borda);margin:8px 0;grid-column:1/-1;"></div>
       <div class="desconto-row"><span class="dr-label">Parcela MRV/Emcash atual</span><span class="dr-val" style="color:var(--vermelho)">${formatMoeda(mrv)}</span></div>
-      <div class="desconto-row"><span class="dr-label">Parcela MRV ideal (≤ 5% da renda)</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(mrvIdeal)}</span></div>
+      <div class="desconto-row"><span class="dr-label">Parcela MRV ideal (≤ ${tetoMrvStr}% da renda)</span><span class="dr-val" style="color:var(--verde)">${formatMoeda(mrvIdeal)}</span></div>
       <div class="desconto-row"><span class="dr-label">Redução necessária por parcela</span><span class="dr-val" style="color:var(--laranja)">${formatMoeda(reducaoNecessaria)}</span></div>`;
       if(AppState.parcelasPSB.length > 0){
         html += `<div class="desconto-row"><span class="dr-label">Parcelas PSB atuais</span><span class="dr-val" style="color:var(--roxo)">${qtdParcelasAtual} parcelas</span></div>`;
@@ -1832,7 +2332,6 @@ function calcular(e){
         html += `<div class="desconto-row"><span class="dr-label">💡 Desconto estimado no PSB</span><span class="dr-val" style="color:var(--laranja);font-size:17px;">${formatMoeda(descontoEstimadoPSB)}</span></div>`;
         if(descontoDisponivel !== null){
           const coberto = descontoEstimadoPSB <= descontoDisponivel;
-          descontoCobreNecessario = coberto ? 'Sim' : 'Não';
           html += `<div class="desconto-row"><span class="dr-label">Desconto máximo disponível (até 80%)</span><span class="dr-val" style="color:${coberto ? 'var(--verde)' : 'var(--vermelho)'}">${formatMoeda(descontoDisponivel)}</span></div>
                    <div class="desconto-row"><span class="dr-label">Desconto cobre o necessário?</span><span class="dr-val" style="color:${coberto ? 'var(--verde)' : 'var(--vermelho)'}">${coberto ? '✔ Sim' : '✘ Não'}</span></div>`;
         }
@@ -1841,13 +2340,14 @@ function calcular(e){
     if(caixaEstourada && !mrvEstourado){
       html += `<div class="projecao-aviso" style="border-color:var(--vermelho);">⚠️ <strong>Parcela Caixa acima de 30% da renda.</strong> Este limite é controlado pela Caixa Econômica Federal — não é possível ajustar via desconto MRV.</div>`;
     } else {
-      html += `<div class="projecao-aviso">📌 <strong>Projeção estimada.</strong> A redução por parcela é calculada proporcionalmente com base na parcela atual.</div>`;
+      html += `<div class="projecao-aviso">📌 <strong>Projeção estimada.</strong> A redução por parcela é calculada proporcionalmente com base na parcela atual e no teto MRV de ${tetoMrvStr}%.</div>`;
     }
     dc.innerHTML = html;
   }
   
+  const jaVisivel = document.getElementById('resultado').classList.contains('show');
   document.getElementById('resultado').className = 'resultado show';
-  document.getElementById('resultado').scrollIntoView({behavior:'smooth'});
+  if (!jaVisivel) document.getElementById('resultado').scrollIntoView({behavior:'smooth'});
 }
 
 // =========================================================================
@@ -1982,10 +2482,19 @@ function aplicarStatusProposta(num, pct){
   const icon = document.getElementById('prop-compIcon'+num);
   const text = document.getElementById('prop-compText'+num);
   const bar = document.getElementById('prop-progressBar'+num);
+  const tetoMRV = AppState.tetoMrvPct;
+  const limVerde = +(tetoMRV * 0.7).toFixed(1);
+  const escalaMax = tetoMRV * 2;
+
+  const labelsEl = document.getElementById('prop-progressLabels'+num);
+  if (labelsEl) {
+    labelsEl.innerHTML = `<span>0%</span><span>${limVerde.toString().replace('.',',')}% ✔</span><span>${tetoMRV.toString().replace('.',',')}% ⚠</span><span>${escalaMax.toString().replace('.',',')}%+</span>`;
+  }
+
   let classe, iconeTxt, textoTxt, barClasse;
   
-  if(pct <= 3.5){ classe='aprovado'; iconeTxt='✔'; textoTxt='DENTRO DO TETO'; barClasse='verde'; }
-  else if(pct <= 5){ classe='atencao'; iconeTxt='⚠'; textoTxt='ATENÇÃO'; barClasse='amarelo'; }
+  if(pct <= limVerde){ classe='aprovado'; iconeTxt='✔'; textoTxt='DENTRO DO TETO'; barClasse='verde'; }
+  else if(pct <= tetoMRV){ classe='atencao'; iconeTxt='⚠'; textoTxt='ATENÇÃO'; barClasse='amarelo'; }
   else { classe='reprovado'; iconeTxt='✘'; textoTxt='ACIMA DO TETO'; barClasse='vermelho'; }
   
   if(num === 2){
@@ -1996,7 +2505,7 @@ function aplicarStatusProposta(num, pct){
   } else { unif.className = 'comprom-unified '+classe; }
   
   icon.textContent = iconeTxt; text.textContent = textoTxt;
-  if(bar){ bar.className = 'progress-bar '+barClasse; bar.style.width = Math.min((pct/7)*100,100)+'%'; }
+  if(bar){ bar.className = 'progress-bar '+barClasse; bar.style.width = Math.min((pct / escalaMax)*100,100)+'%'; }
   return textoTxt;
 }
 
@@ -2006,24 +2515,26 @@ function renderizarExcedenteProposta(num, pct, parcelaBase, renda, label){
   const conteudo = document.getElementById('prop-excedenteConteudo'+num);
   box.style.display = 'block';
   
-  const teto = renda * 0.05;
+  const tetoMRV = AppState.tetoMrvPct;
+  const tetoMrvStr = tetoMRV.toString().replace('.',',');
+  const teto = renda * (tetoMRV / 100);
   const reducaoPorParcela = Math.max(0, parcelaBase - teto);
   const excedenteTotalPSB = reducaoPorParcela * AppState.propPsbQtd;
   
-  if(pct <= 5){
+  if(pct <= tetoMRV){
     box.className = 'excedente-box ok';
-    titulo.innerHTML = `✔ ${sanitizarTexto(label)} dentro do teto MRV (5%)`;
+    titulo.innerHTML = `✔ ${sanitizarTexto(label)} dentro do teto MRV (${tetoMrvStr}%)`;
     conteudo.innerHTML = `
       <div class="excedente-row"><span class="er-label">${sanitizarTexto(label)}</span><span class="er-val" style="color:var(--verde)">${formatMoeda(parcelaBase)}</span></div>
-      <div class="excedente-row"><span class="er-label">Teto MRV (5% da renda)</span><span class="er-val" style="color:var(--verde)">${formatMoeda(teto)}</span></div>
+      <div class="excedente-row"><span class="er-label">Teto MRV (${tetoMrvStr}% da renda)</span><span class="er-val" style="color:var(--verde)">${formatMoeda(teto)}</span></div>
       <div class="excedente-row"><span class="er-label">Comprometimento</span><span class="er-val" style="color:var(--verde)">${pct.toFixed(2).replace('.',',')} %</span></div>
       <div class="excedente-row"><span class="er-label">Margem disponível</span><span class="er-val" style="color:var(--verde)">${formatMoeda(teto-parcelaBase)}</span></div>`;
   }else{
     box.className = 'excedente-box nok';
-    titulo.innerHTML = `⚠️ ${sanitizarTexto(label)} acima do teto MRV — redução necessária`;
+    titulo.innerHTML = `⚠️ ${sanitizarTexto(label)} acima do teto MRV (${tetoMrvStr}%) — redução necessária`;
     conteudo.innerHTML = `
       <div class="excedente-row"><span class="er-label">${sanitizarTexto(label)}</span><span class="er-val" style="color:var(--vermelho)">${formatMoeda(parcelaBase)}</span></div>
-      <div class="excedente-row"><span class="er-label">Teto MRV (5% da renda)</span><span class="er-val" style="color:var(--verde)">${formatMoeda(teto)}</span></div>
+      <div class="excedente-row"><span class="er-label">Teto MRV (${tetoMrvStr}% da renda)</span><span class="er-val" style="color:var(--verde)">${formatMoeda(teto)}</span></div>
       <div class="excedente-row"><span class="er-label">Comprometimento</span><span class="er-val" style="color:var(--vermelho)">${pct.toFixed(2).replace('.',',')} %</span></div>
       <div class="excedente-row"><span class="er-label">Redução necessária por parcela</span><span class="er-val" style="color:var(--laranja)">${formatMoeda(reducaoPorParcela)}</span></div>
       <div class="excedente-row"><span class="er-label">Qtd. parcelas PSB</span><span class="er-val" style="color:var(--roxo)">${AppState.propPsbQtd} parcelas</span></div>
@@ -2032,7 +2543,7 @@ function renderizarExcedenteProposta(num, pct, parcelaBase, renda, label){
 }
 
 function calcularProposta(e){
-  e.preventDefault();
+  if (e && e.preventDefault) e.preventDefault();
   const dataEntStr = document.getElementById('prop-dataEntrega').value.trim();
   const renda = parseMoeda(document.getElementById('prop-renda').value);
   if(!AppState.propFluxo.length){ alert('⚠️ Carregue o PDF da Simulação de Proposta antes de calcular.'); return; }
@@ -2041,14 +2552,20 @@ function calcularProposta(e){
   
   calcularPsaPsbProposta(dataEntStr);
   
-  if(AppState.propPsbQtd === 0){ 
+  if(AppState.propPsbQtd === 0 && e.isTrusted){ 
     alert('ℹ️ AVISO: Nenhuma parcela Mensal encontrada após a data de entrega.\n\nO cálculo prosseguirá considerando a parcela MRV (PSB) como R$ 0,00. Confirme se a data está correta ou se a compra é à vista/quitada.'); 
   }
   
-  const teto = renda * 0.05;
+  const tetoMRV = AppState.tetoMrvPct;
+  const tetoMrvStr = tetoMRV.toString().replace('.',',');
+  const teto = renda * (tetoMRV / 100);
   const pct1 = (AppState.propPsbPrimeira / renda) * 100;
   const pct2 = (AppState.propPsbMedia / renda) * 100;
   
+  document.getElementById('prop-label-teto').textContent = `Teto MRV (${tetoMrvStr}% da Renda)`;
+  document.getElementById('prop-header-teto1').textContent = `Teto: ${tetoMrvStr}%`;
+  document.getElementById('prop-header-teto2').textContent = `versão secundária · Teto: ${tetoMrvStr}%`;
+
   document.getElementById('prop-res-primeira').textContent = formatMoeda(AppState.propPsbPrimeira);
   document.getElementById('prop-res-media').textContent = formatMoeda(AppState.propPsbMedia);
   document.getElementById('prop-res-renda').textContent = formatMoeda(renda);
@@ -2065,8 +2582,9 @@ function calcularProposta(e){
   renderizarExcedenteProposta(1, pct1, AppState.propPsbPrimeira, renda, '1ª Parcela PSB');
   renderizarExcedenteProposta(2, pct2, AppState.propPsbMedia, renda, 'Média PSB');
   
+  const jaVisivel = document.getElementById('resultadoProposta').classList.contains('show');
   document.getElementById('resultadoProposta').className = 'resultado show';
-  document.getElementById('resultadoProposta').scrollIntoView({behavior:'smooth'});
+  if (!jaVisivel) document.getElementById('resultadoProposta').scrollIntoView({behavior:'smooth'});
 }
 
 function limparProposta(){
@@ -2097,8 +2615,8 @@ function limparProposta(){
 // =========================================================================
 //   9. EXPORTAÇÃO
 // =========================================================================
-
 function copiarResultadoProposta(){
+  const tetoMrvStr = AppState.tetoMrvPct.toString().replace('.',',');
   const txt = `SIMULAÇÃO DE PROPOSTA MRV — ${new Date().toLocaleString('pt-BR')}
 Empreendimento: ${document.getElementById('prop-empreendimento').value}
 Unidade: ${document.getElementById('prop-unidade').value}
@@ -2106,7 +2624,7 @@ Valor do Imóvel: ${document.getElementById('prop-valorImovel').value}
 Valor da Proposta: ${document.getElementById('prop-valorProposta').value}
 ─────────────────────────────
 Renda do Cliente: ${document.getElementById('prop-res-renda').textContent}
-Teto MRV (5%): ${document.getElementById('prop-res-teto').textContent}
+Teto MRV (${tetoMrvStr}%): ${document.getElementById('prop-res-teto').textContent}
 ─────────────────────────────
 PSA (pré-entrega): ${document.getElementById('prop-res-psa-saldo').textContent} (${document.getElementById('prop-res-psa-qtd').textContent})
 PSB (pós-entrega): ${document.getElementById('prop-res-psb-saldo').textContent} (${document.getElementById('prop-res-psb-qtd').textContent})
@@ -2124,13 +2642,23 @@ Comprometimento (Média PSB): ${document.getElementById('prop-res-pct2').textCon
 function copiarResultado(){
   const pctMediaTxt = document.getElementById('res-pct-media').textContent;
   const pctVal = parseFloat(document.getElementById('res-pct').textContent.replace('%','').replace(',','.'));
+  const tetoMax = AppState.tetoTotalPct;
   
   let avisoEspecial = '';
-  if(pctVal > 35 && pctVal <= 37) {
+  if((pctVal > tetoMax && pctVal <= tetoMax + 2) || AppState.intermCriticasG1.length > 0) {
     avisoEspecial = '\n⚠️ ATENÇÃO: O caso deve ser avaliado individualmente para a decisão de manter o contrato ou refazer a venda.\n─────────────────────────────';
   }
 
+  let blocoIntermTxt = '';
+  if (AppState.intermCriticasG1.length > 0) {
+    blocoIntermTxt = '\n🚨 ALERTA DE INTERMEDIÁRIA GRUPO 1 (≥ 50% DA RENDA):\n' +
+      AppState.intermCriticasG1.map(c => 
+        `• Venc. ${c.venc}: Interm. ${formatMoeda(c.valorInterm)} (${c.pctIntermRenda.toFixed(1).replace('.',',')}% da renda) | Soma Mês (Interm + Caixa + MRV): ${formatMoeda(c.totalMesPico)} (${c.pctTotalMesPico.toFixed(1).replace('.',',')}% da renda)`
+      ).join('\n') + '\n─────────────────────────────';
+  }
+
   const txt = `ANÁLISE MRV/EMCASH — ${new Date().toLocaleString('pt-BR')}
+Teto Parametrizado: ${tetoMax.toString().replace('.',',')}% (Caixa 30% + MRV ${AppState.tetoMrvPct.toString().replace('.',',')}%)
 Tipo de Contrato: ${AppState.tipoContrato || '—'}
 Cliente: ${document.getElementById('nomeCliente').value}
 CPF: ${document.getElementById('cpf').value}
@@ -2146,11 +2674,10 @@ PSA: ${document.getElementById('res-psa-saldo').textContent} (${document.getElem
 PSB: ${document.getElementById('res-psb-saldo').textContent} (${document.getElementById('res-psb-qtd').textContent})
 ─────────────────────────────
 Comprometimento (1ª Parcela PSB): ${document.getElementById('res-pct').textContent}
-Status: ${document.getElementById('compText1').textContent}
-${avisoEspecial}
+Status: ${document.getElementById('compText1').textContent}${avisoEspecial}${blocoIntermTxt}
 Comprometimento (Média PSB): ${pctMediaTxt}
 Status Média: ${document.getElementById('compText2').textContent}
-* Projeções são estimativas. Solicite simulação ao financeiro MRV.`;
+- Projeções são estimativas. Solicite simulação ao financeiro MRV.`;
   navigator.clipboard.writeText(txt).then(() => alert('✅ Copiado!'));
 }
 
@@ -2254,6 +2781,8 @@ function limpar(){
   document.getElementById('descontoSection').style.display = 'none';
   document.getElementById('planoWrap').style.display = 'none';
   document.getElementById('planoBody').innerHTML = '';
+  document.getElementById('intermAlertBanner').style.display = 'none';
+  document.getElementById('intermAlertList').innerHTML = '';
   document.getElementById('compUnif2').style.display = 'none';
   document.getElementById('progressWrapMedia').style.display = 'none';
   document.getElementById('progressLabelsMedia').style.display = 'none';
@@ -2262,18 +2791,19 @@ function limpar(){
   document.getElementById('res-pct-media').textContent = '—';
   document.getElementById('compIcon1').textContent = '—';
   document.getElementById('compText1').textContent = '—';
+  document.getElementById('compSub1').style.display = 'none';
   document.getElementById('compIcon2').textContent = '—';
   document.getElementById('compText2').textContent = '—';
+  document.getElementById('compSub2').style.display = 'none';
   document.getElementById('msgAvaliacao1').style.display = 'none';
   document.getElementById('msgAvaliacao2').style.display = 'none';
   document.getElementById('compUnif1').className = 'comprom-unified';
   document.getElementById('compUnif2').className = 'comprom-unified secundario';
   
-  // Limpa o estado global de forma segura
   Object.assign(AppState, {
     tipoContrato: '', psaQtd: 0, psaSaldo: 0, psbQtd: 0, psbSaldo: 0,
     parcelasPSB: [], parcelasTodas: [], dataEntregaISO: null, obraPronta: false,
-    entrada: { total: 0, pct: '', parcelas: [] }, intermediarias: []
+    entrada: { total: 0, pct: '', parcelas: [] }, intermediarias: [], intermCriticasG1: []
   });
 }
 
@@ -2284,7 +2814,6 @@ document.getElementById('prop-dataEntrega').addEventListener('change', function(
     renderizarFluxo();
   }
 });
-
 </script>
 </body>
 </html>
