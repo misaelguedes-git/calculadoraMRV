@@ -157,12 +157,7 @@ window.addEventListener('DOMContentLoaded', () => {
       renderizarFluxo();
     }
   });
-  document.getElementById('prop-renda').addEventListener('input', (e) => {
-    mascaraMoedaGen(e.target);
-    renderizarFluxo();
-  });
-  document.getElementById('prop-parcelaCaixa').addEventListener('input', (e) => mascaraMoedaGen(e.target));
-
+  
   // Formulário e Campos do Contrato
   document.getElementById('formCalc').addEventListener('submit', calcular);
   document.getElementById('btnLimparContrato').addEventListener('click', limpar);
@@ -170,14 +165,21 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnCopiarContrato').addEventListener('click', copiarResultado);
 
   document.getElementById('dataEntrega').addEventListener('input', (e) => mascaraData(e.target));
-  document.getElementById('valorAvaliacao').addEventListener('input', (e) => mascaraMoedaGen(e.target));
-  document.getElementById('parcelaCaixa').addEventListener('input', (e) => {
-    mascaraMoedaGen(e.target);
-    atualizarDestaquesPlano();
-  });
-  document.getElementById('renda').addEventListener('input', (e) => {
-    mascaraMoedaGen(e.target);
-    atualizarDestaquesPlano();
+  
+ const camposMoeda = ['parcelaCaixa', 'renda', 'valorAvaliacao', 'tetoFaixa', 'prop-renda', 'prop-parcelaCaixa'];
+  camposMoeda.forEach(id => {
+    const campo = document.getElementById(id);
+    if (!campo) return;
+
+    const formatarCampo = () => {
+      mascaraMoedaGen(campo);
+      if (id === 'parcelaCaixa' || id === 'renda') atualizarDestaquesPlano();
+      if (id === 'prop-renda') renderizarFluxo();
+    };
+
+    campo.addEventListener('input', formatarCampo);
+    campo.addEventListener('paste', () => setTimeout(formatarCampo, 10));
+    campo.addEventListener('blur', formatarCampo);
   });
 
   // Delegação de clique para acordeões dinâmicos do Plano de Pagamento
