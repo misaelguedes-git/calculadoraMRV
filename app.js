@@ -309,7 +309,7 @@ function setAutoCaixa(id, val) {
   const valSanitizado = sanitizarTexto(val);
   if (id === 'parcelaCaixa' || id === 'renda' || id === 'valorAvaliacao' || id === 'tetoFaixa') {
     const num = parseMoeda(valSanitizado);
-    el.value = num > 0 ? formatMoeda(num) : valSanitizado;
+    el.value = num > 0 ? formatMoeda(num) : '';
   } else {
     el.value = valSanitizado;
   }
