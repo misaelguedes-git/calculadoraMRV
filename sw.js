@@ -1,7 +1,9 @@
-const CACHE = 'mrv-calc-cf-v1.1';
+const CACHE = 'mrv-calc-cf-v1.2';
 const ASSETS = [
   '/',
   '/index.html',
+  '/styles.css',
+  '/app.js',
   '/manifest.json',
   '/assets/LogoMRV.png',
   '/assets/LogoMRV-header.png',
