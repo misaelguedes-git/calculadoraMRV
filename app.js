@@ -522,40 +522,44 @@ function extrairParcelas(texto, tipo) {
 
 function extrairDadosCaixa(texto) {
   try {
-    const avalM = texto.match(/Valor\s*de\s*Avalia[çc][aã]o[:\s]*R\$\s*([\d.,]+)/i) || texto.match(/Valor\s*do\s*Im[oó]vel[:\s]*R\$\s*([\d.,]+)/i);
-    if (avalM) setAutoCaixa('valorAvaliacao', 'R$ ' + avalM[1].trim());
+    const avalM = texto.match(/Valor\s*de\s*Avalia[çc][aã]o[:\s]*R?\$?\s*([\d.]+,\d{2})/i)
+      || texto.match(/Valor\s*do\s*Im[oó]vel[:\s]*R?\$?\s*([\d.]+,\d{2})/i);
+    if (avalM) setAutoCaixa('valorAvaliacao', avalM[1].trim());
 
-    const rendaM = texto.match(/Renda\s*Familiar[:\s]*R\$\s*([\d.,]+)/i)
-      || texto.match(/Renda\s*Bruta[:\s]*R\$\s*([\d.,]+)/i)
-      || texto.match(/Renda\s*Individual[:\s]*R\$\s*([\d.,]+)/i)
-      || texto.match(/Renda\s*Familiar[:\s]*([\d.,]+)/i)
-      || texto.match(/Renda[:\s]*R\$\s*([\d.,]+)/i);
+    const rendaM = texto.match(/Renda\s*Familiar[:\s]*R?\$?\s*([\d.]+,\d{2})/i)
+      || texto.match(/Renda\s*Bruta[:\s]*R?\$?\s*([\d.]+,\d{2})/i)
+      || texto.match(/Renda\s*Individual[:\s]*R?\$?\s*([\d.]+,\d{2})/i)
+      || texto.match(/Renda[:\s]*R\$\s*([\d.]+,\d{2})/i);
     if (rendaM) {
       const rendaVal = parseMoeda(rendaM[1]);
-      setAutoCaixa('renda', 'R$ ' + rendaM[1].trim());
+      setAutoCaixa('renda', rendaM[1].trim());
       calcularTetoFaixa(rendaVal);
     }
 
     let parcelaVal = 0;
     const padroesParcela = [
-      /1[aª]\s*Presta[çc][aã]o[:\s]*R?\$?\s*([\d.,]+)/i,
-      /Presta[çc][aã]o\s*mensal[:\s]*R?\$?\s*([\d.,]+)/i,
-      /Valor\s*da\s*Presta[çc][aã]o[:\s]*R?\$?\s*([\d.,]+)/i,
-      /Primeira\s*Presta[çc][aã]o\s*R\$\s*([\d.,]+)/i,
-      /Primeira\s*Presta[çc][aã]o[\s\S]{0,120}?R\$\s*([\d.,]+)/i,
-      /Presta[çc][aã]o\s*M[aá]xima[^R]*R\$\s*([\d.,]+)/i,
-      /Presta[çc][aã]o\s*M[aá]xima[^:]*:[:\s]*R?\$?\s*([\d.,]+)/i,
-      /Componentes\s*da\s*presta[çc][aã]o[\s\S]{0,400}?TOTAL[:\s]*R\$\s*([\d.,]+)/i,
+      /1[aª]\s*Presta[çc][aã]o[:\s]*R?\$?\s*([\d.]+,\d{2})/i,
+      /Presta[çc][aã]o\s*mensal[:\s]*R?\$?\s*([\d.]+,\d{2})/i,
+      /Valor\s*da\s*Presta[çc][aã]o[:\s]*R?\$?\s*([\d.]+,\d{2})/i,
+      /Primeira\s*Presta[çc][aã]o[\s\S]{0,120}?R\$\s*([\d.]+,\d{2})/i,
+      /Presta[çc][aã]o\s*M[aá]xima[\s\S]{0,80}?R\$\s*([\d.]+,\d{2})/i,
+      /Componentes\s*da\s*presta[çc][aã]o[\s\S]{0,400}?TOTAL[:\s]*R\$\s*([\d.]+,\d{2})/i,
     ];
     for (const regex of padroesParcela) {
       const m = texto.match(regex);
-      if (m) { const val = parseMoeda(m[1]); if (val > 50) { parcelaVal = val; break; } }
+      if (m) {
+        const val = parseMoeda(m[1]);
+        if (val > 50 && val < 50000) { parcelaVal = val; break; }
+      }
     }
     if (!parcelaVal) {
       const blocoM = texto.match(/Presta[çc][aã]o[\s\S]{0,300}/i);
       if (blocoM) {
-        const valM = blocoM[0].match(/R\$\s*([\d.,]+)/);
-        if (valM) { const val = parseMoeda(valM[1]); if (val > 50) parcelaVal = val; }
+        const valM = blocoM[0].match(/R\$\s*([\d.]+,\d{2})/);
+        if (valM) {
+          const val = parseMoeda(valM[1]);
+          if (val > 50 && val < 50000) parcelaVal = val;
+        }
       }
     }
     if (parcelaVal > 0) setAutoCaixa('parcelaCaixa', formatMoeda(parcelaVal));
