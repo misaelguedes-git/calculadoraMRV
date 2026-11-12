@@ -4,13 +4,13 @@
 
 Ferramenta web nacional para automatizar e padronizar a análise de comprometimento de renda em contratos de financiamento imobiliário e a pré-análise de propostas comerciais.
 
-[![Deploy](https://img.shields.io/badge/deploy-GitHub%20Pages-00843D?logo=github)](https://misaelguedes-git.github.io/calculadoraMRV/)
+[![Deploy](https://img.shields.io/badge/deploy-GitHub%20Pages-00843D?logo=github)](https://calculadoramrv.pages.dev/)
 [![Versão](https://img.shields.io/badge/vers%C3%A3o-3.0-F58220)](#changelog)
 [![PWA](https://img.shields.io/badge/PWA-instal%C3%A1vel-5A0FC8?logo=pwa&logoColor=white)](#instalação-como-app-pwa)
 [![Privacidade](https://img.shields.io/badge/LGPD-processamento%20local-00843D)](#privacidade-e-segurança)
 [![Stack](https://img.shields.io/badge/stack-HTML5%20%7C%20CSS3%20%7C%20Vanilla%20JS-555555)](#tecnologias)
 
-[**Acessar a ferramenta**](https://misaelguedes-git.github.io/calculadoraMRV/) · [Documentação completa (PDF)](./Documentacao_Calculadora_Comprometimento_Renda_v3.pdf) · [Reportar problema](../../issues)
+[**Acessar a ferramenta**](https://calculadoramrv.pages.dev/) · [Documentação completa (PDF)](./Documentacao_Calculadora_Comprometimento_Renda_v3.pdf) · [Reportar problema](../../issues)
 
 </div>
 
@@ -212,7 +212,7 @@ calculadoraMRV/
 
 | Ambiente | Endereço | Uso |
 | --- | --- | --- |
-| **Oficial** | `https://misaelguedes-git.github.io/calculadoraMRV/` | Versão divulgada ao público interno. |
+| **Oficial** | `https://calculadoramrv.pages.dev/` | Versão divulgada ao público interno. |
 | **Testes** | `https://misaelguedes-git.github.io/calculadoraMRV/teste.html` | Validação de mudanças antes de publicar. |
 | **Legado** | `https://misaelguedes-git.github.io/calculadoraMRV/simulador.html` | Redireciona automaticamente para o oficial. |
 
@@ -226,7 +226,7 @@ calculadoraMRV/
 ## Executando localmente
 
 ```bash
-git clone [https://github.com/misaelguedes-git/calculadoraMRV.git](https://github.com/misaelguedes-git/calculadoraMRV.git)
+git clone [https://calculadoramrv.pages.dev/](https://calculadoramrv.pages.dev/)
 cd calculadoraMRV
 
 # Python
