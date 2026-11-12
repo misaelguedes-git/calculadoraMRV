@@ -1,7 +1,7 @@
 {
   "name": "Calculadora de Comprometimento de Renda - MRV",
   "short_name": "Comprom. MRV",
-  "description": "Calculadora de Comprometimento de Renda — MRV",
+  "description": "Calculadora de Comprometimento de Renda — MRV / Emcash (Edição Nacional com Parametrização Regional e Alerta de Pico Mensal)",
   "start_url": "/calculadoraMRV/",
   "scope": "/calculadoraMRV/",
   "display": "standalone",
