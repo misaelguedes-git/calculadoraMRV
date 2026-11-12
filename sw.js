@@ -1,10 +1,10 @@
-const CACHE = 'mrv-calc-v7.0';
+const CACHE = 'mrv-calc-cf-v1.0';
 const ASSETS = [
-  '/calculadoraMRV/',
-  '/calculadoraMRV/index.html',
-  '/calculadoraMRV/manifest.json',
-  '/calculadoraMRV/assets/LogoMRV.png',
-  '/calculadoraMRV/assets/LogoMRV-header.png'
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/assets/LogoMRV.png',
+  '/assets/LogoMRV-header.png'
 ];
 
 self.addEventListener('install', e => {
