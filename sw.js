@@ -1,10 +1,12 @@
-const CACHE = 'mrv-calc-cf-v1.0';
+const CACHE = 'mrv-calc-cf-v1.1';
 const ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/assets/LogoMRV.png',
-  '/assets/LogoMRV-header.png'
+  '/assets/LogoMRV-header.png',
+  '/libs/pdf.min.js',
+  '/libs/pdf.worker.min.js'
 ];
 
 self.addEventListener('install', e => {
