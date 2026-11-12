@@ -575,22 +575,22 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
     </div>
   </aside>
 
-  <!-- CONTÊINER CENTRAL -->
+ <!-- CONTÊINER CENTRAL -->
   <div class="container">
 
     <div class="tab-switch">
-      <button class="tab-btn active-proposta" id="tabBtnProposta" onclick="trocarAba('proposta')">
-        📋 Simulação de Proposta
-        <span class="tab-badge">Pré-análise MRV</span>
-      </button>
-      <button class="tab-btn" id="tabBtnContrato" onclick="trocarAba('contrato')">
+      <button class="tab-btn active-contrato" id="tabBtnContrato" onclick="trocarAba('contrato')">
         📄 Comprometimento de Renda
         <span class="tab-badge">Contrato + Caixa</span>
       </button>
+      <button class="tab-btn" id="tabBtnProposta" onclick="trocarAba('proposta')">
+        📋 Simulação de Proposta
+        <span class="tab-badge">Pré-análise MRV</span>
+      </button>
     </div>
 
-    <!-- ABA 1: SIMULAÇÃO DE PROPOSTA -->
-    <div id="abaProposta">
+    <!-- ABA 1: SIMULAÇÃO DE PROPOSTA (Agora oculta por padrão) -->
+    <div id="abaProposta" style="display:none;">
       <div class="status-bar" id="statusBarProp">
         <div class="spinner" id="spinnerProp"></div>
         <span id="statusMsgProp">Lendo...</span>
@@ -764,7 +764,7 @@ input.auto-filled-caixa[readonly]{background:var(--azul-claro);color:#003366;}
     </div><!-- /abaProposta -->
 
     <!-- ABA 2: COMPROMETIMENTO DE RENDA (CONTRATO) -->
-    <div id="abaContrato" style="display:none;">
+    <div id="abaContrato"
       <div class="uploads-grid">
         <div class="upload-card mrv" id="uploadCardMRV" onclick="document.getElementById('pdfInput').click()">
           <div class="upload-icon">📄</div>
@@ -2090,47 +2090,219 @@ function calcular(e){
 }
 
 // =========================================================================
-//   8. LÓGICA DE NEGÓCIO (SIMULAÇÃO DE PROPOSTA)
+//   8. LÓGICA DE NEGÓCIO (SIMULAÇÃO DE PROPOSTA — SUPORTE A CAPA/QUADRO-RESUMO E CRM)
 // =========================================================================
 function extrairDadosProposta(texto){
   try{
-    const empM = texto.match(/Empreendimento[:\s]+(.*?)(?=\s*Unidade[:\s]|\n|$)/i);
-    if(empM) setAutoProp('prop-empreendimento', empM[1].trim());
-    const unidM = texto.match(/Unidade[:\s]+(.*?)(?=\s*Cliente[:\s]|\n|$)/i);
-    if(unidM) setAutoProp('prop-unidade', unidM[1].trim());
-    const vimM = texto.match(/Valor\s*Im[oó]vel[:\s]*R\$\s*([\d.,]+)/i);
-    if(vimM) setAutoProp('prop-valorImovel', 'R$ '+vimM[1].trim());
-    const vpropM = texto.match(/Valor\s*da\s*Proposta\s*R\$\s*([\d.,]+)/i);
-    if(vpropM) setAutoProp('prop-valorProposta', 'R$ '+vpropM[1].trim());
-    
-    const finM = texto.match(/Valor\s*Financiado\s*R\$\s*([\d.,]+)/i);
-    if(finM) document.getElementById('rp-financiado').textContent = 'R$ '+finM[1].trim();
-    const sinalM = texto.match(/Valor\s*do\s*Sinal\s*R\$\s*([\d.,]+)/i);
-    if(sinalM) document.getElementById('rp-sinal').textContent = 'R$ '+sinalM[1].trim();
-    const cartM = texto.match(/Carteira\s*MRV\s*R\$\s*([\d.,]+)\s*\((\d+)x\)/i);
-    if(cartM){
-      document.getElementById('rp-carteira').textContent = 'R$ '+cartM[1].trim();
-      document.getElementById('rp-qtdCarteira').textContent = cartM[2]+'x';
+    const isQuadroResumo = /QUADRO-RESUMO|4\.1\.1\s*[-–]?\s*Entrada|4\.1\.2\s*[-–]?\s*Mensais/i.test(texto);
+
+    if (isQuadroResumo) {
+      extrairPropostaQuadroResumo(texto);
     } else {
-      const cartM2 = texto.match(/Carteira\s*MRV\s*R\$\s*([\d.,]+)/i);
-      if(cartM2) document.getElementById('rp-carteira').textContent = 'R$ '+cartM2[1].trim();
+      extrairPropostaCRM(texto);
     }
-    const cupomM = texto.match(/Cupom\s*R\$\s*([\d.,]+)/i);
-    if(cupomM) document.getElementById('rp-cupom').textContent = 'R$ '+cupomM[1].trim();
-    const fgtsM = texto.match(/FGTS\s*R\$\s*([\d.,]+)/i);
-    if(fgtsM) document.getElementById('rp-fgts').textContent = 'R$ '+fgtsM[1].trim();
-    const subM = texto.match(/Subs[ií]dio\s*R\$\s*([\d.,]+)/i);
-    if(subM) document.getElementById('rp-subsidio').textContent = 'R$ '+subM[1].trim();
-    const bomM = texto.match(/Bom\s*pagador\s*R\$\s*([\d.,]+)/i);
-    if(bomM) document.getElementById('rp-bompag').textContent = 'R$ '+bomM[1].trim();
-    
-    document.getElementById('resumoPropostaGrid').style.display = 'grid';
-    AppState.propFluxo = extrairFluxoProposta(texto);
-    renderizarFluxo();
   }catch(e){
     console.error(e);
     mostrarStatusProp('⚠️ Leitura parcial da proposta.', 'error');
   }
+}
+
+// 8.1 Leitor para PDF modelo CAPA / Quadro-Resumo (Ex: CAPA Jefferson RITMOS.pdf)
+function extrairPropostaQuadroResumo(texto) {
+  // Empreendimento e Unidade via campo "Produto:"
+  const prodM = texto.match(/Produto[:\s]+([\s\S]+?)(?=CONT[-:\s]|1\.\s*PARTES|$)/i);
+  if (prodM) {
+    let prod = prodM[1].replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+    prod = prod.replace(/CONT[-\s][A-Z0-9\-]+.*/i, '').trim();
+    let idxHifen = prod.indexOf(' - ');
+    if (idxHifen === -1) idxHifen = prod.indexOf(' – ');
+    if (idxHifen !== -1) {
+      setAutoProp('prop-empreendimento', prod.substring(0, idxHifen).trim());
+      let unid = prod.substring(idxHifen + 3).trim();
+      unid = unid.replace(/\s*[-–]\s*(?:Rio de Janeiro|Maca[eé]|Campos dos Goytacazes|Belo Horizonte|São Paulo).*$/i, '').trim();
+      setAutoProp('prop-unidade', unid);
+    } else {
+      setAutoProp('prop-empreendimento', prod);
+      setAutoProp('prop-unidade', '—');
+    }
+  }
+
+  // Valor do Imóvel e Valor da Proposta
+  const valImovelM = texto.match(/3\.2\s*[-–]?\s*PRE[ÇC]O\s*DO\s*IM[OÓ]VEL[^R\n]*R\$\s*([\d.,]+)/i)
+    || texto.match(/3\s*[-–]?\s*VALOR\s*TOTAL\s*DA\s*OPERA[ÇC][AÃ]O[^R\n]*R\$\s*([\d.,]+)/i);
+  if (valImovelM) {
+    setAutoProp('prop-valorImovel', 'R$ ' + valImovelM[1].trim());
+    setAutoProp('prop-valorProposta', 'R$ ' + valImovelM[1].trim());
+  }
+
+  // Resumo Financeiro (4.1.1 Entrada, 4.1.2 Mensais, 4.1.3 Intermediárias, 4.1.4 Financiamento, 4.1.5 FGTS)
+  const entM = texto.match(/4\.1\.1[^R\n]*R\$\s*([\d.,]+)/is);
+  const entVal = entM ? parseMoeda(entM[1]) : 0;
+  document.getElementById('rp-sinal').textContent = entVal > 0 ? formatMoeda(entVal) : 'R$ 0,00';
+
+  const mensaisTotM = texto.match(/4\.1\.2[^R\n]*R\$\s*([\d.,]+)/is);
+  const mensaisTotVal = mensaisTotM ? parseMoeda(mensaisTotM[1]) : 0;
+
+  const finM = texto.match(/4\.1\.4[^R\n]*R\$\s*([\d.,]+)/is);
+  document.getElementById('rp-financiado').textContent = finM ? 'R$ ' + finM[1].trim() : '—';
+
+  const fgtsM = texto.match(/4\.1\.5\s*[-–]?\s*FGTS[:\s]*R\$\s*([\d.,]+)/i);
+  document.getElementById('rp-fgts').textContent = fgtsM ? 'R$ ' + fgtsM[1].trim() : 'R$ 0,00';
+
+  document.getElementById('rp-cupom').textContent = '—';
+  document.getElementById('rp-subsidio').textContent = '—';
+
+  // Extrai parcelas estruturadas (Entrada, Mensais, Intermediárias Grupo 1 e Grupo 2)
+  const tipoCont = detectarTipoContrato(texto) === 'DESCONHECIDO' ? 'OIC' : detectarTipoContrato(texto);
+  const mensaisLista = extrairParcelas(texto, tipoCont);
+
+  // Extrai Entrada (4.1.1)
+  let entradaParcelas = [];
+  const blocoEntM = texto.match(/4\.1\.1[\s\S]*?(?=4\.1\.2)/i);
+  if (blocoEntM) {
+    const partesForma = blocoEntM[0].split(/seguinte\s*forma\s*:/i);
+    const txtEnt = partesForma.length > 1 ? partesForma.slice(1).join(' ') : blocoEntM[0].replace(/4\.1\.1[^R]*R\$\s*[\d.,]+\s*(?:\([^)]*\))?/i, '');
+    entradaParcelas = extrairParcelasBloco(txtEnt);
+  }
+
+  // Extrai Intermediárias (4.1.3.1 Grupo 1 e 4.1.3.2 Grupo 2)
+  let intermGrupos = [];
+  const blocoIntM = texto.match(/4\.1\.3[\s\S]*?(?=4\.1\.4|5\s*[-–.)]\s*DA\s*ENTREGA|$)/i);
+  if (blocoIntM) {
+    const subgrupos = [...blocoIntM[0].matchAll(/4\.1\.3\.(\d+)([\s\S]*?)(?=4\.1\.3\.\d|$)/gi)];
+    if (subgrupos.length > 0) {
+      for (const sg of subgrupos) {
+        const totalM = sg[2].match(/R\$\s*([\d.,]+)/);
+        const totalG = totalM ? parseMoeda(totalM[1]) : 0;
+        const partesForma = sg[2].split(/seguinte\s*forma\s*:/i);
+        const txtSub = partesForma.length > 1 ? partesForma.slice(1).join(' ') : sg[2].replace(/^[^R]*R\$\s*[\d.,]+\s*(?:\([^)]*\))?/i, '');
+        intermGrupos.push({ grupo: parseInt(sg[1]), total: totalG, parcelas: extrairParcelasBloco(txtSub) });
+      }
+    } else {
+      const totalM = blocoIntM[0].match(/R\$\s*([\d.,]+)/);
+      const totalG = totalM ? parseMoeda(totalM[1]) : 0;
+      const partesForma = blocoIntM[0].split(/seguinte\s*forma\s*:/i);
+      const txtSub = partesForma.length > 1 ? partesForma.slice(1).join(' ') : blocoIntM[0].replace(/4\.1\.3[^R]*R\$\s*[\d.,]+\s*(?:\([^)]*\))?/i, '');
+      intermGrupos.push({ grupo: 1, total: totalG, parcelas: extrairParcelasBloco(txtSub) });
+    }
+  }
+
+  const g1 = intermGrupos.find(g => g.grupo === 1);
+  const g2 = intermGrupos.find(g => g.grupo === 2);
+  const totalG1 = g1 ? g1.total : 0;
+  const totalG2 = g2 ? g2.total : 0;
+
+  const carteiraTotal = mensaisTotVal + totalG1;
+  document.getElementById('rp-carteira').textContent = carteiraTotal > 0 ? formatMoeda(carteiraTotal) : '—';
+  document.getElementById('rp-bompag').textContent = totalG2 > 0 ? formatMoeda(totalG2) : 'R$ 0,00';
+  document.getElementById('rp-qtdCarteira').textContent = mensaisLista.length > 0 ? mensaisLista.length + 'x' : '—';
+  document.getElementById('resumoPropostaGrid').style.display = 'grid';
+
+  // Data Prevista de Entrega automática (item 5.1)
+  const entDataM = texto.match(/5\.1[^:]*:\s*(\d{2}\/\d{2}\/\d{4})/i)
+    || texto.match(/Previs[aã]o\s*para\s*(?:a\s*)?entrega\s*das\s*chaves[:\s]*(\d{2}\/\d{2}\/\d{4})/i);
+  if (entDataM) {
+    const campoEntrega = document.getElementById('prop-dataEntrega');
+    campoEntrega.value = entDataM[1];
+    campoEntrega.classList.add('auto-filled-prop');
+  }
+
+  // Monta o Fluxo Mês a Mês unificado para a Proposta
+  const fluxo = [];
+  let seq = 1;
+
+  // 1. Entrada
+  entradaParcelas.forEach((p, idx) => {
+    const dataStr = p.vencData || '01/01/2026';
+    const [vd, vm, va] = dataStr.split('/').map(Number);
+    fluxo.push({
+      num: idx + 1,
+      vencStr: p.resumoVenc || p.venc,
+      vencData: p.vencData,
+      tipo: p.vencData ? 'Sinal' : 'Sinal Ato',
+      valorNum: p.valor,
+      qtd: p.qtd || 1,
+      periodicidade: p.periodicidade || 'Única',
+      venc: new Date(va, vm - 1, vd)
+    });
+  });
+
+  // 2. Mensais
+  mensaisLista.forEach(m => {
+    fluxo.push({
+      num: m.num,
+      vencStr: m.vencStr,
+      vencData: m.vencStr,
+      tipo: 'Mensal',
+      valorNum: m.valorNum,
+      qtd: 1,
+      periodicidade: 'Mensal',
+      venc: m.venc
+    });
+  });
+
+  // 3. Intermediárias Grupo 1 e Grupo 2
+  intermGrupos.forEach(g => {
+    g.parcelas.forEach((p, idx) => {
+      const dataStr = p.vencData || '01/01/2026';
+      const [vd, vm, va] = dataStr.split('/').map(Number);
+      const isGrupo2 = (g.grupo === 2);
+      fluxo.push({
+        num: idx + 1,
+        vencStr: p.resumoVenc || p.venc,
+        vencData: p.vencData,
+        tipo: isGrupo2 ? 'Bom pagador' : (p.qtd > 1 ? `Intermediária (${p.qtd}x)` : 'Intermediária G1'),
+        valorNum: p.valor,
+        qtd: p.qtd || 1,
+        periodicidade: p.periodicidade || 'Única',
+        venc: new Date(va, vm - 1, vd)
+      });
+    });
+  });
+
+  AppState.propFluxo = fluxo.sort((a, b) => a.venc - b.venc || a.num - b.num);
+  if (entDataM) {
+    calcularPsaPsbProposta(entDataM[1]);
+  } else {
+    renderizarFluxo();
+  }
+}
+
+// 8.2 Leitor para PDF modelo CRM tradicional
+function extrairPropostaCRM(texto){
+  const empM = texto.match(/Empreendimento[:\s]+(.*?)(?=\s*Unidade[:\s]|\n|$)/i);
+  if(empM) setAutoProp('prop-empreendimento', empM[1].trim());
+  const unidM = texto.match(/Unidade[:\s]+(.*?)(?=\s*Cliente[:\s]|\n|$)/i);
+  if(unidM) setAutoProp('prop-unidade', unidM[1].trim());
+  const vimM = texto.match(/Valor\s*Im[oó]vel[:\s]*R\$\s*([\d.,]+)/i);
+  if(vimM) setAutoProp('prop-valorImovel', 'R$ '+vimM[1].trim());
+  const vpropM = texto.match(/Valor\s*da\s*Proposta\s*R\$\s*([\d.,]+)/i);
+  if(vpropM) setAutoProp('prop-valorProposta', 'R$ '+vpropM[1].trim());
+  
+  const finM = texto.match(/Valor\s*Financiado\s*R\$\s*([\d.,]+)/i);
+  if(finM) document.getElementById('rp-financiado').textContent = 'R$ '+finM[1].trim();
+  const sinalM = texto.match(/Valor\s*do\s*Sinal\s*R\$\s*([\d.,]+)/i);
+  if(sinalM) document.getElementById('rp-sinal').textContent = 'R$ '+sinalM[1].trim();
+  const cartM = texto.match(/Carteira\s*MRV\s*R\$\s*([\d.,]+)\s*\((\d+)x\)/i);
+  if(cartM){
+    document.getElementById('rp-carteira').textContent = 'R$ '+cartM[1].trim();
+    document.getElementById('rp-qtdCarteira').textContent = cartM[2]+'x';
+  } else {
+    const cartM2 = texto.match(/Carteira\s*MRV\s*R\$\s*([\d.,]+)/i);
+    if(cartM2) document.getElementById('rp-carteira').textContent = 'R$ '+cartM2[1].trim();
+  }
+  const cupomM = texto.match(/Cupom\s*R\$\s*([\d.,]+)/i);
+  if(cupomM) document.getElementById('rp-cupom').textContent = 'R$ '+cupomM[1].trim();
+  const fgtsM = texto.match(/FGTS\s*R\$\s*([\d.,]+)/i);
+  if(fgtsM) document.getElementById('rp-fgts').textContent = 'R$ '+fgtsM[1].trim();
+  const subM = texto.match(/Subs[ií]dio\s*R\$\s*([\d.,]+)/i);
+  if(subM) document.getElementById('rp-subsidio').textContent = 'R$ '+subM[1].trim();
+  const bomM = texto.match(/Bom\s*pagador\s*R\$\s*([\d.,]+)/i);
+  if(bomM) document.getElementById('rp-bompag').textContent = 'R$ '+bomM[1].trim();
+  
+  document.getElementById('resumoPropostaGrid').style.display = 'grid';
+  AppState.propFluxo = extrairFluxoProposta(texto);
+  renderizarFluxo();
 }
 
 function extrairFluxoProposta(texto){
@@ -2141,7 +2313,7 @@ function extrairFluxoProposta(texto){
     const num = parseInt(m[1]); const vencStr = m[2]; const tipo = m[3].trim(); const valorNum = parseMoeda(m[4]);
     const[vd,vm,va] = vencStr.split('/').map(Number);
     const venc = new Date(va,vm-1,vd);
-    itens.push({num,vencStr,tipo,valorNum,venc});
+    itens.push({num,vencStr,vencData:vencStr,tipo,valorNum,qtd:1,periodicidade:'Única',venc});
   }
   const map = new Map();
   for(const it of itens){
@@ -2191,11 +2363,12 @@ function analisarPicosProposta(renda) {
 
       const totalMesPico = it.valorNum + valorCaixa + valorMrvMes;
       const pctTotalMesPico = (totalMesPico / renda) * 100;
+      const qtdItem = it.qtd || 1;
 
       const chaveGrupo = `${it.tipo}_${it.valorNum.toFixed(2)}`;
       if (!gruposMap.has(chaveGrupo)) {
         gruposMap.set(chaveGrupo, {
-          qtd: 1,
+          qtd: qtdItem,
           primeiroVenc: it.vencStr,
           ultimoVenc: it.vencStr,
           tipoBase: it.tipo,
@@ -2211,7 +2384,7 @@ function analisarPicosProposta(renda) {
         });
       } else {
         const g = gruposMap.get(chaveGrupo);
-        g.qtd++;
+        g.qtd += qtdItem;
         g.ultimoVenc = it.vencStr;
         if (totalMesPico > g.totalMesPico) {
           g.valorMrvMes = valorMrvMes;
@@ -2225,10 +2398,10 @@ function analisarPicosProposta(renda) {
 
   for (const g of gruposMap.values()) {
     const vencTexto = g.qtd > 1
-      ? `${g.qtd}x de ${formatMoeda(g.valorInterm)} (de ${g.primeiroVenc} a ${g.ultimoVenc})`
+      ? (g.primeiroVenc === g.ultimoVenc ? `${g.primeiroVenc} — ${g.qtd}x de ${formatMoeda(g.valorInterm)}` : `${g.qtd}x de ${formatMoeda(g.valorInterm)} (de ${g.primeiroVenc} a ${g.ultimoVenc})`)
       : `Vencimento: ${g.primeiroVenc}`;
     const tipoLabel = g.qtd > 1
-      ? `1. ${g.tipoBase} (${g.qtd}x)`
+      ? `1. ${g.tipoBase.replace(/\(\d+x\)/i, '').trim()} (${g.qtd}x)`
       : `1. ${g.tipoBase} (#${g.numPrimeiro})`;
 
     AppState.propPicosCriticos.push({
@@ -2272,6 +2445,8 @@ function renderizarFluxo(){
     const tipoLower = it.tipo.toLowerCase();
     const pctRenda = (rendaProp > 0 && !tipoLower.includes('bom')) ? (it.valorNum / rendaProp) * 100 : 0;
     const isCritica = pctRenda >= 50;
+    const qtd = it.qtd || 1;
+    const valExibicao = qtd > 1 ? `${qtd}x de ${formatMoeda(it.valorNum)}` : formatMoeda(it.valorNum);
 
     let trClass='', badgeClass='', badgeLabel='', faseLabel='—';
     if(tipoLower.includes('sinal')){trClass='tipo-sinal'; badgeClass='sinal'; badgeLabel=it.tipo; faseLabel='Sinal';}
@@ -2289,7 +2464,7 @@ function renderizarFluxo(){
       faseLabel += ` <span class="tag-interm-critica" style="margin-left:4px;">🚨 ${pctRenda.toFixed(1).replace('.',',')}% Renda</span>`;
     }
 
-    return `<tr class="${trClass}"><td>${it.num}</td><td>${sanitizarTexto(it.vencStr)}</td><td><span class="tipo-badge ${badgeClass}">${sanitizarTexto(badgeLabel)}</span></td><td><strong>${formatMoeda(it.valorNum)}</strong></td><td>${faseLabel}</td></tr>`;
+    return `<tr class="${trClass}"><td>${it.num}</td><td>${sanitizarTexto(it.vencStr)}</td><td><span class="tipo-badge ${badgeClass}">${sanitizarTexto(badgeLabel)}</span></td><td><strong>${valExibicao}</strong></td><td>${faseLabel}</td></tr>`;
   }).join('');
 }
 
