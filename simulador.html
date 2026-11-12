@@ -2,13 +2,60 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Redirecionando…</title>
-  <meta http-equiv="refresh" content="0; url=./">
-  <link rel="canonical" href="https://misaelguedes-git.github.io/calculadoraMRV/">
-  <script>location.replace('./' + location.search + location.hash);</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecionando — Calculadora MRV / Emcash</title>
+  <meta http-equiv="refresh" content="0; url=https://calculadoramrv.pages.dev/">
+  <link rel="canonical" href="https://calculadoramrv.pages.dev/">
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #ECEEF2;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+      padding: 20px;
+    }
+    .box {
+      background: #fff;
+      padding: 30px 24px;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      border-top: 4px solid #006b3f;
+      max-width: 420px;
+    }
+    h2 { color: #006b3f; font-size: 18px; margin-bottom: 10px; }
+    p { font-size: 14px; color: #666; margin-bottom: 18px; line-height: 1.5; }
+    a {
+      display: inline-block;
+      background: #006b3f;
+      color: #fff;
+      text-decoration: none;
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+  </style>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+    window.location.replace("https://calculadoramrv.pages.dev/");
+  </script>
 </head>
 <body>
-  <p>Esta página mudou. <a href="./">Clique aqui</a> para acessar a calculadora.</p>
+  <div class="box">
+    <h2>Atualizamos nosso endereço!</h2>
+    <p>A Calculadora de Comprometimento de Renda agora está em um servidor mais rápido e seguro. Você está sendo redirecionado...</p>
+    <a href="https://calculadoramrv.pages.dev/">Acessar Nova Calculadora</a>
+  </div>
 </body>
 </html>
