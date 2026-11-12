@@ -2,7 +2,7 @@
 //   CONFIGURAÇÕES INICIAIS E SERVICE WORKER
 // =========================================================================
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
+  navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
 if (typeof pdfjsLib !== 'undefined') {
@@ -58,23 +58,33 @@ function atualizarTetoPorInput(val) {
   const tetoMrvFmt = AppState.tetoMrvPct.toFixed(1).replace('.', ',') + '%';
   const tetoTotFmt = AppState.tetoTotalPct.toFixed(1).replace('.', ',');
   const tetoAteFmt = (AppState.tetoTotalPct + 2).toFixed(1).replace('.', ',');
-  document.getElementById('sidebarTetoMRV').textContent = tetoMrvFmt;
-  document.getElementById('sidebarFaixaAtencao').textContent = `${tetoTotFmt}% a ${tetoAteFmt}%`;
+  const elMrv = document.getElementById('sidebarTetoMRV');
+  const elFaixa = document.getElementById('sidebarFaixaAtencao');
+  if (elMrv) elMrv.textContent = tetoMrvFmt;
+  if (elFaixa) elFaixa.textContent = `${tetoTotFmt}% a ${tetoAteFmt}%`;
 
-  if (document.getElementById('resultado').classList.contains('show')) {
-    calcular(new Event('submit'));
+  const resContrato = document.getElementById('resultado');
+  const resProposta = document.getElementById('resultadoProposta');
+  if (resContrato && resContrato.classList.contains('show')) {
+    calcular(null);
   }
-  if (document.getElementById('resultadoProposta').classList.contains('show')) {
-    calcularProposta(new Event('submit'));
+  if (resProposta && resProposta.classList.contains('show')) {
+    calcularProposta(null);
   }
 }
 
 // =========================================================================
 //   2. EVENTOS DE ARRASTAR E SOLTAR E VINCULAÇÃO DE LISTENERS (SEM INLINE)
 // =========================================================================
+function onEl(id, eventName, handler) {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener(eventName, handler);
+}
+
 function setupDragAndDrop(cardId, inputId, readFunction) {
   const card = document.getElementById(cardId);
   const input = document.getElementById(inputId);
+  if (!card || !input) return;
 
   card.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -94,13 +104,19 @@ function setupDragAndDrop(cardId, inputId, readFunction) {
   });
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  // Fallback do Logo sem onerror inline
+function inicializarApp() {
+  // Garante que nenhum formulário recarregue a página ou adicione "?" na URL
+  document.querySelectorAll('form').forEach(f => {
+    f.addEventListener('submit', (e) => e.preventDefault());
+  });
+
+  // Fallback do Logo
   const logoImg = document.getElementById('logoImg');
   if (logoImg) {
     logoImg.addEventListener('error', () => {
       logoImg.classList.add('hidden');
-      document.getElementById('logoFallback').style.display = 'inline';
+      const fb = document.getElementById('logoFallback');
+      if (fb) fb.style.display = 'inline';
     });
   }
 
@@ -108,65 +124,79 @@ window.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.preset-btn').forEach(btn => {
     btn.addEventListener('click', () => definirTetoTotal(parseFloat(btn.dataset.teto)));
   });
-  document.getElementById('sliderTetoTotal').addEventListener('input', (e) => atualizarTetoPorInput(e.target.value));
-  document.getElementById('inputTetoTotal').addEventListener('input', (e) => atualizarTetoPorInput(e.target.value));
+  onEl('sliderTetoTotal', 'input', (e) => atualizarTetoPorInput(e.target.value));
+  onEl('inputTetoTotal', 'input', (e) => atualizarTetoPorInput(e.target.value));
 
   // Navegação de Abas
-  document.getElementById('tabBtnContrato').addEventListener('click', () => trocarAba('contrato'));
-  document.getElementById('tabBtnProposta').addEventListener('click', () => trocarAba('proposta'));
+  onEl('tabBtnContrato', 'click', () => trocarAba('contrato'));
+  onEl('tabBtnProposta', 'click', () => trocarAba('proposta'));
 
   // Uploads e Drag & Drop
   setupDragAndDrop('uploadCardMRV', 'pdfInput', lerPDFContrato);
   setupDragAndDrop('uploadCardCaixa', 'pdfCaixaInput', lerPDFCaixa);
   setupDragAndDrop('uploadCardProp', 'pdfPropostaInput', lerPDFProposta);
 
-  document.getElementById('uploadCardProp').addEventListener('click', () => document.getElementById('pdfPropostaInput').click());
-  document.getElementById('btnUploadProp').addEventListener('click', (e) => {
-    e.stopPropagation();
-    document.getElementById('pdfPropostaInput').click();
+  onEl('uploadCardProp', 'click', () => {
+    const inp = document.getElementById('pdfPropostaInput');
+    if (inp) inp.click();
   });
-  document.getElementById('pdfPropostaInput').addEventListener('change', (e) => lerPDFProposta(e.target));
+  onEl('btnUploadProp', 'click', (e) => {
+    e.stopPropagation();
+    const inp = document.getElementById('pdfPropostaInput');
+    if (inp) inp.click();
+  });
+  onEl('pdfPropostaInput', 'change', (e) => lerPDFProposta(e.target));
 
-  document.getElementById('uploadCardMRV').addEventListener('click', () => document.getElementById('pdfInput').click());
-  document.getElementById('btnUploadMRV').addEventListener('click', (e) => {
-    e.stopPropagation();
-    document.getElementById('pdfInput').click();
+  onEl('uploadCardMRV', 'click', () => {
+    const inp = document.getElementById('pdfInput');
+    if (inp) inp.click();
   });
-  document.getElementById('pdfInput').addEventListener('change', (e) => lerPDFContrato(e.target));
+  onEl('btnUploadMRV', 'click', (e) => {
+    e.stopPropagation();
+    const inp = document.getElementById('pdfInput');
+    if (inp) inp.click();
+  });
+  onEl('pdfInput', 'change', (e) => lerPDFContrato(e.target));
 
-  document.getElementById('uploadCardCaixa').addEventListener('click', () => document.getElementById('pdfCaixaInput').click());
-  document.getElementById('btnUploadCaixa').addEventListener('click', (e) => {
-    e.stopPropagation();
-    document.getElementById('pdfCaixaInput').click();
+  onEl('uploadCardCaixa', 'click', () => {
+    const inp = document.getElementById('pdfCaixaInput');
+    if (inp) inp.click();
   });
-  document.getElementById('pdfCaixaInput').addEventListener('change', (e) => lerPDFCaixa(e.target));
-  document.getElementById('avisoCaixaCard').addEventListener('click', (e) => e.stopPropagation());
+  onEl('btnUploadCaixa', 'click', (e) => {
+    e.stopPropagation();
+    const inp = document.getElementById('pdfCaixaInput');
+    if (inp) inp.click();
+  });
+  onEl('pdfCaixaInput', 'change', (e) => lerPDFCaixa(e.target));
+  onEl('avisoCaixaCard', 'click', (e) => e.stopPropagation());
 
   // Formulário e Campos da Proposta
-  document.getElementById('formProposta').addEventListener('submit', calcularProposta);
-  document.getElementById('btnLimparProp').addEventListener('click', limparProposta);
-  document.getElementById('prop-fluxoHeader').addEventListener('click', toggleFluxo);
-  document.getElementById('btnCopiarProp').addEventListener('click', copiarResultadoProposta);
-  document.getElementById('btnImprimirProp').addEventListener('click', prepararImpressao);
+  onEl('formProposta', 'submit', calcularProposta);
+  onEl('btnLimparProp', 'click', limparProposta);
+  onEl('prop-fluxoHeader', 'click', toggleFluxo);
+  onEl('btnCopiarProp', 'click', copiarResultadoProposta);
+  onEl('btnImprimirProp', 'click', prepararImpressao);
 
   const propDataEntrega = document.getElementById('prop-dataEntrega');
-  propDataEntrega.addEventListener('input', (e) => mascaraData(e.target));
-  propDataEntrega.addEventListener('change', function () {
-    if (AppState.propFluxo.length > 0 && this.value && /^\d{2}\/\d{2}\/\d{4}$/.test(this.value)) {
-      calcularPsaPsbProposta(this.value);
-      renderizarFluxo();
-    }
-  });
-  
-  // Formulário e Campos do Contrato
-  document.getElementById('formCalc').addEventListener('submit', calcular);
-  document.getElementById('btnLimparContrato').addEventListener('click', limpar);
-  document.getElementById('btnImprimirContrato').addEventListener('click', prepararImpressao);
-  document.getElementById('btnCopiarContrato').addEventListener('click', copiarResultado);
+  if (propDataEntrega) {
+    propDataEntrega.addEventListener('input', (e) => mascaraData(e.target));
+    propDataEntrega.addEventListener('change', function () {
+      if (AppState.propFluxo.length > 0 && this.value && /^\d{2}\/\d{2}\/\d{4}$/.test(this.value)) {
+        calcularPsaPsbProposta(this.value);
+        renderizarFluxo();
+      }
+    });
+  }
 
-  document.getElementById('dataEntrega').addEventListener('input', (e) => mascaraData(e.target));
-  
- const camposMoeda = ['parcelaCaixa', 'renda', 'valorAvaliacao', 'tetoFaixa', 'prop-renda', 'prop-parcelaCaixa'];
+  // Formulário e Campos do Contrato
+  onEl('formCalc', 'submit', calcular);
+  onEl('btnLimparContrato', 'click', limpar);
+  onEl('btnImprimirContrato', 'click', prepararImpressao);
+  onEl('btnCopiarContrato', 'click', copiarResultado);
+  onEl('dataEntrega', 'input', (e) => mascaraData(e.target));
+
+  // Formatação Monetária Automática (Digitação, Colagem e Saída do Campo)
+  const camposMoeda = ['parcelaCaixa', 'renda', 'valorAvaliacao', 'tetoFaixa', 'prop-renda', 'prop-parcelaCaixa'];
   camposMoeda.forEach(id => {
     const campo = document.getElementById(id);
     if (!campo) return;
@@ -183,18 +213,28 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   // Delegação de clique para acordeões dinâmicos do Plano de Pagamento
-  document.getElementById('planoBody').addEventListener('click', (e) => {
+  onEl('planoBody', 'click', (e) => {
     const titulo = e.target.closest('.plano-secao-titulo');
     if (titulo && titulo.dataset.secao) {
       toggleSecao(titulo.dataset.secao);
     }
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', inicializarApp);
+} else {
+  inicializarApp();
+}
 
 // =========================================================================
 //   3. LEITURA E PROCESSAMENTO BASE DE PDFs
 // =========================================================================
 async function extrairTextoPDF(file) {
+  if (typeof pdfjsLib === 'undefined') {
+    alert('❌ Biblioteca PDF.js não carregada. Recarregue a página com Ctrl + Shift + R.');
+    return null;
+  }
   const buf = await file.arrayBuffer();
   let pdf;
   try {
@@ -1465,6 +1505,7 @@ function analisarPicosProposta(renda) {
 function renderizarFluxo() {
   const tbody = document.getElementById('prop-fluxoTbody');
   const wrap = document.getElementById('prop-fluxoWrap');
+  if (!tbody || !wrap) return;
   if (!AppState.propFluxo.length) { wrap.style.display = 'none'; return; }
 
   wrap.style.display = 'block';
@@ -1634,7 +1675,7 @@ function calcularProposta(e) {
 
   calcularPsaPsbProposta(dataEntStr);
 
-  if (AppState.propPsbQtd === 0 && e.isTrusted) {
+  if (AppState.propPsbQtd === 0 && e && e.isTrusted) {
     alert('ℹ️ AVISO: Nenhuma parcela Mensal encontrada após a data de entrega.\n\nO cálculo prosseguirá considerando a parcela MRV (PSB) como R$ 0,00. Confirme se a data está correta ou se a compra é à vista/quitada.');
   }
 
